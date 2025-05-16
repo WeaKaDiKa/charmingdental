@@ -1,0 +1,218 @@
+/* General Body Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e3a5a5; /* Soft pink background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #5C3A31; /* Soft brown text */
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+/* Wrapper for the Login Form */
+.wrapper {
+    background-color: #ffffff; /* White form background */
+    padding: 60px 100px;
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    text-align: center; /* Center the text and content */
+    width: 400px; /* Fixed width for the form */
+}
+
+
+/* Logo Section */
+.logo-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.logo-text img {
+    width: 65px;
+    height: 60px;
+    margin-right: 10px;
+    border-radius: 20%;
+}
+
+.logo-text h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    color: #000000; /* Black title text */
+}
+
+.logo-text p {
+    font-size: 14px;
+    margin: 0;
+    margin-top: 8px;
+    color: #333333; /* Dark gray subtitle */
+}
+
+.wrapper p {
+    font-size: 14px;
+    color: #555555;
+    font-weight: 100;
+}
+p1 {
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+    margin: 0;
+    color: #555555; /* Dark gray subtitle */
+    font-weight: 600;
+    margin-bottom: 60px;
+}
+/* Input Fields */
+form p {
+    font-size: 14px;
+    font-weight: bold;
+    color: #5C3A31;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+
+.input-box {
+    position: relative;
+    margin-bottom: 0px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
+    font-size: 14px;
+    border: 1px solid #EEEEEE;
+    border-radius: 8px; /* Rounded input boxes */
+    box-sizing: border-box;
+    background-color: #EEEEEE;
+}
+
+
+.input-box img {
+    position: absolute;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 47px;
+    height: 44px;
+    border-radius: 17%;
+}
+
+.input-box .error-message {
+    color: #FF0000; 
+    font-size: 14px; 
+    margin-top: 5px; 
+}
+
+/* Base Button Styling */
+.btn {
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px; /* Adjust spacing */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Login Button Specific Styling */
+.login-btn {
+    background-color: #da9393; /* Soft pink */
+    color: #ffffff; /* White text */
+    margin-bottom: 10px;
+}
+
+.login-btn:hover {
+    background-color: #c77c7c; /* Slightly darker pink on hover */
+    transform: scale(1.02); /* Slight zoom effect */
+}
+
+/* Signup Button Specific Styling */
+.signup-btn {
+    background-color: #ffffff; /* White background */
+    color: #da9393; /* Soft pink text */
+    border: 1px solid #da9393; /* Border matching text color */
+}
+
+.signup-btn:hover {
+    background-color: #da9393; /* Invert to pink background */
+    color: #ffffff; /* White text */
+    transform: scale(1.02); /* Slight zoom effect */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .btn {
+        font-size: 14px; /* Slightly smaller font on smaller screens */
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .wrapper {
+        width: 90%; /* Make form responsive on smaller screens */
+    }
+}
+
+/* Base Style */
+.forgot-password {
+    display: block; /* Makes it easier to style and align */
+    margin-top: 20px; /* Adds space from the input fields */
+    margin-bottom: 20px;
+    font-size: 14.14px; /* Sets a smaller font size */
+    color: white; /* Soft pink color */
+    text-align: right; /* Aligns to the right */
+    transition: color 0.3s ease; /* Adds a hover effect */
+}
+
+/* Hover Effect */
+.forgot-password:hover {
+    color: white; /* Darker pink on hover */
+    text-decoration: underline; /* Underline on hover for clarity */
+}
+
+/* Optional: Add responsiveness */
+@media (max-width: 768px) {
+    .forgot-password {
+        text-align: center; /* Center align on smaller screens */
+    }
+}
+
+/* Divider Styling */
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0; /* Adds space above and below the divider */
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px; /* Thickness of the line */
+    background-color: #C2C2C2; /* Soft pink color for the line */
+}
+
+.divider::before {
+    margin-right: 10px; /* Space between the line and "OR" text */
+}
+
+.divider::after {
+    margin-left: 10px; /* Space between the line and "OR" text */
+}
+
+.divider span {
+    font-size: 14px; /* Text size */
+    color: #C2C2C2; /* Gray color for the "OR" text */
+}

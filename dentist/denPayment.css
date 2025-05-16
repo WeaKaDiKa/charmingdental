@@ -1,0 +1,452 @@
+/* General Body Styling */
+html, body {
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #5C3A31; /* Brown text color */
+    background-color: #da9393; /* Light pink background */
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+/* Top Header Styling */
+.top-header {
+    background-color: #000000;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+    z-index: 100;
+}
+
+.left-section {
+    display: flex;
+    align-items: center; /* This will vertically align the logo and text */
+}
+
+.logoDental {
+    font-size: 22px;
+    font-weight: bold;
+    line-height: 1; /* Remove extra line height */
+    white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.user-info {
+    display: flex;
+    align-items: center; /* Align date and profile vertically */
+}
+
+.date {
+    font-size: 18px; /* Slightly larger font for date */
+    margin-right: 10px; /* Add space between date and profile icon */
+}
+
+.profile {
+    width: 40px;
+    height: 40px;
+    background-color: #d99e9e; /* Light pink for profile icon */
+    border-radius: 50%; /* Make profile icon circular */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px; /* Font size for initials inside the profile icon */
+}
+
+/* Main Wrapper Styling */
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full viewport height */
+    padding-top: 90px; /* Offset content to account for fixed header */
+    background-color: #da9393;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    margin-top: 12px;
+    width: 250px;
+    background-color: #FFFFFF; /* White background for sidebar */
+    box-sizing: border-box; /* Include padding and borders in width/height */
+    height: 100vh; /* Full viewport height */
+    position: fixed;
+    top: 80px; /* Place the sidebar below the header */
+    left: 0;
+}
+
+.nav {
+    list-style-type: none; /* Remove default list styling */
+    padding: 0;
+    margin: 0;
+}
+
+.nav li {
+    padding: 15px 10px; /* Add padding inside list items */
+    border-bottom: 1px solid #d99e9e; /* Light pink border between items */
+    cursor: pointer; /* Show pointer cursor on hover */
+    display: flex;
+    align-items: center; /* Align icons and text vertically */
+    transition: background-color 0.3s; /* Smooth background color transition */
+    color: #000000; /* Set sidebar text to black */
+}
+
+.nav li i {
+    margin-right: 10px; /* Add space between icon and text */
+    font-size: 18px; /* Slightly larger icons */
+    color: #000000; /* Set icons to black */
+}
+
+.nav li:hover, .nav li.active {
+    background-color: #da9393; /* Pink background on hover/active */
+    color: white; /* White text color on hover/active */
+    border-left: 4px solid #000000; /* Black left border on hover/active */
+}
+
+.logo {
+    font-size: 22px; /* Larger font for logo */
+    font-weight: bold;
+    text-align: left; /* Align logo to the left */
+    color: #000000; /* Set logo color to black */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f1f1; /* Light pink background */
+    color: #5C3A31; /* Text color */
+}
+
+.user-management {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-management h2 {
+    font-size: 28px;
+    color: #5C3A31;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.user-table {
+    flex-grow: 1;
+    margin-left: 270px; /* Adjust the left margin to create space for the sidebar */
+    margin-top: 15px;
+    margin-right: 20px;
+    margin-bottom: 160px;
+    padding: 20px;
+    background-color: #ffffff;
+  }
+
+  .user-table h2 {
+    display: flex;
+    font-size: 28px;
+    color: #5C3A31;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  
+  .user-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+  }
+
+  .appointments-tabs {
+    display: flex;
+    margin-top: 2%;
+    gap: 104px;
+    border-bottom: 2px solid #ddd;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: #da9393;
+    position: relative;
+    font-size: 16px;
+}
+
+.tab.active {
+    color: #8b4513;
+    border-bottom: 2px solid #8b4513;
+    margin-bottom: -2px;
+}
+  
+  .table-header div {
+    margin-left: 20px;
+    margin-bottom: 35px;
+    display: flex;
+    justify-content: space-between; /* Distributes items evenly with space between */
+    align-items: center; /* Aligns items vertically in the center */
+}
+
+/* Table Header Adjustments */
+.table-header {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    color: #965757;
+}
+
+.payment-content {
+    background-color: white;
+    padding: 20px;
+}
+
+.add-payment-btn {
+    display: flex;
+    background-color: #ea7575;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.add-payment-btn:hover {
+    background-color: #d85b5b;
+}
+
+.header-actions {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.left-actions, .right-actions {
+    display: flex;
+    align-items: center;
+}
+
+.sort-dropdown {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    gap: 5px;
+}
+
+.sort-dropdown label {
+    margin-right: 10px;
+}
+
+.sort-dropdown select {
+    padding: 5px 10px;
+    border: 1px solid #d99e9e;
+    border-radius: 5px;
+    color: #5C3A31;
+}
+
+/* Table Styles */
+
+.user-table{
+    background-color: #da9393;
+}
+.user-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    color: #5C3A31;
+}
+
+.user-table th {
+    background-color: #f9f1f1;
+    color: #5C3A31;
+}
+
+.view-btn {
+    background-color: #0085FF;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+.view-btn:hover {
+    background-color: #006bbd;
+}
+
+
+
+.search-bar {
+    margin-top: 10px;
+    margin-right: 20px;
+    display: flex;
+    justify-content: flex-end; /* Push the search bar to the right */
+    align-items: center; /* Aligns the input vertically in the center */
+}
+
+.search-bar input {
+    padding: 10px 15px;
+    border: 2px solid #D88D87;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 250px;
+    background-color: #FFFFFF;
+    color: #5C3A31;
+    width: 200px;
+    background-color: #f9f1f1;
+}
+  
+  .user-table .search-bar input::placeholder {
+    color: #999;
+  }
+
+  .user-table th,
+  .user-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .user-table th {
+    background-color: white;
+    color: #965757;
+  }
+  
+  .user-table tbody tr:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .user-table .action-buttons {
+    display: flex;
+    gap: 5px;
+  }
+  
+  .user-table .action-buttons button {
+    background-color: #ea7575;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 5px;
+  }
+  
+  .user-table .action-buttons button.view-btn {
+    background-color: #0085FF;
+  }
+
+/* Sidebar Item Alignment */
+.nav li, .dropdown-btn {
+    display: flex;
+    align-items: center;
+    padding: 15px 10px;
+}
+
+.nav .dropdown-btn i {
+    margin-right: 15px;
+}
+
+.dropdown-btn {
+    justify-content: flex-start;
+}
+
+/* Dropdown Button Styles */
+.dropdown-btn {
+    display: flex;
+    align-items: normal;
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 15px 10px;
+    border-bottom: 1px solid #d99e9e;
+    cursor: pointer;
+    color: #000000;
+    transition: background-color 0.3s;
+    font-size: 17px;
+}
+
+.dropdown-btn i {
+    margin-right: 10px;
+}
+
+/* Dropdown Icon Styles */
+.dropdown-icon {
+    transition: transform 0.3s ease;
+    position: left; /* Allows you to fine-tune its placement */
+}
+
+.dropdown-btn.active .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.dropdown-btn:hover {
+    background-color: #da9393;
+    color: white;
+    border-left: 4px solid #000000;
+}
+
+/* Dropdown Container Styles */
+.dropdown-container {
+    display: none;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-container li {
+    padding: 20px 15px 10px 30px;
+    border-bottom: 1px solid #ddd;
+}
+
+.dropdown-container li:last-child {
+    border-bottom: none;
+}
+
+.dropdown-container li span {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: color 0.3s;
+    margin-bottom: 7px;
+}
+
+/* Dropdown Icon Styles */
+.dropdown-icon {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-btn.active .dropdown-icon {
+    transform: rotate(180deg);
+}
+
+/* Dropdown Container Styling */
+.dropdown-container {
+    display: none;  /* Initially hide the dropdown */
+    list-style-type: none;
+    padding-left: 20px;  /* Indent dropdown items */
+    background-color: #f9f1f1;  /* Light background for dropdown */
+}
+
+.dropdown-btn.active .dropdown-icon {
+    transform: rotate(180deg);  /* Rotate chevron when active */
+    transition: transform 0.3s ease;
+}
+
+.dropdown-btn .dropdown-icon {
+    margin-left: 10px;
+    transition: transform 0.3s ease;
+}

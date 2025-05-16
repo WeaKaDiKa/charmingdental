@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Charming Smile Dental Clinic</title>
+
+  <?php require_once 'db/head.php' ?>
+</head>
+
+<body>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top">
+    <div class="container d-flex align-items-center">
+
+      <h1 class="logo me-auto d-block d-md-none"><a href="index.php">CSDC</a></h1>
+      <h1 class="logo me-auto d-none d-md-block"><a href="index.php">Charming Smile Dental Clinic</a></h1>
+      <nav id="navbar" class="navbar order-last order-lg-0">
+        <ul>
+          <li><a class="nav-link scrollto active" href="#home">Home</a></li>
+          <li><a class="nav-link scrollto" href="#services">Services</a></li>
+          <li><a class="nav-link scrollto" href="#contact">Clinic info</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+    </div>
+  </header><!-- End Header -->
+
+  <!-- ======= Home Section ======= -->
+  <section id="home" class="d-flex align-items-center">
+    <div class="container">
+      <h1>Have a teeth problem?<br>We got you covered with our quality<br>and affordable dental services.🦷</h1>
+      <br>
+      <a href="patient/patLogin.php" class="signup-btn"><span class="d-none d-md-inline"></span>Book an Appointment now
+        !</a>
+    </div>
+  </section><!-- End Home -->
+
+
+  <!-- ======= Services Section ======= -->
+  <section id="services" class="services">
+    <div class="container">
+
+      <div class="section-title">
+        <h2>Services Offered</h2>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+          <div class="icon-box">
+            <div class="icon"><i class="fas fa-tooth"></i></div>
+            <h4><a href="">Cosmetic Dentistry</a></h4>
+            <p>Teeth Whitening<br>Direct & Indirect Veneers</p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0">
+          <div class="icon-box">
+            <div class="icon"><i class="fas fa-tooth"></i></div>
+            <h4><a href="">Dental X-ray</a></h4>
+            <p>Periapical</p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0">
+          <div class="icon-box">
+            <div class="icon"><i class="fas fa-tooth"></i></div>
+            <h4><a href="">Endodontics</a></h4>
+            <p>Root Canal Therapy</p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+          <div class="icon-box">
+            <div class="icon"><i class="fas fa-tooth"></i></div>
+            <h4><a href=""> General Services</a></h4>
+            <p>Oral Prophylaxis (Cleaning)
+              <br>Tooth Filling (Pasta)
+              <br>Simple Extraction (Bunot)
+              <br>Oral Rehabilitation
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+          <div class="icon-box">
+            <div class="icon"><i class="fas fa-tooth"></i></div>
+            <h4>Oral Surgery</h4>
+            <p>Simple Extraction
+              <br>Odontectomy (Removal of Impacted Wisdom Tooth)
+              <br>Frenectomy
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+          <div class="icon-box">
+            <div class="icon"><i class="fas fa-tooth"></i></div>
+            <h4>Orthodontics</h4>
+            <p>Conventional Metal Braces
+              <br>Retainers
+              <br>Mouth Guard
+              <br>Bite Plane / Inclined Plane
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+          <div class="icon-box">
+            <div class="icon"><i class="fas fa-tooth"></i></div>
+            <h4>Pedodontics</h4>
+            <p>Pit and Fissure Sealant
+              <br>Fluoride Application
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+          <div class="icon-box">
+            <div class="icon"><i class="fas fa-tooth"></i></div>
+            <h4>Periodontics</h4>
+            <p>Gingivitis<br>Gum Treatment</p>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+          <div class="icon-box">
+            <div class="icon"><i class="fas fa-tooth"></i></div>
+            <h4>Prosthodontics</h4>
+            <p>Complete Denture (Pustiso)
+              <br>Removable Partial Denture (Thermosen, Ivocap, Flexible, Acrylic)
+              <br>Jacket Crown/Fixed Bridge (Zirconia, All Porcelain (EMAX), Porcelain Fused to Metal, Ceramage,
+              Plastic)
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section><!-- End Services Section -->
+
+
+  <!-- ======= Info Section ======= -->
+  <section id="contact" class="contact">
+
+    <div class="section-title">
+      <h2>Clinic Info</h2>
+    </div>
+    <div class="container">
+      <div class="col-lg-4">
+        <div class="info">
+
+          <div class="hours">
+            <i class="fa fa-clock"></i>
+            <h4>Clinic Hours</h4>
+            <p>9am-6pm (Mon, Wed-Sun)</p>
+          </div>
+          <br>
+          <div class="address">
+            <a
+              href="https://www.google.com/maps/place/Charming+Smile+Dental+Clinic/@14.640419,121.0071371,17z/data=!3m1!4b1!4m6!3m5!1s0x3397b700d17622eb:0x96cea99ca013e7d7!8m2!3d14.640419!4d121.009712!16s%2Fg%2F11rh4b78zg?entry=ttu&g_ep=EgoyMDI1MDEyOS4xIKXMDSoASAFQAw%3D%3D"><i
+                class="bi bi-geo-alt"></i></a>
+            <h4>Location:</h4>
+            <p>2nd floor, #4 Corumi St., Brgy. Masambong, Del Monte Avenue, Quezon City, Philippines</p>
+          </div>
+          <div class="facebook">
+            <a href="https://www.facebook.com/CharmingSmileDentalClinic"><i class="bi bi-facebook"></i></a>
+            <h4>Facebook</h4>
+            <p>Charming Smile Dental Clinic</p>
+          </div>
+          <br>
+          <div class="phone">
+            <i class="bi bi-phone"></i>
+            <h4>Call:</h4>
+            <p>0916-846-4995 / 0999-821-1819 </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><!-- End Contact Section -->
+
+  <div id="preloader"></div>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <!-- Bootstrap Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- GLightbox -->
+  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/js/glightbox.min.js"></script>
+
+  <!-- PureCounter -->
+  <script src="https://cdn.jsdelivr.net/npm/@srexi/purecounterjs@1.5.0/dist/purecounter_vanilla.js"></script>
+
+  <!-- Swiper.js -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11.0.5/swiper-bundle.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="js/main.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,179 @@
+/* General Body Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e3a5a5; /* Soft pink background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+/* Wrapper Styling */
+.wrapper {
+    background-color: #ffffff;
+    padding: 44px 45px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    max-width: 900px;
+}
+
+.wrapper p1 {
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+    margin: 0;
+    color: #555555; /* Dark gray subtitle */
+    font-weight: 600;
+    margin-bottom: 60px;
+}
+
+/* Logo and Text */
+.logo-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.logo-text img {
+    width: 65px;
+    height: 60px;
+    margin-right: 10px;
+    border-radius: 20%;
+}
+
+.logo-text h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+    color: #000000;
+}
+
+.logo-text p {
+    font-size: 14px;
+    margin: 0;
+    color: #333333;
+}
+
+/* Form Heading */
+.form-heading {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0 20px;
+    color: #5C3A31;
+}
+
+/* Input Fields */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Success Message Styles */
+.success-message {
+    background-color: #d4edda; 
+    color: #155724; 
+    border: 1px solid #c3e6cb; 
+    padding: 15px; 
+    margin: 20px 0; 
+    border-radius: 5px; 
+    font-size: 16px; 
+    display: flex; 
+    align-items: center; 
+}
+
+.success-message i {
+    margin-right: 10px; 
+}
+
+/* Optional: Add a close button for dismissing the message */
+.success-message .close-btn {
+    margin-left: auto; /* Push close button to the right */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    gap: 30px; /* Adds space between rows */
+    color: #965757;
+}
+
+.input-group {
+    flex: 1 1 calc(33% - 20px); /* Ensures 3 inputs fit in one row, adjusting for spacing */
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #965757;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #eeeeee;
+    border-radius: 8px;
+    background-color: #E8E8E8;
+    box-sizing: border-box;
+    color: #4a4a4a;
+}
+
+
+/* Ensure the last row aligns properly */
+.input-group-full {
+    flex: 1 1 100%; /* Full-width input group */
+}
+
+/*for PHP Error message*/
+.input-group .error-message {
+    color: #FF0000; 
+    font-size: 14px; 
+    margin-top: 5px; 
+}
+
+/* Submit Button */
+button {
+    background-color: #da9393;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 25%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto 0; /* Top margin, center horizontally */
+    margin-top: 50px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+form button:hover {
+    background-color: #da9393; /* Invert to pink background */
+    color: #ffffff; /* White text */
+    transform: scale(1.02); /* Slight zoom effect */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .wrapper {
+        width: 90%; /* Make form responsive on smaller screens */
+    }
+}
+
