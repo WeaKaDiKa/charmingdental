@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Dentist Appointments</title>
     <link rel="stylesheet" href="denAppointments.css">
     <?php require_once "../db/head.php" ?>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="recepScript.js" defer></script>
 </head>
 <style>

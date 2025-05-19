@@ -1,6 +1,6 @@
 <?php
 require_once('../db/db_users.php');
-
+require_once '../db/sendmail.php';
 $registration_successful = isset($_SESSION['registration_success']) && $_SESSION['registration_success'];
 unset($_SESSION['registration_success']); // Clear the flag after using it
 
@@ -10,15 +10,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpresend'])) {
     $email = $_SESSION['otpemail'];
 
     // Update OTP in the database
-    $sql = "UPDATE users SET otp = ? WHERE email = ?";
+    $expiryotp = date("Y-m-d H:i:s", strtotime("+1 minute"));
+
+    $sql = "UPDATE users SET otp = ?, expiryotp = ? WHERE email = ?";
     $stmt = $db->prepare($sql);
     if ($stmt) {
-        $stmt->bind_param("ss", $otp, $email);
+        $stmt->bind_param("sss", $otp, $expiryotp, $email);
         if ($stmt->execute()) {
             $_SESSION['success'] = "OTP resend successful";
         }
         $stmt->close();
     }
+
     // Fetch user details for email
     $sql = "SELECT first_name, last_name FROM users WHERE email = ?";
     $stmt = $db->prepare($sql);
@@ -32,72 +35,99 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpresend'])) {
 
 
     // Send email
-    require_once '../db/sendmail.php';
+
     $message = "Here is your OTP. Use it to activate your account after signing in. <strong>" . $otp . "</strong>";
     sendmail($email, $firstName . " " . $lastName, "Confirm your email", $message);
 }
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
     $inputOTP = $_POST['otp'];
     $id = $_SESSION['otpemail'];
 
-    // Database query to fetch the stored OTP
-    $sql = "SELECT otp FROM users WHERE email = ?";
-
-    // Prepare and bind
+    // Fetch stored OTP and expiry time
+    $sql = "SELECT otp, expiryotp FROM users WHERE email = ?";
     $stmt = $db->prepare($sql);
     if ($stmt) {
         $stmt->bind_param("s", $id);
 
-        // Execute the query
         if ($stmt->execute()) {
-            // Bind the result
-            $stmt->bind_result($storedOTP);
-            if ($stmt->fetch()) {
-                // Check if the input OTP matches the stored OTP
-                if ($inputOTP == $storedOTP) {
-                    // Close the statement before running another query
-                    $stmt->close();
+            $stmt->bind_result($storedOTP, $expiryOTP);
 
-                    // OTP is valid, update user status to active
-                    $updateSql = "UPDATE users SET status = 'active' WHERE email = ?";
-                    $updateStmt = $db->prepare($updateSql);
+            if ($stmt->fetch()) {
+                $stmt->close(); // Close after fetch
+
+                $currentTime = date("Y-m-d H:i:s");
+                if ($currentTime > $expiryOTP) {
+                    // OTP expired – generate and update new OTP
+                    $newOTP = rand(100000, 999999);
+                    $newExpiry = date("Y-m-d H:i:s", strtotime("+1 minute"));
+
+                    $updateOtpSql = "UPDATE users SET otp = ?, expiryotp = ? WHERE email = ?";
+                    $updateStmt = $db->prepare($updateOtpSql);
                     if ($updateStmt) {
-                        $updateStmt->bind_param("s", $id);
+                        $updateStmt->bind_param("sss", $newOTP, $newExpiry, $id);
                         if ($updateStmt->execute()) {
-                            $_SESSION['success'] = "OTP confirmed";
-                            $_SESSION['status'] = "active";
-                            unset($_SESSION['otpmode']);
-                            unset($_SESSION['otpemail']);
-                            header("location: patLogin.php");
-                            exit();
+                            echo "<script>alert('OTP expired. A new OTP has been sent.');</script>";
+                            // Send email
+                            // Fetch user details for email
+                            $sql = "SELECT first_name, last_name FROM users WHERE email = ?";
+                            $stmt = $db->prepare($sql);
+                            if ($stmt) {
+                                $stmt->bind_param("s", $id);
+                                $stmt->execute();
+                                $stmt->bind_result($firstName, $lastName);
+                                $stmt->fetch();
+                                $stmt->close();
+                            }
+
+                            $message = "Here is your OTP. Use it to activate your account after signing in. <strong>" . $newOTP . "</strong>";
+                            sendmail($id, $firstName . " " . $lastName, "Confirm your email", $message);
+                            // OPTIONAL: Send OTP to user via email
+                            // mail($id, "Your New OTP", "Your OTP is: " . $newOTP);
+
                         } else {
-                            echo "Error updating user status: " . $updateStmt->error;
+                            echo "Error updating OTP: " . $updateStmt->error;
                         }
                         $updateStmt->close();
                     } else {
-                        echo "<script>alert('Error preparing the update statement: " . $db->error . "');</script>";
+                        echo "Error preparing OTP update statement: " . $db->error;
                     }
                 } else {
-                    echo "<script>alert('Invalid OTP.');</script>";
-                    // Close the statement as the fetch is complete
-                    $stmt->close();
+                    // Check if the input OTP matches
+                    if ($inputOTP == $storedOTP) {
+                        $updateSql = "UPDATE users SET status = 'active' WHERE email = ?";
+                        $updateStmt = $db->prepare($updateSql);
+                        if ($updateStmt) {
+                            $updateStmt->bind_param("s", $id);
+                            if ($updateStmt->execute()) {
+                                $_SESSION['success'] = "OTP confirmed";
+                                $_SESSION['status'] = "active";
+                                unset($_SESSION['otpmode']);
+                                unset($_SESSION['otpemail']);
+                                header("location: patLogin.php");
+                                exit();
+                            } else {
+                                echo "Error updating user status: " . $updateStmt->error;
+                            }
+                            $updateStmt->close();
+                        } else {
+                            echo "<script>alert('Error preparing the update statement: " . $db->error . "');</script>";
+                        }
+                    } else {
+                        echo "<script>alert('Invalid OTP.');</script>";
+                    }
                 }
             } else {
                 echo "<script>alert('User not found.');</script>";
-                // Close the statement as the fetch is complete
                 $stmt->close();
             }
         } else {
             echo "Error executing query: " . $stmt->error;
-            // Close the statement as the fetch is complete
             $stmt->close();
         }
     } else {
         echo "Error preparing the statement: " . $db->error;
     }
 }
-
 
 
 ?>

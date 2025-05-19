@@ -13,7 +13,7 @@
                                                 Appointments</span></li>
                                 <li class="<?= $navactive == "patCalendar" ? "active" : "" ?> w-100"><span
                                                 onclick="window.location.href='patCalendar.php';"><i class="fas fa-calendar-alt"></i>
-                                                Calendar</span></li>
+                                                Schedule an Appointment</span></li>
                                 <li class="<?= $navactive == "patRecord" ? "active" : "" ?> w-100"><span
                                                 onclick="window.location.href='patRecord.php';"><i class="fas fa-user"></i>
                                                 Patient
@@ -98,7 +98,8 @@
                                                 class="fas fa-file-alt"></i>
                                         Policy</span></li>
                         <li class="<?= $navactive == "denPatientlist" ? "active" : "" ?> w-100"><span
-                                        onclick="window.location.href='../dentist/denPatientlist.php';"><i class="fas fa-users"></i>
+                                        onclick="window.location.href='../dentist/denPatientlist.php';"><i
+                                                class="fas fa-users"></i>
                                         Patient
                                         List</span></li>
                 </ul>

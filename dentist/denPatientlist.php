@@ -20,8 +20,9 @@ if (!$result) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient List</title>
     <link rel="stylesheet" href="denPatientlist.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <?php require_once "../db/head.php" ?>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="recepScript.js" defer></script>
 </head>
 <style>
@@ -104,7 +105,7 @@ if (!$result) {
                     </div> -->
                 </div>
             </div>
-            <table>
+            <table id="usersTable" class="display">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -119,14 +120,8 @@ if (!$result) {
                 </thead>
                 <tbody>
                     <?php while ($row = mysqli_fetch_assoc($result)):
-
-
-
-                        $querymedical = "SELECT * FROM medical WHERE usersid = " . $row['id'] . "  ORDER BY dateuploaded DESC LIMIT 1";
-
+                        $querymedical = "SELECT * FROM medical WHERE usersid = " . $row['id'] . " ORDER BY dateuploaded DESC LIMIT 1";
                         $resultmedical = mysqli_query($db, $querymedical);
-
-
                         ?>
                         <tr data-id="<?php echo $row['id']; ?>">
                             <td><?php echo htmlspecialchars($row['full_name']); ?></td>
@@ -134,38 +129,43 @@ if (!$result) {
                             <td><?php echo htmlspecialchars($row['mobile']); ?></td>
                             <td><?php echo htmlspecialchars($row['email']); ?></td>
                             <td><?php echo htmlspecialchars($row['username']); ?></td>
-
-                            <td> <?php echo !empty($row['emergencyname']) ? htmlspecialchars($row['emergencyname']) : "N/A"; ?>
+                            <td><?php echo !empty($row['emergencyname']) ? htmlspecialchars($row['emergencyname']) : "N/A"; ?>
                             </td>
-                            <td> <?php echo !empty($row['emergencycontact']) ? htmlspecialchars($row['emergencycontact']) : "N/A"; ?>
+                            <td><?php echo !empty($row['emergencycontact']) ? htmlspecialchars($row['emergencycontact']) : "N/A"; ?>
                             </td>
-
-                            <?php
-                            if (mysqli_num_rows($resultmedical) > 0):
-
+                            <?php if (mysqli_num_rows($resultmedical) > 0):
                                 while ($medical = mysqli_fetch_assoc($resultmedical)): ?>
-                                    <td><button class="btn btn-primary btn-view" data-bs-toggle="modal"
+                                    <td>
+                                        <button class="btn btn-primary btn-view" data-bs-toggle="modal"
                                             data-bs-target="#viewMedical"
                                             data-disease="<?= htmlspecialchars($medical['disease']) ?>"
                                             data-surgery="<?= htmlspecialchars($medical['recent_surgery']) ?>"
                                             data-current="<?= htmlspecialchars($medical['current_disease']) ?>"
                                             data-medcert="<?= htmlspecialchars($medical['medcertlink']) ?>"
-                                            data-upload="<?= date("F j, Y", strtotime(htmlspecialchars($medical['dateuploaded']))); ?>">View
-                                            Medical</button></td>
-
-                                <?php endwhile; ?>
-                            <?php else: ?>
+                                            data-upload="<?= date("F j, Y", strtotime(htmlspecialchars($medical['dateuploaded']))); ?>">
+                                            View Medical
+                                        </button>
+                                    </td>
+                                <?php endwhile; else: ?>
                                 <td><button class="btn btn-secondary disabled">Not Available</button></td>
-
                             <?php endif; ?>
-
-                            <!--<td class="action-buttons">
-                                    <button class="view-btn">View</button>
-                                </td>-->
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
+            <script>
+                $(document).ready(function () {
+                    $('#usersTable').DataTable({
+                        "pageLength": 10,
+                        "lengthMenu": [5, 10, 25, 50],
+                        "order": [[0, "asc"]], // default sort by Name ascending
+                        "columnDefs": [
+                            { "orderable": false, "targets": 7 } // disable sorting on 'Action' column
+                        ]
+                    });
+                });
+            </script>
+
         </div>
 
         <div class="modal fade" id="viewMedical" tabindex="-1" aria-labelledby="viewMedicalLabel" aria-hidden="true">
