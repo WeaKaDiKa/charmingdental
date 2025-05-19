@@ -8,7 +8,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 // Connect to the database
-$db = mysqli_connect($db_hostname, $db_username, $db_password, $db_database, 3318);
+$db = mysqli_connect($db_hostname, $db_username, $db_password, $db_database);
 
 if (!$db) {
     die("Connection failed: " . mysqli_connect_error());

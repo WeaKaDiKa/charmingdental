@@ -51,11 +51,11 @@ require_once('../db/db_users.php');
                 <a href="#" class="forgot-password" data-bs-toggle="modal" data-bs-target="#emailModal">Forgot
                     password?</a>
             </div>
-            <button type="submit" id="login" name="login" class="btn login-btn">Login Now</button>
+            <button type="submit" id="login" name="login" class="btn login-btn">Login</button>
             <div class="divider">
                 <span>OR</span>
             </div>
-            <button type="button" class="btn signup-btn" onclick="signupRedirect()">Signup Now</button>
+            <button type="button" class="btn signup-btn" onclick="signupRedirect()">Sign Up</button>
         </form>
     </div>
 

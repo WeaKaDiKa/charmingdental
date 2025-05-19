@@ -70,54 +70,73 @@ if (isset($_POST["signup"])) {
 
     // Validate inputs
     if (empty($firstName)) {
-        $errors['first-name'] = "First name is required.";
+        $errors['first-name'] = "* First name is required.";
     }
 
     if (empty($lastName)) {
-        $errors['last-name'] = "Last name is required.";
+        $errors['last-name'] = "* Last name is required.";
     }
 
     if (empty($address)) {
-        $errors['address'] = "Address is required.";
+        $errors['address'] = "* Address is required.";
     }
 
     if (empty($mobile)) {
-        $errors['mobile'] = "Mobile number is required.";
-    } elseif (!preg_match('/^\+?\d{1,3}?[-.\s]?\(?\d{1,4}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/', $mobile)) {
-        $errors['mobile'] = "Invalid mobile number format.";
+        $errors['mobile'] = "* Mobile number is required.";
+    } elseif (!preg_match('/^\+63\d{10}$/', $mobile)) {
+        $errors['mobile'] = "* Mobile number must start with +63 followed by 10 digits.";
     }
 
     $birthdateError = validateBirthdate($birthdate);
     if ($birthdateError) {
-        $errors['birthdate'] = $birthdateError;
+        $errors['birthdate'] = "* " . $birthdateError;
     }
 
     if (empty($gender)) {
-        $errors['gender'] = "Gender selection is required.";
+        $errors['gender'] = "* Gender selection is required.";
     }
 
     if (empty($email)) {
-        $errors['email'] = "Email is required.";
+        $errors['email'] = "* Email is required.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors['email'] = "Email is not valid.";
+        $errors['email'] = "* Email is not valid.";
     }
 
     if (empty($username)) {
-        $errors['username'] = "Username is required.";
+        $errors['username'] = "* Username is required.";
     }
 
     if (empty($password)) {
-        $errors['password'] = "Password is required.";
-    } elseif (strlen($password) < 8) {
-        $errors['password'] = "Password must be at least 8 characters long.";
+        $errors['password'] = "* Password is required.";
+    } else {
+        $passwordErrors = [];
+
+        if (strlen($password) < 8) {
+            $passwordErrors[] = "at least 8 characters";
+        }
+        if (!preg_match('/[A-Z]/', $password)) {
+            $passwordErrors[] = "one uppercase letter";
+        }
+        if (!preg_match('/[a-z]/', $password)) {
+            $passwordErrors[] = "one lowercase letter";
+        }
+        if (!preg_match('/\d/', $password)) {
+            $passwordErrors[] = "one number";
+        }
+        if (!preg_match('/[\W_]/', $password)) {
+            $passwordErrors[] = "one special character";
+        }
+
+        if (!empty($passwordErrors)) {
+            $errors['password'] = "* Password must contain " . implode(", ", $passwordErrors) . ".";
+        } elseif ($password !== $passwordRepeat) {
+            $errors['confirm-password'] = "* Passwords do not match.";
+        }
     }
 
-    if ($password !== $passwordRepeat) {
-        $errors['confirm-password'] = "Passwords do not match.";
-    }
 
     if ($usertype === "employee" && empty($_POST["usertype"])) {
-        $errors['usertype'] = "User selection is required.";
+        $errors['usertype'] = "* User selection is required.";
     }
 
     // Check for existing email
@@ -208,9 +227,6 @@ if (isset($_POST["signup"])) {
             );
 
         }
-
-
-
         if (mysqli_stmt_execute($insert_stmt)) {
             $last_id = mysqli_insert_id($db);
 
@@ -268,11 +284,11 @@ if (isset($_POST["signup"])) {
             }
         } else {
             echo "Error creating user: " . mysqli_error($db);
-            header("location: " . $_SERVER['PHP_SELF']);
-            exit();
+
         }
 
-
+        header("location: " . $_SERVER['PHP_SELF']);
+        exit();
     }
 
 }

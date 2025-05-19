@@ -221,24 +221,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
                 <p>DENTAL CLINIC</p>
             </div>
         </div>
-        <p1 class="form-heading">Sign up into your account</p1>
+        <p class="form-heading">Sign up into your account</p>
         <form action="patSignup.php" method="post">
             <div class="row">
-                <div class="input-group">
-                    <label for="first-name">First Name :</label>
+                <div class="input-group col">
+                    <label for="first-name">First Name <span class="text-danger">*</span></label>
                     <input type="text" id="first-name" name="first-name" placeholder="Enter your name.."
                         value="<?php echo isset($firstName) ? htmlspecialchars($firstName) : ''; ?>">
                     <?php if (!empty($errors['first-name'])): ?>
                         <div class="error-message"><?php echo htmlspecialchars($errors['first-name']); ?></div>
                     <?php endif; ?>
                 </div>
-                <div class="input-group">
-                    <label for="middle-name">Middle Name :</label>
+                <div class="input-group col">
+                    <label for="middle-name">Middle Name <span class="text-danger">*</span></label>
                     <input type="text" id="middle-name" name="middle-name" placeholder="Enter your name.."
                         value="<?php echo isset($middleName) ? htmlspecialchars($middleName) : ''; ?>">
                 </div>
-                <div class="input-group">
-                    <label for="last-name">Last Name :</label>
+                <div class="input-group col">
+                    <label for="last-name">Last Name <span class="text-danger">*</span></label>
                     <input type="text" id="last-name" name="last-name" placeholder="Enter your name.."
                         value="<?php echo isset($lastName) ? htmlspecialchars($lastName) : ''; ?>">
                     <?php if (!empty($errors['last-name'])): ?>
@@ -247,24 +247,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
                 </div>
             </div>
             <div class="row">
-                <div class="input-group">
-                    <label for="address">Address:</label>
+                <div class="input-group col">
+                    <label for="address">Address <span class="text-danger">*</span></label>
                     <input type="text" id="address" name="address" placeholder="Enter your address..."
-                        value="<?php echo isset($address) ? htmlspecialchars($address) : ''; ?>">
+                        style="width: 100%;" value="<?php echo isset($address) ? htmlspecialchars($address) : ''; ?>">
                     <?php if (!empty($errors['address'])): ?>
                         <div class="error-message"><?php echo htmlspecialchars($errors['address']); ?></div>
                     <?php endif; ?>
                 </div>
-                <div class="input-group">
-                    <label for="birthdate">Birthdate:</label>
+            </div>
+            <div class="row">
+                <div class="input-group col">
+                    <label for="birthdate">Birthdate: <span class="text-danger">*</span></label>
                     <input type="date" id="birthdate" name="birthdate"
+                        max="<?php echo date('Y-m-d', strtotime('-2 years')); ?>"
                         value="<?php echo isset($birthdate) ? htmlspecialchars($birthdate) : ''; ?>">
                     <?php if (!empty($errors['birthdate'])): ?>
                         <div class="error-message"><?php echo htmlspecialchars($errors['birthdate']); ?></div>
                     <?php endif; ?>
                 </div>
-                <div class="input-group">
-                    <label for="gender">Gender:</label>
+                <div class="input-group col">
+                    <label for="gender">Gender <span class="text-danger">*</span></label>
                     <select id="gender" name="gender">
                         <option value="">Select your gender...</option>
                         <option value="Male" <?php echo (isset($gender) && $gender == 'Male') ? 'selected' : ''; ?>>Male
@@ -278,16 +281,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
                 </div>
             </div>
             <div class="row">
-                <div class="input-group">
-                    <label for="mobile">Mobile No. :</label>
+                <div class="input-group col">
+                    <label for="mobile">Mobile No. <span class="text-danger">*</span></label>
                     <input type="text" id="mobile" name="mobile" placeholder="+63- 912 345 6789"
-                        value="<?php echo isset($mobile) ? htmlspecialchars($mobile) : ''; ?>">
+                        value="<?php echo isset($mobile) ? htmlspecialchars($mobile) : '+63'; ?>">
                     <?php if (!empty($errors['mobile'])): ?>
                         <div class="error-message"><?php echo htmlspecialchars($errors['mobile']); ?></div>
                     <?php endif; ?>
                 </div>
-                <div class="input-group">
-                    <label for="email">Email Address:</label>
+                <div class="input-group col">
+                    <label for="email">Email Address <span class="text-danger">*</span></label>
                     <input type="email" id="email" name="email" placeholder="Enter your email address..."
                         value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>">
                     <?php if (!empty($errors['email'])): ?>
@@ -297,9 +300,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
             </div>
 
             <div class="row">
-
-                <div class="input-group">
-                    <label for="emergencyname">Emergency Contact:</label>
+                <div class="input-group col">
+                    <label for="emergencyname">Emergency Contact <span class="text-danger">*</span></label>
                     <input type="text" id="emergencyname" name="emergencyname"
                         placeholder="Enter your emergency contact person..."
                         value="<?php echo isset($emergencyname) ? htmlspecialchars($emergencyname) : ''; ?>">
@@ -308,10 +310,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
                     <?php endif; ?>
                 </div>
 
-                <div class="input-group">
-                    <label for="emergencycontact">Emergency Mobile No. :</label>
+                <div class="input-group col">
+                    <label for="emergencycontact">Emergency Mobile No. <span class="text-danger">*</span></label>
                     <input type="text" id="emergencycontact" name="emergencycontact" placeholder="+63- 912 345 6789"
-                        value="<?php echo isset($emergencycontact) ? htmlspecialchars($emergencycontact) : ''; ?>">
+                        value="<?php echo isset($emergencycontact) ? htmlspecialchars($emergencycontact) : '+63'; ?>">
                     <?php if (!empty($errors['emergencycontact'])): ?>
                         <div class="error-message"><?php echo htmlspecialchars($errors['emergencycontact']); ?></div>
                     <?php endif; ?>
@@ -319,29 +321,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
             </div>
 
             <div class="row">
-                <div class="input-group">
-                    <label for="username">Username:</label>
+                <div class="input-group col">
+                    <label for="username">Username <span class="text-danger">*</span></label>
                     <input type="text" id="username" name="username" placeholder="Enter your username"
                         value="<?php echo isset($username) ? htmlspecialchars($username) : ''; ?>">
                     <?php if (!empty($errors['username'])): ?>
                         <div class='error-message'><?php echo htmlspecialchars($errors['username']); ?></div>
                     <?php endif; ?>
                 </div>
-                <div class="input-group">
-                    <label for="password">Password :</label>
+            </div>
+            <div class="row">
+                <div class="input-group col">
+                    <label for="password">Password <span class="text-danger">*</span></label>
                     <input type="password" id="password" name="password" placeholder='xxxxxxxxxx'>
                     <?php if (!empty($errors['password'])): ?>
                         <div class='error-message'><?php echo htmlspecialchars($errors['password']); ?></div>
                     <?php endif; ?>
+
                 </div>
-                <div class='input-group'>
-                    <label for='confirm-password'>Confirm Password :</label>
+                <div class='input-group col'>
+                    <label for='confirm-password'>Confirm Password <span class="text-danger">*</span></label>
                     <input type='password' id='confirm-password' name='confirm-password' placeholder='xxxxxxxxxx'>
                     <?php if (!empty($errors['confirm-password'])): ?>
                         <div class='error-message'><?php echo htmlspecialchars($errors['confirm-password']); ?></div>
                     <?php endif; ?>
                 </div>
             </div>
+            <ul class="password-requirements" style="font-size: 0.9em; margin-top: 5px; padding-left: 20px;">
+                <li>Password must be at least 8 characters long.</li>
+                <li>Must contain at least one uppercase letter (A-Z).</li>
+                <li>Must contain at least one lowercase letter (a-z).</li>
+                <li>Must include at least one number (0-9).</li>
+                <li>Must include at least one special character.</li>
+            </ul>
             <button type="submit" name="signup">Sign Up</button>
         </form>
 
