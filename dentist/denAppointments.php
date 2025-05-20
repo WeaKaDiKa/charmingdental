@@ -2,14 +2,61 @@
 // Database connection code at the top of your file
 require_once '../db/config.php';
 
+// Allowed tab values
+$allowedTabs = ['upcoming', 'rescheduled', 'completed', 'cancelled', 'rejected'];
+
+// Get tab from GET and validate it
+$activeTab = isset($_GET['tab']) && in_array($_GET['tab'], $allowedTabs)
+    ? $_GET['tab']
+    : 'upcoming';
+
 $query = "SELECT id, patient_id, notes, patient_name, treatment, appointment_time, appointment_date, status
-          FROM approved_requests";
+          FROM approved_requests WHERE status = 'upcoming';";
 
-$result = mysqli_query($db, $query);
+$resultupcoming = mysqli_query($db, $query);
 
-if (!$result) {
+if (!$resultupcoming) {
     die("Query Error: " . mysqli_error($db));
 }
+
+$query = "SELECT id, patient_id, notes, patient_name, treatment, appointment_time, appointment_date, status
+          FROM approved_requests WHERE status = 'completed';";
+
+$resultcompleted = mysqli_query($db, $query);
+
+if (!$resultcompleted) {
+    die("Query Error: " . mysqli_error($db));
+}
+
+
+$query = "SELECT id, patient_id, notes, patient_name, treatment, appointment_time, appointment_date, status
+          FROM approved_requests WHERE status = 'rescheduled';";
+
+$resultrescheduled = mysqli_query($db, $query);
+
+if (!$resultrescheduled) {
+    die("Query Error: " . mysqli_error($db));
+}
+
+
+$query = "SELECT id, patient_id, notes, patient_name, treatment, appointment_time, appointment_date, status
+          FROM approved_requests WHERE status = 'cancelled';";
+
+$resultcancelled = mysqli_query($db, $query);
+
+if (!$resultcancelled) {
+    die("Query Error: " . mysqli_error($db));
+}
+
+$queryreject = "SELECT id, patient_id, patient_name, treatment, appointment_time, appointment_date, status
+                FROM rejected_requests";
+
+$resultreject = mysqli_query($db, $queryreject);
+
+if (!$resultreject) {
+    die("Query Error: " . mysqli_error($db));
+}
+
 $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
 //$showActionColumn = !in_array($status, ['completed', 'cancelled']);
 
@@ -52,8 +99,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dentist Appointments</title>
     <link rel="stylesheet" href="denAppointments.css">
-    <?php require_once "../db/head.php" ?>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <?php require_once "../db/head.php" ?>
+
     <script src="recepScript.js" defer></script>
 </head>
 <style>
@@ -138,76 +186,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div> -->
                 </div>
             </div>
-            <div class="appointments-tabs">
-                <button class="tab active" data-tab="upcoming">Upcoming</button>
+            <div class="appointments-tabs" style="margin-bottom:10px;">
+                <!--       <button class="tab active" data-tab="upcoming">Upcoming</button>
                 <button class="tab" data-tab="rescheduled">Re-scheduled</button>
                 <button class="tab" data-tab="completed">Completed</button>
                 <button class="tab" data-tab="cancelled">Cancelled</button>
                 <?php
 
-                $queryreject = "SELECT id, patient_id, patient_name, treatment, appointment_time, appointment_date, status
-                FROM rejected_requests";
-
-                $resultreject = mysqli_query($db, $queryreject);
-
-                if (!$resultreject) {
-                    die("Query Error: " . mysqli_error($db));
-                }
-
-                if ($_SESSION['usertype'] == 'clinic_receptionist'):
-
-
-                    ?>
+                //if ($_SESSION['usertype'] == 'clinic_receptionist'):
+                ?>
                     <button class="tab" data-tab="rejected">Rejected</button>
+                <?php //endif; ?> -->
+
+                <a href="?tab=upcoming"
+                    class="tab <?php echo ($_GET['tab'] ?? 'upcoming') == 'upcoming' ? 'active' : ''; ?>">Upcoming</a>
+                <a href="?tab=rescheduled"
+                    class="tab <?php echo ($_GET['tab'] ?? '') == 'rescheduled' ? 'active' : ''; ?>">Re-scheduled</a>
+                <a href="?tab=completed"
+                    class="tab <?php echo ($_GET['tab'] ?? '') == 'completed' ? 'active' : ''; ?>">Completed</a>
+                <a href="?tab=cancelled"
+                    class="tab <?php echo ($_GET['tab'] ?? '') == 'cancelled' ? 'active' : ''; ?>">Cancelled</a>
+                <?php if ($_SESSION['usertype'] == 'clinic_receptionist'): ?>
+                    <a href="?tab=rejected"
+                        class="tab <?php echo ($_GET['tab'] ?? '') == 'rejected' ? 'active' : ''; ?>">Rejected</a>
                 <?php endif; ?>
+
                 <!-- <button class="tab" data-tab="archived">Archived</button> -->
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Appointment No.</th>
-                        <th>Appointment Date</th>
-                        <th>Appointment Time</th>
-                        <th>Name</th>
-                        <th>Treatment</th>
-                        <?php if ($_SESSION['usertype'] == 'dentist'): ?>
-                            <th class="action-column">Action</th>
-                        <?php endif; ?>
-                        <th class="reason-column" style="display:none;">Notes</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                        <?php
-                        // Determine appointment status
-                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
-                        $currentDateTime = date('Y-m-d H:i:s');
-
-                        // Get the end time of the appointment
-                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
-                        $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
-
-                        // Default status is upcoming
-                        $status = 'upcoming';
-
-                        // Check if appointment has ended
-                        if (strtotime($appointmentEndDateTime) < strtotime($currentDateTime)) {
-                            $status = 'completed';
-                        }
-
-                        // Check for manual status updates from the database
-                        if (!empty($row['status'])) {
-                            $status = strtolower($row['status']);
-                        }
-                        ?>
-                        <tr class="appointment-row" data-status="<?php echo $status; ?>">
-                            <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
-                            <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
-                            <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+            <?php if ($activeTab == 'upcoming'): ?>
+                <table id="appointment-approve-upcoming">
+                    <thead>
+                        <tr>
+                            <th>Appointment No.</th>
+                            <th>Appointment Date</th>
+                            <th>Appointment Time</th>
+                            <th>Name</th>
+                            <th>Treatment</th>
                             <?php if ($_SESSION['usertype'] == 'dentist'): ?>
-                                <?php if ($status !== 'completed' && $status !== 'cancelled'): ?>
+                                <th class="action-column">Action</th>
+                            <?php endif; ?>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($resultupcoming)): ?>
+                            <?php
+                            $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                            $currentDateTime = date('Y-m-d H:i:s');
+
+                            $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                            $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
+
+
+
+                            /*                         // Check if appointment has ended
+                                                    if (strtotime($appointmentEndDateTime) < strtotime($currentDateTime)) {
+                                                        $status = 'completed';
+                                                    } */
+
+                            // Check for manual status updates from the database
+                            if (!empty($row['status'])) {
+                                $status = strtolower($row['status']);
+                            }
+                            ?>
+                            <tr class="appointment-row" data-status="<?php echo $status; ?>">
+                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+                                <?php if ($_SESSION['usertype'] == 'dentist'): ?>
                                     <td class="action-buttons">
                                         <!--    <button class="complete-btn" data-id="<?//php// echo $row['id']; ?>">Mark as Done</button>
                                      <button class="archive-btn">Decline</button> -->
@@ -217,43 +265,269 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </button>
                                     </td>
                                 <?php endif; ?>
+                            </tr>
+                        <?php endwhile; ?>
+
+                    </tbody>
+                </table>
+            <?php elseif ($activeTab == 'rescheduled'): ?>
+                <table id="appointment-approve-resched">
+                    <thead>
+                        <tr>
+                            <th>Appointment No.</th>
+                            <th>Appointment Date</th>
+                            <th>Appointment Time</th>
+                            <th>Name</th>
+                            <th>Treatment</th>
+                            <?php if ($_SESSION['usertype'] == 'dentist'): ?>
+                                <th class="action-column">Action</th>
                             <?php endif; ?>
-                            <?php if ($status === 'completed'): ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($resultrescheduled)): ?>
+                            <?php
+                            // Determine appointment status
+                            $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                            $currentDateTime = date('Y-m-d H:i:s');
+
+                            // Get the end time of the appointment
+                            $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                            $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
+
+                            // Default status is upcoming
+                    
+
+                            // Check if appointment has ended
+                            // if (strtotime($appointmentEndDateTime) < strtotime($currentDateTime)) {
+                            //     $status = 'completed';
+                            // }
+                    
+                            // Check for manual status updates from the database
+                            if (!empty($row['status'])) {
+                                $status = strtolower($row['status']);
+                            }
+                            ?>
+                            <tr class="appointment-row" data-status="<?php echo $status; ?>">
+                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+                                <?php if ($_SESSION['usertype'] == 'dentist'): ?>
+
+                                    <td class="action-buttons">
+                                        <!--    <button class="complete-btn" data-id="<?//php// echo $row['id']; ?>">Mark as Done</button>
+                                     <button class="archive-btn">Decline</button> -->
+                                        <button class="complete-btn btn btn-primary" data-id="<?= $row['id']; ?>"
+                                            data-bs-toggle="modal" data-bs-target="#completeModal">
+                                            Mark as Done
+                                        </button>
+                                    </td>
+
+                                <?php endif; ?>
+
+                            </tr>
+                        <?php endwhile; ?>
+
+                    </tbody>
+
+                </table>
+            <?php elseif ($activeTab == 'completed'): ?>
+                <table id="appointment-approve-complete">
+                    <thead>
+                        <tr>
+                            <th>Appointment No.</th>
+                            <th>Appointment Date</th>
+                            <th>Appointment Time</th>
+                            <th>Name</th>
+                            <th>Treatment</th>
+
+                            <th class="reason-column">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($resultcompleted)): ?>
+                            <?php
+                            // Determine appointment status
+                            $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                            $currentDateTime = date('Y-m-d H:i:s');
+
+                            // Get the end time of the appointment
+                            $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                            $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
+
+                            // Check for manual status updates from the database
+                            if (!empty($row['status'])) {
+                                $status = strtolower($row['status']);
+                            }
+                            ?>
+                            <tr class="appointment-row" data-status="<?php echo $status; ?>">
+                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+
                                 <td class="reason-note">
                                     <?php echo htmlspecialchars($row['notes']); ?>
                                 </td>
-                            <?php endif; ?>
-                        </tr>
-                    <?php endwhile; ?>
 
+                            </tr>
+                        <?php endwhile; ?>
 
-                    <?php while ($row = mysqli_fetch_assoc($resultreject)): ?>
-                        <?php
-                        // Determine appointment status
-                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
-                        $currentDateTime = date('Y-m-d H:i:s');
-
-                        // Get the end time of the appointment
-                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
-                        $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
-
-                        // Check for manual status updates from the database
-                        if (!empty($row['status'])) {
-                            $status = strtolower($row['status']);
-                        }
-                        ?>
-                        <tr class="appointment-row" data-status="<?php echo $status; ?>">
-                            <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
-                            <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
-                            <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+                    </tbody>
+                </table>
+            <?php elseif ($activeTab == 'cancelled'): ?>
+                <table id="appointment-approve-cancelled">
+                    <thead>
+                        <tr>
+                            <th>Appointment No.</th>
+                            <th>Appointment Date</th>
+                            <th>Appointment Time</th>
+                            <th>Name</th>
+                            <th>Treatment</th>
 
                         </tr>
-                    <?php endwhile; ?>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($resultcancelled)): ?>
+                            <?php
+                            // Determine appointment status
+                            $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                            $currentDateTime = date('Y-m-d H:i:s');
 
-                </tbody>
-            </table>
+                            // Get the end time of the appointment
+                            $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                            $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
+
+
+                            // Check for manual status updates from the database
+                            if (!empty($row['status'])) {
+                                $status = strtolower($row['status']);
+                            }
+                            ?>
+                            <tr class="appointment-row" data-status="<?php echo $status; ?>">
+                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+
+
+                            </tr>
+                        <?php endwhile; ?>
+
+
+                        <?php while ($row = mysqli_fetch_assoc($resultreject)): ?>
+                            <?php
+                            // Determine appointment status
+                            $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                            $currentDateTime = date('Y-m-d H:i:s');
+
+                            // Get the end time of the appointment
+                            $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                            $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
+
+                            // Check for manual status updates from the database
+                            if (!empty($row['status'])) {
+                                $status = strtolower($row['status']);
+                            }
+                            ?>
+                            <tr class="appointment-row" data-status="<?php echo $status; ?>">
+                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+
+                            </tr>
+                        <?php endwhile; ?>
+
+                    </tbody>
+                </table>
+            <?php elseif ($activeTab == 'rejected'): ?>
+                <table id="appointment-reject">
+                    <thead>
+                        <tr>
+                            <th>Appointment No.</th>
+                            <th>Appointment Date</th>
+                            <th>Appointment Time</th>
+                            <th>Name</th>
+                            <th>Treatment</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($row = mysqli_fetch_assoc($resultreject)): ?>
+                            <?php
+                            // Determine appointment status
+                            $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                            $currentDateTime = date('Y-m-d H:i:s');
+
+                            // Get the end time of the appointment
+                            $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                            $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
+
+                            // Check for manual status updates from the database
+                            if (!empty($row['status'])) {
+                                $status = strtolower($row['status']);
+                            }
+                            ?>
+                            <tr class="appointment-row" data-status="<?php echo $status; ?>">
+                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
+                                <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+                                <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+
+                            </tr>
+                        <?php endwhile; ?>
+
+                    </tbody>
+                </table>
+            <?php endif; ?>
+            <script>
+                $(document).ready(function () {
+                    $('#appointment-approve-upcoming').DataTable({
+                        paging: true,
+                        searching: true,
+                        order: [[1, 'asc']],
+                        "columnDefs": [
+                            { "orderable": false, "targets": "action-column" }
+
+                        ]
+                    });
+                    $('#appointment-approve-resched').DataTable({
+                        paging: true,
+                        searching: true,
+                        order: [[1, 'asc']],
+                        "columnDefs": [
+                            { "orderable": false, "targets": "action-column" }
+
+                        ]
+                    });
+                    $('#appointment-approve-complete').DataTable({
+                        paging: true,
+                        searching: true,
+                        order: [[1, 'asc']],
+
+                    });
+                    $('#appointment-approve-cancelled').DataTable({
+                        paging: true,
+                        searching: true,
+                        order: [[1, 'asc']],
+
+                    });
+                    $('#appointment-reject').DataTable({
+                        paging: true,
+                        searching: true,
+                        order: [[1, 'asc']],
+
+                    });
+                });
+            </script>
+
         </div>
     </div><!-- Complete Task Modal -->
     <div class="modal fade" id="completeModal" tabindex="-1" aria-labelledby="completeModalLabel" aria-hidden="true">
@@ -304,17 +578,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         document.addEventListener('DOMContentLoaded', function () {
             // Handle tab switching
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function () {
-                    const status = this.getAttribute('data-status');
-                    filterAppointments(status);
-
-                    // Update active tab
-                    tabs.forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
+            /*             const tabs = document.querySelectorAll('.tab');
+                        tabs.forEach(tab => {
+                            tab.addEventListener('click', function () {
+                                const status = this.getAttribute('data-status');
+                                filterAppointments(status);
+            
+                                // Update active tab
+                                tabs.forEach(t => t.classList.remove('active'));
+                                this.classList.add('active');
+                            });
+                        }); */
 
             // Handle Complete button clicks
             document.querySelectorAll('.complete-btn').forEach(btn => {
@@ -332,15 +606,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
 
-        function filterAppointments(status) {
-            document.querySelectorAll('.appointment-row').forEach(row => {
-                if (row.getAttribute('data-status') === status) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
+        /*    function filterAppointments(status) {
+               document.querySelectorAll('.appointment-row').forEach(row => {
+                   if (row.getAttribute('data-status') === status) {
+                       row.style.display = '';
+                   } else {
+                       row.style.display = 'none';
+                   }
+               });
+           } */
         /*
                 function updateAppointmentStatus(id, status) {
                     // AJAX call to update status in database
@@ -371,102 +645,102 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     });
                 });
         */
-        document.addEventListener('DOMContentLoaded', function () {
-            const tabs = document.querySelectorAll('.tab');
-
-            // Retrieve last active tab from localStorage
-            const activeTab = localStorage.getItem('activeAppointmentTab') || 'upcoming';
-
-            // Set active tab
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-                if (tab.dataset.tab === activeTab) {
-                    tab.classList.add('active');
+        /*     document.addEventListener('DOMContentLoaded', function () {
+                const tabs = document.querySelectorAll('.tab');
+    
+                // Retrieve last active tab from localStorage
+                const activeTab = localStorage.getItem('activeAppointmentTab') || 'upcoming';
+    
+                // Set active tab
+                tabs.forEach(tab => {
+                    tab.classList.remove('active');
+                    if (tab.dataset.tab === activeTab) {
+                        tab.classList.add('active');
+                    }
+                });
+    
+                // Filter appointments based on active tab
+                filterAppointmentsByTab();
+    
+                // Add event listeners to tabs
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        // Remove active class from all tabs
+                        tabs.forEach(t => t.classList.remove('active'));
+    
+                        // Add active class to clicked tab
+                        this.classList.add('active');
+    
+                        // Save active tab to localStorage
+                        localStorage.setItem('activeAppointmentTab', this.dataset.tab);
+    
+                        // Filter appointments
+                        filterAppointmentsByTab();
+                    });
+                });
+    
+                function filterAppointmentsByTab() {
+                    const activeTab = document.querySelector('.tab.active');
+                    const activeTabName = activeTab.dataset.tab;
+    
+                    document.querySelectorAll('.user-table table tbody tr').forEach(row => {
+                        const rowStatus = row.dataset.status.toLowerCase();
+                        row.style.display = (rowStatus === activeTabName) ? '' : 'none';
+                    });
                 }
             });
-
-            // Filter appointments based on active tab
-            filterAppointmentsByTab();
-
-            // Add event listeners to tabs
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function () {
-                    // Remove active class from all tabs
-                    tabs.forEach(t => t.classList.remove('active'));
-
-                    // Add active class to clicked tab
-                    this.classList.add('active');
-
-                    // Save active tab to localStorage
-                    localStorage.setItem('activeAppointmentTab', this.dataset.tab);
-
-                    // Filter appointments
-                    filterAppointmentsByTab();
-                });
+    
+            // Event listeners for specific tabs
+            document.querySelector('.appointments-tabs .tab[data-tab="upcoming"]').addEventListener('click', () => {
+                filterByStatus('Upcoming');
             });
-
-            function filterAppointmentsByTab() {
-                const activeTab = document.querySelector('.tab.active');
-                const activeTabName = activeTab.dataset.tab;
-
-                document.querySelectorAll('.user-table table tbody tr').forEach(row => {
-                    const rowStatus = row.dataset.status.toLowerCase();
-                    row.style.display = (rowStatus === activeTabName) ? '' : 'none';
-                });
-            }
-        });
-
-        // Event listeners for specific tabs
-        document.querySelector('.appointments-tabs .tab[data-tab="upcoming"]').addEventListener('click', () => {
-            filterByStatus('Upcoming');
-        });
-
-        document.querySelector('.appointments-tabs .tab[data-tab="completed"]').addEventListener('click', () => {
-            filterByStatus('Completed');
-        });
-
-        document.querySelector('.appointments-tabs .tab[data-tab="rescheduled"]').addEventListener('click', () => {
-            filterByStatus('Rescheduled');
-        });
-
-        document.querySelector('.appointments-tabs .tab[data-tab="cancelled"]').addEventListener('click', () => {
-            filterByStatus('Cancelled');
-        });
-
-        // Function to filter table rows based on status
-        function filterByStatus(status) {
-            const tableRows = document.querySelectorAll('table tbody tr');
-            const reasonColumnHeader = document.querySelector(".reason-column");
-            const actionColumnHeader = document.querySelector(".action-column");
-
-            if (status === "Completed") {
-                reasonColumnHeader.style.display = "";
-                document.querySelectorAll(".reason-note").forEach(cell => cell.style.display = "");
-            } else {
-                reasonColumnHeader.style.display = "none";
-                document.querySelectorAll(".reason-note").forEach(cell => cell.style.display = "none");
-            }
-
-            if (status === "Rescheduled" || status === "Upcoming") {
-                actionColumnHeader.style.display = "";
-                document.querySelectorAll(".action-buttons").forEach(cell => cell.style.display = "");
-            } else {
-                actionColumnHeader.style.display = "none";
-                document.querySelectorAll(".action-buttons").forEach(cell => cell.style.display = "none");
-            }
-
-            tableRows.forEach(row => {
-                if (row.getAttribute('data-status') === status) {
-                    row.style.display = 'table-row';
+    
+            document.querySelector('.appointments-tabs .tab[data-tab="completed"]').addEventListener('click', () => {
+                filterByStatus('Completed');
+            });
+    
+            document.querySelector('.appointments-tabs .tab[data-tab="rescheduled"]').addEventListener('click', () => {
+                filterByStatus('Rescheduled');
+            });
+    
+            document.querySelector('.appointments-tabs .tab[data-tab="cancelled"]').addEventListener('click', () => {
+                filterByStatus('Cancelled');
+            });
+    
+            // Function to filter table rows based on status
+            function filterByStatus(status) {
+                const tableRows = document.querySelectorAll('table tbody tr');
+                const reasonColumnHeader = document.querySelector(".reason-column");
+                const actionColumnHeader = document.querySelector(".action-column");
+    
+                if (status === "Completed") {
+                    reasonColumnHeader.style.display = "";
+                    document.querySelectorAll(".reason-note").forEach(cell => cell.style.display = "");
                 } else {
-                    row.style.display = 'none';
+                    reasonColumnHeader.style.display = "none";
+                    document.querySelectorAll(".reason-note").forEach(cell => cell.style.display = "none");
                 }
-            });
-
-            // Set the active tab
-            document.querySelectorAll('.appointments-tabs .tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelector(`.appointments-tabs .tab[data-tab="${status.toLowerCase()}"]`).classList.add('active');
-        }
+    
+                if (status === "Rescheduled" || status === "Upcoming") {
+                    actionColumnHeader.style.display = "";
+                    document.querySelectorAll(".action-buttons").forEach(cell => cell.style.display = "");
+                } else {
+                    actionColumnHeader.style.display = "none";
+                    document.querySelectorAll(".action-buttons").forEach(cell => cell.style.display = "none");
+                }
+    
+                tableRows.forEach(row => {
+                    if (row.getAttribute('data-status') === status) {
+                        row.style.display = 'table-row';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+    
+                // Set the active tab
+                document.querySelectorAll('.appointments-tabs .tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelector(`.appointments-tabs .tab[data-tab="${status.toLowerCase()}"]`).classList.add('active');
+            } */
 
         // Function to fetch the current time
         function fetchCurrentTime() {
@@ -487,6 +761,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         fetchCurrentTime(); // Initial call to display time on page load
 
         // Tab switching logic
+        /* 
         document.addEventListener("DOMContentLoaded", () => {
             const tabs = document.querySelectorAll(".appointments-tabs .tab");
             const tabPanes = document.querySelectorAll(".tab-content .tab-pane");
@@ -503,7 +778,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     document.getElementById(tabId).classList.add("active");
                 });
             });
-        });
+        }); */
 
         // Dropdown toggle functionality
         document.addEventListener('DOMContentLoaded', function () {

@@ -19,8 +19,9 @@ if (!$result) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Approval</title>
     <link rel="stylesheet" href="denRequest.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <?php require_once "../db/head.php" ?>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
 <style>
     .logout-confirm-dialog {
@@ -215,7 +216,8 @@ if (!$result) {
                 </div> -->
             </div>
             <div class="request-content">
-                <table class="approval-table">
+                <table id="appointmentTable" class="approval-table display">
+
                     <thead>
                         <tr>
                             <th>Appointment No.</th>
@@ -223,6 +225,7 @@ if (!$result) {
                             <th>Treatment and Price (₱)</th>
                             <th>Time</th>
                             <th>Date</th>
+                            <th>Email</th>
                             <th>GCash Reference</th>
                             <th>Action</th>
                         </tr>
@@ -244,7 +247,7 @@ if (!$result) {
                                     <td><?php echo htmlspecialchars($row['service_name']); ?></td>
                                     <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
                                     <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                    <td class="hidden"><?php echo htmlspecialchars($row['email']); ?></td>
+                                    <td><?php echo htmlspecialchars($row['email']); ?></td>
                                     <td><?php echo htmlspecialchars($row['transaction']); ?></td>
                                     <td>
                                         <div class="action-buttons">
@@ -269,6 +272,18 @@ if (!$result) {
                         <?php } ?>
                     </tbody>
                 </table>
+                <script>
+                    $(document).ready(function () {
+                        $('#appointmentTable').DataTable({
+                            responsive: true,
+                            pageLength: 10,
+                            columnDefs: [
+                                { targets: [5], visible: false } // Hide the email column if needed
+                            ]
+                        });
+                    });
+                </script>
+
             </div>
         </div>
     </div>
