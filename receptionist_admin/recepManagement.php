@@ -133,9 +133,10 @@ $result = mysqli_query($db, $query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script> <!-- For current_timezone -->
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="adminStyles.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- For current_timezone -->
+
 </head>
 <style>
     /* General Body Styling */
@@ -226,21 +227,21 @@ $result = mysqli_query($db, $query);
 
     /* Form Styles */
     label {
-        display: block;
+
         margin-bottom: 5px;
         color: #5C3A31;
         /* Brown label color */
     }
-
+/* 
     input[type="text"],
-    input[type="password"],
-    select {
+    input[type="password"] */
+ /*    select {
         width: 100%;
         padding: 10px;
         margin-bottom: 15px;
         border: 1px solid #ddd;
         border-radius: 5px;
-    }
+    } */
 
     button[type="button"] {
         background-color: #da9393;
@@ -551,7 +552,7 @@ $result = mysqli_query($db, $query);
                 </div>
                 <!-- Main User Table -->
                 <div class="user-table">
-                    <table id="userTable">
+                    <table id="userTable" class="table table-striped table-bordered">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -579,6 +580,22 @@ $result = mysqli_query($db, $query);
                             <?php endwhile; ?>
                         </tbody>
                     </table>
+
+                    <script>
+                        $(document).ready(function () {
+                            $('#userTable').DataTable({
+                                responsive: true,
+                                language: {
+                                    searchPlaceholder: "Search users...",
+                                    lengthMenu: "Show _MENU_ users",
+                                    zeroRecords: "No matching users found",
+                                    info: "Showing _START_ to _END_ of _TOTAL_ users",
+                                    infoEmpty: "No users available",
+                                    infoFiltered: "(filtered from _MAX_ total users)"
+                                }
+                            });
+                        });
+                    </script>
                     <div class="pagination" id="paginationContainer"></div>
                 </div>
                 <!-- Close the database connection -->
