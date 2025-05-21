@@ -414,29 +414,6 @@ $result = mysqli_query($db, $query);
         background-color: #fdecea;
     }
 
-    /* Adjust the row size */
-    #userTable tbody tr {
-        height: 50px;
-        /* Adjust this value to set the desired row height */
-    }
-
-    /* Alternatively, adjust padding for a more consistent look */
-    #userTable td {
-        padding: 12px 8px;
-        /* Adjust top/bottom and left/right padding */
-    }
-
-    /* Maintain alignment for headers */
-    #userTable th {
-        padding: 14px 8px;
-        /* Similar padding as rows */
-    }
-
-    /* Optional: Ensure consistent spacing across the table */
-    #userTable {
-        border-spacing: 0 8px;
-        /* Adds spacing between rows */
-    }
 
     .top-header img {
         width: 55px;
