@@ -141,7 +141,8 @@ mysqli_close($db);
                                                     data-appointmentid="<?php echo htmlspecialchars($appointment['id']); ?>"
                                                     data-time="<?php echo htmlspecialchars($appointment['appointment_time']); ?>"
                                                     data-date="<?= $appointment['appointment_date'] ?>">Reschedule</button>
-                                                <button class="btn btn-danger btn-cancel" data-bs-toggle="modal" data-bs-target="#cancelModal"
+                                                <button class="btn btn-danger btn-cancel" data-bs-toggle="modal"
+                                                    data-bs-target="#cancelModal"
                                                     data-id="<?= htmlspecialchars($appointment['id']) ?>">
                                                     Cancel
                                                 </button>
@@ -440,12 +441,10 @@ mysqli_close($db);
             });
         }
 
-        // Fetch current time every second (1000 milliseconds)
-        setInterval(fetchCurrentTime, 1000);
-
-        // Initial call to display time immediately on page load
-        fetchCurrentTime();
-
+        document.addEventListener('DOMContentLoaded', function () {
+            setInterval(fetchCurrentTime, 1000);
+            fetchCurrentTime();
+        });
         document.addEventListener('DOMContentLoaded', function () {
             var dropdownButtons = document.querySelectorAll('.dropdown-btn');
 

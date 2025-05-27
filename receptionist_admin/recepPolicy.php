@@ -193,11 +193,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['policy_content'])) {
     <?php require_once "../db/header.php" ?>
 
     <div class="main-wrapper">
-    <?php
+        <?php
         $navactive = "recepPolicy";
 
         require_once "../db/nav.php" ?>
-      
+
 
         <div class="main-content">
             <div class="user-management">
@@ -254,10 +254,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['policy_content'])) {
     <script>
         function fetchCurrentTime() {
             $.ajax({
-                url: '../db/current_timezone.php',
+                url: '../db/current_timezone.php', // URL of the PHP script
                 method: 'GET',
                 success: function (data) {
-                    $('#datetime').html(data);
+                    $('#datetime').html(data); // Update the HTML with the fetched data
                 },
                 error: function () {
                     console.error('Error fetching time.');
@@ -265,8 +265,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['policy_content'])) {
             });
         }
 
-        setInterval(fetchCurrentTime, 1000);
-        fetchCurrentTime();
+        document.addEventListener('DOMContentLoaded', function () {
+            setInterval(fetchCurrentTime, 1000);
+            fetchCurrentTime();
+        });
 
         function showLogoutDialog() {
             document.getElementById('logoutConfirmDialog').style.display = 'block';

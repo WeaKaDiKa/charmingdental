@@ -239,11 +239,10 @@ require_once '../db/config.php';
             });
         }
 
-        // Fetch current time every second (1000 milliseconds)
-        setInterval(fetchCurrentTime, 1000);
-
-        // Initial call to display time immediately on page load
-        fetchCurrentTime();
+        document.addEventListener('DOMContentLoaded', function () {
+            setInterval(fetchCurrentTime, 1000);
+            fetchCurrentTime();
+        });
 
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.dropdown-btn').forEach(function (button) {

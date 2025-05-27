@@ -412,17 +412,10 @@ $gender = $_SESSION['gender'];
             });
         }
 
-        // Fetch current time every second (1000 milliseconds)
-        setInterval(fetchCurrentTime, 1000);
-
-        // Initial call to display time immediately on page load
-        fetchCurrentTime();
-        function updateDate() {
-            const dateElement = document.getElementById('current-date');
-            const today = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            dateElement.innerHTML = today.toLocaleDateString('en-US', options);
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            setInterval(fetchCurrentTime, 1000);
+            fetchCurrentTime();
+        });
 
         updateDate();
         setInterval(updateDate, 60000); // Update every minute

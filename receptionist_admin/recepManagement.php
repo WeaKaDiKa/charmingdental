@@ -232,10 +232,11 @@ $result = mysqli_query($db, $query);
         color: #5C3A31;
         /* Brown label color */
     }
-/* 
+
+    /* 
     input[type="text"],
     input[type="password"] */
- /*    select {
+    /*    select {
         width: 100%;
         padding: 10px;
         margin-bottom: 15px;
@@ -651,11 +652,10 @@ $result = mysqli_query($db, $query);
             });
         }
 
-        // Fetch current time every second (1000 milliseconds)
-        setInterval(fetchCurrentTime, 1000);
-
-        // Initial call to display time immediately on page load
-        fetchCurrentTime();
+        document.addEventListener('DOMContentLoaded', function () {
+            setInterval(fetchCurrentTime, 1000);
+            fetchCurrentTime();
+        });
 
         function confirmLogout() {
             if (confirm("Are you sure you want to logout?")) {

@@ -1168,13 +1168,12 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
 
         }
 
-
         function fetchCurrentTime() {
             $.ajax({
-                url: '../db/current_timezone.php',
+                url: '../db/current_timezone.php', // URL of the PHP script
                 method: 'GET',
                 success: function (data) {
-                    $('#datetime').html(data);
+                    $('#datetime').html(data); // Update the HTML with the fetched data
                 },
                 error: function () {
                     console.error('Error fetching time.');
@@ -1182,9 +1181,10 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
             });
         }
 
-        setInterval(fetchCurrentTime, 1000);
-        fetchCurrentTime();
-
+        document.addEventListener('DOMContentLoaded', function () {
+            setInterval(fetchCurrentTime, 1000);
+            fetchCurrentTime();
+        });
         document.addEventListener('DOMContentLoaded', function () {
             var dropdownButtons = document.querySelectorAll('.dropdown-btn');
 

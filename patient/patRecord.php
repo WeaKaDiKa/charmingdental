@@ -317,9 +317,10 @@ mysqli_stmt_close($stmt2);
             });
         }
 
-
-        setInterval(fetchCurrentTime, 1000);
-        fetchCurrentTime();
+        document.addEventListener('DOMContentLoaded', function () {
+            setInterval(fetchCurrentTime, 1000);
+            fetchCurrentTime();
+        });
 
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.dropdown-btn').forEach(function (button) {

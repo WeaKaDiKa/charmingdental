@@ -316,7 +316,7 @@ if (!$result) {
 <body>
     <?php require_once "../db/header.php" ?>
     <div class="main-wrapper">
-    <?php
+        <?php
         $navactive = "recepPayment";
 
         require_once "../db/nav.php" ?>
@@ -684,24 +684,26 @@ if (!$result) {
                 }
             });
 
-            // Current time update
-            function fetchCurrentTime() {
-                $.ajax({
-                    url: '../db/current_timezone.php',
-                    method: 'GET',
-                    success: function (data) {
-                        $('#datetime').html(data);
-                    },
-                    error: function () {
-                        console.error('Error fetching time.');
-                    }
-                });
-            }
 
+        });
+
+        function fetchCurrentTime() {
+            $.ajax({
+                url: '../db/current_timezone.php', // URL of the PHP script
+                method: 'GET',
+                success: function (data) {
+                    $('#datetime').html(data); // Update the HTML with the fetched data
+                },
+                error: function () {
+                    console.error('Error fetching time.');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
             setInterval(fetchCurrentTime, 1000);
             fetchCurrentTime();
         });
-
         // Sort function
         function sortPayments() {
             var sortSelect = document.getElementById('sort');
