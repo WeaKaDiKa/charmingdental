@@ -105,6 +105,11 @@ if (!$result) {
                     </div> -->
                 </div>
             </div>
+            <div class="mb-3 d-flex flex-row justify-content-end">
+                <button class="btn btn-success btn-sm me-2" onclick="printUsersTable()">Print</button>
+                <button class="btn btn-secondary btn-sm" onclick="saveUsersTableToPDF()">Save to PDF</button>
+            </div>
+
             <table id="usersTable" class="display">
                 <thead>
                     <tr>
@@ -115,7 +120,7 @@ if (!$result) {
                         <th>Username</th>
                         <th>Emergency Name</th>
                         <th>Emergency Phone</th>
-                        <th>Action</th>
+                        <th class="no-print">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -135,7 +140,7 @@ if (!$result) {
                             </td>
                             <?php if (mysqli_num_rows($resultmedical) > 0):
                                 while ($medical = mysqli_fetch_assoc($resultmedical)): ?>
-                                    <td>
+                                    <td class="no-print">
                                         <button class="btn btn-primary btn-view" data-bs-toggle="modal"
                                             data-bs-target="#viewMedical"
                                             data-disease="<?= htmlspecialchars($medical['disease']) ?>"
@@ -147,7 +152,9 @@ if (!$result) {
                                         </button>
                                     </td>
                                 <?php endwhile; else: ?>
-                                <td><button class="btn btn-secondary disabled">Not Available</button></td>
+                                <td class="no-print">
+                                    <button class="btn btn-primary btn-view" ...>View Medical</button>
+                                </td>
                             <?php endif; ?>
                         </tr>
                     <?php endwhile; ?>
@@ -164,8 +171,68 @@ if (!$result) {
                         ]
                     });
                 });
-            </script>
 
+                function printUsersTable() {
+                    const table = document.getElementById('usersTable');
+                    if (!table) return;
+
+                    const clone = table.cloneNode(true);
+                    clone.querySelectorAll('.no-print').forEach(el => el.remove());
+
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write('<html><head><title>Print Users</title>');
+                    printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">');
+                    printWindow.document.write(`
+      <style>
+        @page { size: landscape; }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+        th, td {
+          border: 1px solid #000;
+          padding: 8px;
+        }
+      </style>
+    `);
+                    printWindow.document.write('</head><body>');
+                    printWindow.document.write('<h4>User Information</h4>');
+                    printWindow.document.write(clone.outerHTML);
+                    printWindow.document.write('</body></html>');
+                    printWindow.document.close();
+                    printWindow.print();
+                }
+
+                async function saveUsersTableToPDF() {
+                    const table = document.getElementById('usersTable');
+                    if (!table) return;
+
+                    const clone = table.cloneNode(true);
+                    clone.querySelectorAll('.no-print').forEach(el => el.remove());
+
+                    const wrapper = document.createElement('div');
+                    wrapper.appendChild(clone);
+                    document.body.appendChild(wrapper);
+                    wrapper.style.position = 'absolute';
+                    wrapper.style.left = '-9999px';
+
+                    const canvas = await html2canvas(wrapper);
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('l', 'mm', 'a4');
+
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const imgWidth = pageWidth - 20;
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+
+                    pdf.text('User Information', 14, 10);
+                    pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
+                    pdf.save('user_information.pdf');
+
+                    document.body.removeChild(wrapper);
+                }
+
+            </script>
         </div>
 
         <div class="modal fade" id="viewMedical" tabindex="-1" aria-labelledby="viewMedicalLabel" aria-hidden="true">

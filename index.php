@@ -65,7 +65,7 @@
       <h1>Have a teeth problem?</h1>
       <h2 class="text-white">We got you covered with our quality and affordable dental services.🦷</h2>
       <div class="w-100 d-flex justify-content-center justify-content-md-start mt-5">
-        <a href="patient/patLogin.php" class="signup-btn">Book <span class="d-none d-md-inline">an Appointment
+        <a href="patient/patLogin.php" class="signup-btn m-0">Book <span class="d-none d-md-inline">an Appointment
           </span>now!</a>
       </div>
     </div>

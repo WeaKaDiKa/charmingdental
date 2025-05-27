@@ -1,10 +1,10 @@
 <?php
-// Set the default timezone to Manila, Philippines
+ini_set('display_errors', 0);
+
+if (php_sapi_name() !== 'cli' && !headers_sent()) {
+    header('Content-Type: text/plain'); // Ensure it's plain text
+}
+
 date_default_timezone_set('Asia/Manila');
 
-// Get the current date and time
-$currentDateTime = date('l, F j, Y h:i:s A'); // Format: Day, Month Date, Year Hour:Minute:Second AM/PM
-
-// Output the current date and time
-echo $currentDateTime;
-?>
+echo date('l, F j, Y h:i:s A');

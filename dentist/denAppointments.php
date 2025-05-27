@@ -214,6 +214,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- <button class="tab" data-tab="archived">Archived</button> -->
             </div>
             <?php if ($activeTab == 'upcoming'): ?>
+                <div class="print-section mb-3">
+                    <form class="d-flex align-items-center gap-2"
+                        onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
+                        <label for="from-<?php echo $activeTab; ?>">From:</label>
+                        <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
+
+                        <label for="to-<?php echo $activeTab; ?>">To:</label>
+                        <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
+
+                        <button type="submit" class="btn btn-success btn-sm">Print</button>
+                        <button type="button" class="btn btn-secondary btn-sm"
+                            onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
+
+                    </form>
+                </div>
+
                 <table id="appointment-approve-upcoming">
                     <thead>
                         <tr>
@@ -271,7 +287,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </tbody>
                 </table>
             <?php elseif ($activeTab == 'rescheduled'): ?>
-                <table id="appointment-approve-resched">
+                <div class="print-section mb-3">
+                    <form class="d-flex align-items-center gap-2"
+                        onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
+                        <label for="from-<?php echo $activeTab; ?>">From:</label>
+                        <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
+
+                        <label for="to-<?php echo $activeTab; ?>">To:</label>
+                        <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
+
+                        <button type="submit" class="btn btn-success btn-sm">Print</button>
+                        <button type="button" class="btn btn-secondary btn-sm"
+                            onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
+
+                    </form>
+                </div>
+
+                <table id="appointment-approve-rescheduled">
                     <thead>
                         <tr>
                             <th>Appointment No.</th>
@@ -334,7 +366,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 </table>
             <?php elseif ($activeTab == 'completed'): ?>
-                <table id="appointment-approve-complete">
+                <div class="print-section mb-3">
+                    <form class="d-flex align-items-center gap-2"
+                        onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
+                        <label for="from-<?php echo $activeTab; ?>">From:</label>
+                        <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
+
+                        <label for="to-<?php echo $activeTab; ?>">To:</label>
+                        <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
+
+                        <button type="submit" class="btn btn-success btn-sm">Print</button>
+                        <button type="button" class="btn btn-secondary btn-sm"
+                            onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
+
+                    </form>
+                </div>
+
+                <table id="appointment-approve-completed">
                     <thead>
                         <tr>
                             <th>Appointment No.</th>
@@ -379,6 +427,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </tbody>
                 </table>
             <?php elseif ($activeTab == 'cancelled'): ?>
+                <div class="print-section mb-3">
+                    <form class="d-flex align-items-center gap-2"
+                        onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
+                        <label for="from-<?php echo $activeTab; ?>">From:</label>
+                        <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
+
+                        <label for="to-<?php echo $activeTab; ?>">To:</label>
+                        <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
+
+                        <button type="submit" class="btn btn-success btn-sm">Print</button>
+                        <button type="button" class="btn btn-secondary btn-sm"
+                            onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
+
+                    </form>
+                </div>
+
                 <table id="appointment-approve-cancelled">
                     <thead>
                         <tr>
@@ -447,7 +511,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </tbody>
                 </table>
             <?php elseif ($activeTab == 'rejected'): ?>
-                <table id="appointment-reject">
+                <div class="print-section mb-3">
+                    <form class="d-flex align-items-center gap-2"
+                        onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
+                        <label for="from-<?php echo $activeTab; ?>">From:</label>
+                        <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
+
+                        <label for="to-<?php echo $activeTab; ?>">To:</label>
+                        <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
+
+                        <button type="submit" class="btn btn-success btn-sm">Print</button>
+                        <button type="button" class="btn btn-secondary btn-sm"
+                            onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
+
+                    </form>
+                </div>
+
+                <table id="appointment-rejected">
                     <thead>
                         <tr>
                             <th>Appointment No.</th>
@@ -498,7 +578,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         ]
                     });
-                    $('#appointment-approve-resched').DataTable({
+                    $('#appointment-approve-rescheduled').DataTable({
                         paging: true,
                         searching: true,
                         order: [[1, 'asc']],
@@ -507,7 +587,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         ]
                     });
-                    $('#appointment-approve-complete').DataTable({
+                    $('#appointment-approve-completed').DataTable({
                         paging: true,
                         searching: true,
                         order: [[1, 'asc']],
@@ -519,14 +599,95 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         order: [[1, 'asc']],
 
                     });
-                    $('#appointment-reject').DataTable({
+                    $('#appointment-rejected').DataTable({
                         paging: true,
                         searching: true,
                         order: [[1, 'asc']],
 
                     });
                 });
+
+                function printFilteredTable(tab) {
+                    const fromDate = document.getElementById(`from-${tab}`).value;
+                    const toDate = document.getElementById(`to-${tab}`).value;
+                    const table = document.getElementById(`appointment-approve-${tab}`) || document.getElementById(`appointment-rejected`);
+
+                    if (!table) return;
+
+                    const rows = table.querySelectorAll('tbody tr');
+                    const filteredRows = [];
+
+                    const from = fromDate ? new Date(fromDate) : null;
+                    const to = toDate ? new Date(toDate) : null;
+
+                    rows.forEach(row => {
+                        const dateCell = row.querySelector(`td:nth-child(2)`);
+                        if (!dateCell) return;
+
+                        const date = new Date(dateCell.textContent);
+
+                        if ((from && date < from) || (to && date > to)) {
+                            row.style.display = 'none';
+                        } else {
+                            row.style.display = '';
+                            filteredRows.push(row.cloneNode(true));
+                        }
+                    });
+
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write('<html><head><title>Print Appointments</title>');
+                    printWindow.document.write('<style>table{width:100%; border-collapse:collapse;} th, td{border:1px solid #000;padding:8px;text-align:left;}</style>');
+                    printWindow.document.write('</head><body>');
+                    printWindow.document.write(`<h2>Appointments (${tab})</h2>`);
+                    printWindow.document.write('<table>' + table.querySelector('thead').outerHTML + '<tbody>');
+                    filteredRows.forEach(row => printWindow.document.write(row.outerHTML));
+                    printWindow.document.write('</tbody></table>');
+                    printWindow.document.write('</body></html>');
+                    printWindow.document.close();
+                    printWindow.print();
+                }
+
+                async function saveTableToPDF(tab) {
+                    const fromDate = document.getElementById(`from-${tab}`).value;
+                    const toDate = document.getElementById(`to-${tab}`).value;
+                    const table = document.getElementById(`appointment-approve-${tab}`);
+                    if (!table) return;
+
+                    const rows = table.querySelectorAll('tbody tr');
+                    const from = fromDate ? new Date(fromDate) : null;
+                    const to = toDate ? new Date(toDate) : null;
+
+                    rows.forEach(row => {
+                        const dateCell = row.querySelector(`td:nth-child(2)`);
+                        if (!dateCell) return;
+                        const date = new Date(dateCell.textContent);
+                        row.style.display = (!from || date >= from) && (!to || date <= to) ? '' : 'none';
+                    });
+
+                    const clone = table.cloneNode(true);
+                    const wrapper = document.createElement('div');
+                    wrapper.appendChild(clone);
+                    document.body.appendChild(wrapper);
+                    wrapper.style.position = 'absolute';
+                    wrapper.style.left = '-9999px';
+
+                    const canvas = await html2canvas(wrapper);
+                    const imgData = canvas.toDataURL('image/png');
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('l', 'mm', 'a4');
+
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const imgWidth = pageWidth - 20;
+                    const imgHeight = canvas.height * imgWidth / canvas.width;
+
+                    pdf.text(`${tab.charAt(0).toUpperCase() + tab.slice(1)} Appointments`, 14, 10);
+                    pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
+                    pdf.save(`appointments_${tab}.pdf`);
+
+                    document.body.removeChild(wrapper);
+                }
             </script>
+
 
         </div>
     </div><!-- Complete Task Modal -->
@@ -577,20 +738,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-            // Handle tab switching
-            /*             const tabs = document.querySelectorAll('.tab');
-                        tabs.forEach(tab => {
-                            tab.addEventListener('click', function () {
-                                const status = this.getAttribute('data-status');
-                                filterAppointments(status);
-            
-                                // Update active tab
-                                tabs.forEach(t => t.classList.remove('active'));
-                                this.classList.add('active');
-                            });
-                        }); */
 
-            // Handle Complete button clicks
             document.querySelectorAll('.complete-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
                     const row = this.closest('tr');
@@ -606,143 +754,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
 
-        /*    function filterAppointments(status) {
-               document.querySelectorAll('.appointment-row').forEach(row => {
-                   if (row.getAttribute('data-status') === status) {
-                       row.style.display = '';
-                   } else {
-                       row.style.display = 'none';
-                   }
-               });
-           } */
-        /*
-                function updateAppointmentStatus(id, status) {
-                    // AJAX call to update status in database
-                    fetch('update_status.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: `id=${id}&status=${status}`
-                    });
-                }
-        
-                $(document).ready(function () {
-                    $('.complete-btn').click(function () {
-                        var appointmentId = $(this).data('id');
-        
-                        $.ajax({
-                            url: 'update_status.php',
-                            type: 'POST',
-                            data: { id: appointmentId, status: 'Completed' },
-                            success: function (response) {
-                                // Optionally, update the row's status visually
-                                location.reload(); // Reload the page to reflect changes
-                            },
-                            error: function () {
-                            }
-                        });
-                    });
-                });
-        */
-        /*     document.addEventListener('DOMContentLoaded', function () {
-                const tabs = document.querySelectorAll('.tab');
-    
-                // Retrieve last active tab from localStorage
-                const activeTab = localStorage.getItem('activeAppointmentTab') || 'upcoming';
-    
-                // Set active tab
-                tabs.forEach(tab => {
-                    tab.classList.remove('active');
-                    if (tab.dataset.tab === activeTab) {
-                        tab.classList.add('active');
-                    }
-                });
-    
-                // Filter appointments based on active tab
-                filterAppointmentsByTab();
-    
-                // Add event listeners to tabs
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', function () {
-                        // Remove active class from all tabs
-                        tabs.forEach(t => t.classList.remove('active'));
-    
-                        // Add active class to clicked tab
-                        this.classList.add('active');
-    
-                        // Save active tab to localStorage
-                        localStorage.setItem('activeAppointmentTab', this.dataset.tab);
-    
-                        // Filter appointments
-                        filterAppointmentsByTab();
-                    });
-                });
-    
-                function filterAppointmentsByTab() {
-                    const activeTab = document.querySelector('.tab.active');
-                    const activeTabName = activeTab.dataset.tab;
-    
-                    document.querySelectorAll('.user-table table tbody tr').forEach(row => {
-                        const rowStatus = row.dataset.status.toLowerCase();
-                        row.style.display = (rowStatus === activeTabName) ? '' : 'none';
-                    });
-                }
-            });
-    
-            // Event listeners for specific tabs
-            document.querySelector('.appointments-tabs .tab[data-tab="upcoming"]').addEventListener('click', () => {
-                filterByStatus('Upcoming');
-            });
-    
-            document.querySelector('.appointments-tabs .tab[data-tab="completed"]').addEventListener('click', () => {
-                filterByStatus('Completed');
-            });
-    
-            document.querySelector('.appointments-tabs .tab[data-tab="rescheduled"]').addEventListener('click', () => {
-                filterByStatus('Rescheduled');
-            });
-    
-            document.querySelector('.appointments-tabs .tab[data-tab="cancelled"]').addEventListener('click', () => {
-                filterByStatus('Cancelled');
-            });
-    
-            // Function to filter table rows based on status
-            function filterByStatus(status) {
-                const tableRows = document.querySelectorAll('table tbody tr');
-                const reasonColumnHeader = document.querySelector(".reason-column");
-                const actionColumnHeader = document.querySelector(".action-column");
-    
-                if (status === "Completed") {
-                    reasonColumnHeader.style.display = "";
-                    document.querySelectorAll(".reason-note").forEach(cell => cell.style.display = "");
-                } else {
-                    reasonColumnHeader.style.display = "none";
-                    document.querySelectorAll(".reason-note").forEach(cell => cell.style.display = "none");
-                }
-    
-                if (status === "Rescheduled" || status === "Upcoming") {
-                    actionColumnHeader.style.display = "";
-                    document.querySelectorAll(".action-buttons").forEach(cell => cell.style.display = "");
-                } else {
-                    actionColumnHeader.style.display = "none";
-                    document.querySelectorAll(".action-buttons").forEach(cell => cell.style.display = "none");
-                }
-    
-                tableRows.forEach(row => {
-                    if (row.getAttribute('data-status') === status) {
-                        row.style.display = 'table-row';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-    
-                // Set the active tab
-                document.querySelectorAll('.appointments-tabs .tab').forEach(tab => tab.classList.remove('active'));
-                document.querySelector(`.appointments-tabs .tab[data-tab="${status.toLowerCase()}"]`).classList.add('active');
-            } */
 
-        // Function to fetch the current time
         function fetchCurrentTime() {
             $.ajax({
                 url: '../db/current_timezone.php', // URL of the PHP script
@@ -756,30 +768,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         }
 
-        // Fetch current time every second
-        setInterval(fetchCurrentTime, 1000);
-        fetchCurrentTime(); // Initial call to display time on page load
-
-        // Tab switching logic
-        /* 
-        document.addEventListener("DOMContentLoaded", () => {
-            const tabs = document.querySelectorAll(".appointments-tabs .tab");
-            const tabPanes = document.querySelectorAll(".tab-content .tab-pane");
-
-            tabs.forEach(tab => {
-                tab.addEventListener("click", () => {
-                    // Remove active class from all tabs and panes
-                    tabs.forEach(t => t.classList.remove("active"));
-                    tabPanes.forEach(pane => pane.classList.remove("active"));
-
-                    // Add active class to the clicked tab and corresponding pane
-                    tab.classList.add("active");
-                    const tabId = tab.getAttribute("data-tab");
-                    document.getElementById(tabId).classList.add("active");
-                });
-            });
-        }); */
-
+        document.addEventListener('DOMContentLoaded', function () {
+            setInterval(fetchCurrentTime, 1000);
+            fetchCurrentTime();
+        });
         // Dropdown toggle functionality
         document.addEventListener('DOMContentLoaded', function () {
             var dropdownButtons = document.querySelectorAll('.dropdown-btn');
@@ -821,6 +813,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 closeLogoutDialog();
             }
         };
+
     </script>
 
 </body>
