@@ -8,6 +8,36 @@
   <title>Charming Smile Dental Clinic</title>
 
   <?php require_once 'db/head.php' ?>
+  <style>
+    #home {
+      width: 100%;
+      height: 90vh;
+      background: url("img/home.jpg") top center;
+      background-size: cover;
+      background-attachment: fixed;
+      
+    }
+
+    @media only screen and (max-width: 768px) {
+
+      #home {
+        height: 70vh;
+              background: url("img/home.jpg") right center ;
+      }
+
+    }
+
+    #home .container {
+      position: relative;
+    }
+
+    #home h1 {
+      margin: 0;
+      font-weight: 700;
+
+      color: white;
+    }
+  </style>
 </head>
 
 <body>
@@ -32,10 +62,12 @@
   <!-- ======= Home Section ======= -->
   <section id="home" class="d-flex align-items-center">
     <div class="container">
-      <h1>Have a teeth problem?<br>We got you covered with our quality<br>and affordable dental services.🦷</h1>
-      <br>
-      <a href="patient/patLogin.php" class="signup-btn"><span class="d-none d-md-inline"></span>Book an Appointment now
-        !</a>
+      <h1>Have a teeth problem?</h1>
+      <h2 class="text-white">We got you covered with our quality and affordable dental services.🦷</h2>
+      <div class="w-100 d-flex justify-content-center justify-content-md-start mt-5">
+        <a href="patient/patLogin.php" class="signup-btn">Book <span class="d-none d-md-inline">an Appointment
+          </span>now!</a>
+      </div>
     </div>
   </section><!-- End Home -->
 
@@ -49,7 +81,7 @@
       </div>
 
       <div class="row">
-        <div class="col-lg-4 col-md-6 d-flex align-items-stretch">
+        <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-center mt-4">
           <div class="icon-box">
             <div class="icon"><i class="fas fa-tooth"></i></div>
             <h4><a href="">Cosmetic Dentistry</a></h4>
@@ -57,7 +89,7 @@
           </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0">
+        <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-center mt-4">
           <div class="icon-box">
             <div class="icon"><i class="fas fa-tooth"></i></div>
             <h4><a href="">Dental X-ray</a></h4>
@@ -65,7 +97,7 @@
           </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0">
+        <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-center mt-4">
           <div class="icon-box">
             <div class="icon"><i class="fas fa-tooth"></i></div>
             <h4><a href="">Endodontics</a></h4>
@@ -73,7 +105,7 @@
           </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+        <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-center mt-4">
           <div class="icon-box">
             <div class="icon"><i class="fas fa-tooth"></i></div>
             <h4><a href=""> General Services</a></h4>
@@ -85,7 +117,7 @@
           </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+        <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-center mt-4">
           <div class="icon-box">
             <div class="icon"><i class="fas fa-tooth"></i></div>
             <h4>Oral Surgery</h4>
@@ -96,7 +128,7 @@
           </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+        <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-center mt-4">
           <div class="icon-box">
             <div class="icon"><i class="fas fa-tooth"></i></div>
             <h4>Orthodontics</h4>
@@ -108,7 +140,7 @@
           </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+        <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-center mt-4">
           <div class="icon-box">
             <div class="icon"><i class="fas fa-tooth"></i></div>
             <h4>Pedodontics</h4>
@@ -118,7 +150,7 @@
           </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+        <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-center mt-4">
           <div class="icon-box">
             <div class="icon"><i class="fas fa-tooth"></i></div>
             <h4>Periodontics</h4>
@@ -126,7 +158,7 @@
           </div>
         </div>
 
-        <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4">
+        <div class="col-lg-4 col-md-6 d-flex align-items-center justify-content-center mt-4">
           <div class="icon-box">
             <div class="icon"><i class="fas fa-tooth"></i></div>
             <h4>Prosthodontics</h4>
@@ -185,23 +217,7 @@
   <div id="preloader"></div>
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
       class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <!-- Bootstrap Bundle (includes Popper) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- GLightbox -->
-  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.3.0/dist/js/glightbox.min.js"></script>
-
-  <!-- PureCounter -->
-  <script src="https://cdn.jsdelivr.net/npm/@srexi/purecounterjs@1.5.0/dist/purecounter_vanilla.js"></script>
-
-  <!-- Swiper.js -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11.0.5/swiper-bundle.min.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="js/main.js"></script>
-
+  <?php require_once 'db/script.php' ?>
 </body>
 
 </html>
