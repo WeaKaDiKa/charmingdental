@@ -12,38 +12,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     mysqli_begin_transaction($db);
 
     try {
-        // First, get the username and dentist_name from the appointments table
-        $usernameQuery = "SELECT dentist_name, username FROM appointments WHERE appointment_id = ?";
+        // Fetch patient_id, username, dentist_name
+        $usernameQuery = "SELECT patient_id, dentist_name, username FROM appointments WHERE appointment_id = ?";
         $usernameStmt = $db->prepare($usernameQuery);
         $usernameStmt->bind_param("i", $id);
         $usernameStmt->execute();
         $usernameResult = $usernameStmt->get_result();
-        
-        // Fetch the result as an associative array
+
         $row = $usernameResult->fetch_assoc();
         if ($row) {
+            $patient_id = $row['patient_id'];
             $username = $row['username'];
             $dentist_name = $row['dentist_name'];
         } else {
             throw new Exception("No appointment found with the given ID.");
         }
-        
         $usernameStmt->close();
 
-        // Insert data into the approved_requests table, now including username and dentist_name
+        // Insert into approved_requests with correct patient_id
         $insertQuery = "INSERT INTO approved_requests (patient_id, patient_name, treatment, appointment_time, appointment_date, username, dentist_name)
-                       VALUES (?, ?, ?, ?, ?, ?, ?)";
-        
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
         $insertStmt = $db->prepare($insertQuery);
-        $insertStmt->bind_param("issssss", $id, $name, $treatment, $time, $date, $username, $dentist_name);
+        $insertStmt->bind_param("issssss", $patient_id, $name, $treatment, $time, $date, $username, $dentist_name);
 
         if (!$insertStmt->execute()) {
             throw new Exception("Error inserting data: " . $insertStmt->error);
         }
         $insertStmt->close();
-        
 
-        // Delete the appointment from the appointments table
+        // Delete from appointments
         $deleteQuery = "DELETE FROM appointments WHERE appointment_id = ?";
         $deleteStmt = $db->prepare($deleteQuery);
         $deleteStmt->bind_param("i", $id);
@@ -53,14 +50,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $deleteStmt->close();
 
-        // Commit the transaction
+        // Commit transaction
         mysqli_commit($db);
 
     } catch (Exception $e) {
-        // Roll back the transaction on failure
         mysqli_rollback($db);
+        // Optional: log or display error message
     }
 
     mysqli_close($db);
+
 }
 ?>

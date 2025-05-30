@@ -239,9 +239,11 @@ if (isset($_POST["signup"])) {
                     exit();
                 } else { 
                     array_push($errors, "Invalid username or password."); 
+                    $errors['login'] = 'Incorrect username or password.';
                 }
             } else { 
                 array_push($errors, "Invalid username or password."); 
+                $errors['login'] = 'Incorrect username or password.';
             }
             
             mysqli_stmt_close($stmt_login);

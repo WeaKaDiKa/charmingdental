@@ -137,6 +137,58 @@ form p {
     transform: scale(1.02); /* Slight zoom effect */
 }
 
+
+/*error alert-box*/
+.alert {
+  position: relative;
+  padding: 15px 50px 15px 15px;
+  border-radius: 4px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid transparent;
+}
+
+.alert-danger {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+}
+
+.alert-success {
+  color: #0f5132;
+  background-color: #d1e7dd;
+  border-color: #badbcc;
+}
+
+.alert span {
+  font-size: clamp(14px, 2vw, 18px);
+  line-height: 1.4;
+}
+
+.alert .btn-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #000;
+  opacity: 0.5;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transition: opacity 0.2s ease;
+}
+
+.alert .btn-close:hover {
+  opacity: 1;
+}
+
 /* Signup Button Specific Styling */
 .signup-btn {
     background-color: #ffffff; /* White background */

@@ -7,6 +7,5 @@
         <div class='current-datetime me-3'>
             <span id="datetime"></span>
         </div>
-        <div class="profile"><i class="fas fa-user-circle"></i></div>
     </div>
 </div>

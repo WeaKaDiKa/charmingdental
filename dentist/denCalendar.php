@@ -9,7 +9,7 @@ require_once '../db/config.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dentist Dashboard</title>
-    <link rel="stylesheet" href="denCalendar.css">
+    <link rel="stylesheet" href="../receptionist_admin/adminStyles.css">
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -19,23 +19,23 @@ require_once '../db/config.php';
     <script src="recepScript.js" defer></script>
 </head>
 <style>
-    /* Center the calendar horizontally and vertically */
+   /* Center the calendar horizontally and vertically */
+    body {
+        background-color: #d99e9e;
+    }
+
     #calendar {
         max-width: none;
-        width: 83.55%;
+        width: 81%;
         margin: 0 auto;
         margin-top: 1px;
         margin-left: 16.28%;
         justify-content: center;
-        position: absolute;
     }
 
     .container {
-        height: 100%;
-        margin: 0;
-        padding: 0;
+        padding: none;
     }
-
 
 
     @media (max-width: 768px) {
@@ -97,156 +97,51 @@ require_once '../db/config.php';
         background-color: #5a6268;
     }
 
-    /* Add this to your denCalendar.css file */
-    .custom-modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 500px;
-        border-radius: 5px;
-        position: relative;
-    }
-
-    .modal-header {
-        padding-bottom: 10px;
-        border-bottom: 1px solid #ddd;
-        margin-bottom: 15px;
-    }
-
-    .modal-title {
-        margin: 0;
-        font-size: 1.25rem;
-    }
-
-    .close-button {
-        position: absolute;
-        right: 20px;
-        top: 15px;
-        font-size: 20px;
-        cursor: pointer;
-        background: none;
-        border: none;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    .modal-footer {
-        padding-top: 15px;
-        border-top: 1px solid #ddd;
-        text-align: right;
-    }
-
-    .btn {
-        padding: 8px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-left: 10px;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
-        color: white;
-        border: none;
-    }
-
-    .btn:hover {
-        opacity: 0.9;
-    }
-
-    /* Delete Modal Specific Styles */
-    .delete-modal .modal-content {
-        max-width: 400px;
-    }
-
-    .delete-modal .modal-body {
-        padding: 20px 0;
-        text-align: center;
-    }
-
-    /* Notification Toast Styles */
-    .notification-modal {
-        display: none;
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #fff;
-        padding: 15px 25px;
-        border-radius: 4px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        animation: slideIn 0.3s ease-out;
-    }
-
-    .notification-modal.success {
-        border-left: 4px solid #28a745;
-    }
-
-    .notification-modal.error {
-        border-left: 4px solid #dc3545;
-    }
-
-    @keyframes slideIn {
-        from {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-
-        to {
-            transform: translateX(0);
-            opacity: 1;
-        }
-    }
-
-    @keyframes fadeOut {
-        from {
-            opacity: 1;
-        }
-
-        to {
-            opacity: 0;
-        }
-    }
-
     .top-header img {
         width: 55px;
         height: 50px;
         margin-right: 10px;
         border-radius: 20%;
     }
+     .legend {
+        display: flex;
+        flex-direction: column; 
+        gap: 10px;
+        margin: 20px 0 0 0;    
+        padding: 0 16px;        
+        width: 100%;            
+        box-sizing: border-box;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+    .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 3px;
+        display: inline-block;
+    }
+    /* Match your appointment colors */
+    .legend-danger {
+        background-color: #dc3545;
+        border: 1px solid #dc3545;
+    }
+    .legend-primary {
+        background-color: #007bff;
+        border: 1px solid #007bff;
+    }
+    .legend-secondary {
+        background-color: #6c757d;
+        border: 1px solid #6c757d;
+    }
+    .legend-task {
+        background-color: rgb(0, 133, 22);
+        border: 1px solid rgb(0, 133, 22);
+    }
+
 </style>
 
 <body>
@@ -259,8 +154,10 @@ require_once '../db/config.php';
         $navactive = "denCalendar";
 
         require_once "../db/nav.php" ?>
-        <div class="container">
-            <div id="calendar"></div>
+
+       <div class="container w-100">
+            <div class="legend"></div>
+            <div id="calendar" class="w-100"></div>
         </div>
     </div>
     <div id="logoutConfirmDialog" class="logout-confirm-dialog" style="display: none;">
@@ -273,6 +170,8 @@ require_once '../db/config.php';
             </div>
         </div>
     </div>
+
+     <!-- 
     <div id="taskModal" class="custom-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -293,23 +192,7 @@ require_once '../db/config.php';
             </div>
         </div>
     </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="custom-modal delete-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirm Deletion</h5>
-                <button type="button" class="close-button">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to remove this task?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelDelete">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmDelete">Delete</button>
-            </div>
-        </div>
-    </div>
+    -->
 
     <!-- Notification Toast -->
     <div id="notification" class="notification-modal">
@@ -371,10 +254,11 @@ require_once '../db/config.php';
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            setInterval(fetchCurrentTime, 1000);
-            fetchCurrentTime();
-        });
+        // Fetch current time every second (1000 milliseconds)
+        setInterval(fetchCurrentTime, 1000);
+
+        // Initial call to display time immediately on page load
+        fetchCurrentTime();
 
         $(document).ready(function () {
             // Notification function

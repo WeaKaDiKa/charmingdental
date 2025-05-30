@@ -295,10 +295,11 @@ if (!$result) {
                 });
             }
 
-            document.addEventListener('DOMContentLoaded', function () {
-                setInterval(fetchCurrentTime, 1000);
-                fetchCurrentTime();
-            });
+            // Fetch current time every second (1000 milliseconds)
+            setInterval(fetchCurrentTime, 1000);
+
+            // Initial call to display time immediately on page load
+            fetchCurrentTime();
 
             $('#openAddPaymentModal').on('click', function () {
                 $('#addPaymentModal').addClass('active');

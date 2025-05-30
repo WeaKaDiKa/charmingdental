@@ -3,7 +3,8 @@
 require_once('../db/db_patient_appointments.php');
 require_once '../db/config.php';
 
-$username = $_SESSION['username']; // Use username if the table uses it as a column
+$username = $_SESSION['username']; // Use username if needed
+$patient_id = $_SESSION['id'];     // <-- Fixed missing semicolon
 
 // Fetch all appointments from the approved_requests table
 $query = "SELECT id, patient_id, treatment, appointment_time, appointment_date, dentist_name, status
@@ -12,11 +13,10 @@ $query = "SELECT id, patient_id, treatment, appointment_time, appointment_date, 
 $stmt = mysqli_prepare($db, $query);
 
 if ($stmt) {
-    mysqli_stmt_bind_param($stmt, "s", $username); // Bind username as a string
+    mysqli_stmt_bind_param($stmt, "s", $username);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
-    // Fetch all rows into an array
     $appointments = [];
     while ($row = mysqli_fetch_assoc($result)) {
         $appointments[] = $row;
@@ -38,11 +38,9 @@ if ($stmt_rejected) {
     mysqli_stmt_execute($stmt_rejected);
     $result_rejected = mysqli_stmt_get_result($stmt_rejected);
 
-    // Fetch all rejected appointments
     while ($row = mysqli_fetch_assoc($result_rejected)) {
-        // Add a 'status' field to rejected appointments
         $row['status'] = 'rejected';
-        $appointments[] = $row; // Merge with the main appointments array
+        $appointments[] = $row;
     }
 
     mysqli_stmt_close($stmt_rejected);
@@ -50,10 +48,67 @@ if ($stmt_rejected) {
     echo "Error preparing the statement for rejected requests: " . mysqli_error($db);
 }
 
+// Variables for rescheduling logic
+$current_appointment_id = $_GET['appointment_id'] ?? null;
+
+// Fetch approved upcoming appointments excluding current appointment if rescheduling
+$approved_query = "SELECT appointment_date, appointment_time, id 
+                   FROM approved_requests 
+                   WHERE patient_id = ? 
+                     AND status = 'approved' 
+                     AND appointment_date >= CURDATE()";
+
+if ($current_appointment_id !== null) {
+    $approved_query .= " AND appointment_id != ?";
+}
+
+// Fetch submitted appointments excluding current appointment if rescheduling
+$submitted_query = "SELECT appointment_date, appointment_time, appointment_id 
+                    FROM appointments 
+                    WHERE patient_id = ? 
+                      AND appointment_date >= CURDATE()";
+
+if ($current_appointment_id !== null) {
+    $submitted_query .= " AND appointment_id != ?";
+}
+
+$booked_slots = [];
+
+// Prepare and execute approved requests query
+if ($stmt = $db->prepare($approved_query)) {
+    if ($current_appointment_id !== null) {
+        $stmt->bind_param("ii", $patient_id, $current_appointment_id);
+    } else {
+        $stmt->bind_param("i", $patient_id);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $booked_slots[] = $row['appointment_date'] . ' ' . $row['appointment_time'];
+    }
+    $stmt->close();
+}
+
+// Prepare and execute submitted appointments query
+if ($stmt = $db->prepare($submitted_query)) {
+    if ($current_appointment_id !== null) {
+        $stmt->bind_param("ii", $patient_id, $current_appointment_id);
+    } else {
+        $stmt->bind_param("i", $patient_id);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $booked_slots[] = $row['appointment_date'] . ' ' . $row['appointment_time'];
+    }
+    $stmt->close();
+}
 
 // Close the database connection
 mysqli_close($db);
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -128,7 +183,7 @@ mysqli_close($db);
                                     }
                                     ?>
                                     <tr class="appointment-row" data-status="<?= $status ?>">
-                                        <td><?= htmlspecialchars($appointment['patient_id']) ?></td>
+                                        <td><?= htmlspecialchars($appointment['id']) ?></td>
                                         <td><?= htmlspecialchars($appointment['appointment_date']) ?></td>
                                         <td><?= htmlspecialchars($appointment['appointment_time']) ?></td>
                                         <td><?= htmlspecialchars($appointment['treatment']) ?></td>
@@ -141,8 +196,7 @@ mysqli_close($db);
                                                     data-appointmentid="<?php echo htmlspecialchars($appointment['id']); ?>"
                                                     data-time="<?php echo htmlspecialchars($appointment['appointment_time']); ?>"
                                                     data-date="<?= $appointment['appointment_date'] ?>">Reschedule</button>
-                                                <button class="btn btn-danger btn-cancel" data-bs-toggle="modal"
-                                                    data-bs-target="#cancelModal"
+                                                <button class="btn btn-danger btn-cancel" data-bs-toggle="modal" data-bs-target="#cancelModal"
                                                     data-id="<?= htmlspecialchars($appointment['id']) ?>">
                                                     Cancel
                                                 </button>
@@ -245,6 +299,8 @@ mysqli_close($db);
     </div>
 
     <script>
+        var bookedSlots = <?= json_encode($booked_slots); ?>;
+
         function getDuration(timeRange) {
             // Split the time range
             let [startTime, endTime] = timeRange.split(" - ");
@@ -275,17 +331,20 @@ mysqli_close($db);
         document.addEventListener('DOMContentLoaded', function () {
 
             var rescheduleModal = document.getElementById("rescheduleModal");
+            
             rescheduleModal.addEventListener("show.bs.modal", function (event) {
                 var button = event.relatedTarget;
                 var appointmentId = button.getAttribute("data-appointmentid");
                 var appointmentDate = button.getAttribute("data-date");
                 var appointmentTime = button.getAttribute("data-time");
+                var timeSlots = getAvailableTimeSlots(startTime, endTime, duration, formattedDate);
+
 
                 const startTime = '08:00'; // Using 24-hour format for clarity
                 const endTime = '17:00'; // Using 24-hour format for clarity
                 const duration = getDuration(appointmentTime); // Duration in minutes
 
-                function getAvailableTimeSlots(startTime, endTime, duration) {
+                function getAvailableTimeSlots(startTime, endTime, duration, selectedDate) {
                     const slots = [];
                     let currentTime = new Date(`1970-01-01T${startTime}:00`);
                     const endTimeDate = new Date(`1970-01-01T${endTime}:00`);
@@ -293,12 +352,21 @@ mysqli_close($db);
                     while (currentTime < endTimeDate) {
                         let nextTime = new Date(currentTime.getTime() + duration * 60000);
                         if (nextTime <= endTimeDate) {
-                            // Format the time slot
-                            slots.push(`${currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${nextTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+                            // Format the time slot as "HH:MM - HH:MM"
+                            const slot = `${currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${nextTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+                            // Construct full datetime string to check against bookedSlots
+                            const slotStartTime = currentTime.toTimeString().split(' ')[0].slice(0,5); // HH:MM
+                            const fullDateTime = `${selectedDate} ${slotStartTime}`;
+
+                            // Check if slot is booked
+                            if (!bookedSlots.includes(fullDateTime)) {
+                                slots.push(slot);
+                            }
                         }
-                        currentTime = nextTime; // Move to the next time slot
+                        currentTime = nextTime;
                     }
-                    return slots; // Return the array of available time slots
+                    return slots;
                 }
 
 
@@ -441,10 +509,12 @@ mysqli_close($db);
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            setInterval(fetchCurrentTime, 1000);
-            fetchCurrentTime();
-        });
+        // Fetch current time every second (1000 milliseconds)
+        setInterval(fetchCurrentTime, 1000);
+
+        // Initial call to display time immediately on page load
+        fetchCurrentTime();
+
         document.addEventListener('DOMContentLoaded', function () {
             var dropdownButtons = document.querySelectorAll('.dropdown-btn');
 

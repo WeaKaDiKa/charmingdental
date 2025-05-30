@@ -103,6 +103,44 @@ require_once '../db/config.php';
         margin-right: 10px;
         border-radius: 20%;
     }
+     .legend {
+        display: flex;
+        flex-direction: column; 
+        gap: 10px;
+        margin: 20px 0 0 0;    
+        padding: 0 16px;        
+        width: 100%;            
+        box-sizing: border-box;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+    .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 3px;
+        display: inline-block;
+    }
+    /* Match your appointment colors */
+    .legend-danger {
+        background-color: #dc3545;
+        border: 1px solid #dc3545;
+    }
+    .legend-primary {
+        background-color: #007bff;
+        border: 1px solid #007bff;
+    }
+    .legend-secondary {
+        background-color: #6c757d;
+        border: 1px solid #6c757d;
+    }
+    .legend-task {
+        background-color: rgb(0, 133, 22);
+        border: 1px solid rgb(0, 133, 22);
+    }
 </style>
 
 <body>
@@ -117,6 +155,7 @@ require_once '../db/config.php';
         require_once "../db/nav.php" ?>
 
         <div class="container w-100">
+            <div class="legend"></div>
             <div id="calendar" class="w-100"></div>
         </div>
     </div>
@@ -182,10 +221,11 @@ require_once '../db/config.php';
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            setInterval(fetchCurrentTime, 1000);
-            fetchCurrentTime();
-        });
+        // Fetch current time every second (1000 milliseconds)
+        setInterval(fetchCurrentTime, 1000);
+
+        // Initial call to display time immediately on page load
+        fetchCurrentTime();
 
         $(document).ready(function () {
             var calendar = $('#calendar').fullCalendar({

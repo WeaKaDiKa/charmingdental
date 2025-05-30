@@ -4,10 +4,9 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
   <title>Charming Smile Dental Clinic</title>
-
   <?php require_once 'db/head.php' ?>
+
   <style>
     #home {
       width: 100%;
@@ -34,20 +33,64 @@
     #home h1 {
       margin: 0;
       font-weight: 700;
-
       color: white;
     }
+
+    .top-header {
+      background-color: #000000;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      box-sizing: border-box;
+      z-index: 100;
+    }
+
+    .left-section {
+        display: flex;
+        align-items: center; /* This will vertically align the logo and text */
+        gap: 10px;
+    }
+
+    .logoDental {
+        font-weight: 900;
+        font-size: 22px;
+        line-height: 1; /* Remove extra line height */
+        white-space: nowrap; /* Prevent text from wrapping */
+    }
+
+    .logo {
+      width: 55px;
+      height: 50px;
+      background-color: #d99e9e; /* Light pink for profile icon */
+      border-radius: 20%; /* Make profile icon circular */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px; /* Font size for initials inside the profile icon */
+      margin-right: 20px;
+    }
+
   </style>
 </head>
 
 <body>
 
   <!-- ======= Header ======= -->
-  <header id="header" class="fixed-top">
+  <header id="header" class="">
     <div class="container d-flex align-items-center">
+      <div class="top-header">
+        <div class="left-section">
+            <img src="img/pfp.jpg" alt="Profile Picture" class="logo">
+            <div class="logoDental">CHARMING SMILE<br>DENTAL CLINIC</div>
+        </div>
 
-      <h1 class="logo me-auto d-block d-md-none"><a href="index.php">CSDC</a></h1>
-      <h1 class="logo me-auto d-none d-md-block"><a href="index.php">Charming Smile Dental Clinic</a></h1>
+<!--       <h1 class="logo me-auto d-block d-md-none"><a href="index.php">CSDC</a></h1> -->
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
           <li><a class="nav-link scrollto active" href="#home">Home</a></li>
@@ -65,7 +108,7 @@
       <h1>Have a teeth problem?</h1>
       <h2 class="text-white">We got you covered with our quality and affordable dental services.🦷</h2>
       <div class="w-100 d-flex justify-content-center justify-content-md-start mt-5">
-        <a href="patient/patLogin.php" class="signup-btn m-0">Book <span class="d-none d-md-inline">an Appointment
+        <a href="patient/patLogin.php" class="signup-btn">Book <span class="d-none d-md-inline">an Appointment
           </span>now!</a>
       </div>
     </div>

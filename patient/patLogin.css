@@ -3,25 +3,25 @@ body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #e3a5a5; /* Soft pink background */
+    background-color: #e3a5a5;
+    /* Soft pink background */
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    color: #5C3A31; /* Soft brown text */
-    flex-direction: column; /* Allows responsiveness on smaller screens */
+    min-height: 100vh;
 }
+
 
 /* Wrapper for the Login Form */
 .wrapper {
-    background-color: #ffffff; /* White form background */
-    padding: 60px 100px;
-    border-radius: 15px; /* Rounded corners */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-    text-align: center; /* Center the text and content */
-    width: 400px; /* Fixed width for the form */
-    max-width: 90%; /* Prevents form from being too large on bigger screens */
+    background-color: #ffffff;
+    padding: 44px 45px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    width: 80%;
+    margin: 30px auto;
 }
+
 
 /* Logo Section */
 .logo-text {
@@ -29,7 +29,6 @@ body {
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
-    font-family: 'Poppins', sans-serif;
 }
 
 .logo-text img {
@@ -48,16 +47,12 @@ body {
 
 .logo-text p {
     font-size: 14px;
+    align-items: center;
     margin: 0;
     margin-top: 8px;
     color: #333333; /* Dark gray subtitle */
 }
 
-.wrapper p {
-    font-size: 14px;
-    color: #555555;
-    font-weight: 100;
-}
 
 p1 {
     display: flex;
@@ -187,7 +182,120 @@ form p {
     color: #C2C2C2; /* Gray color for the "OR" text */
 }
 
+.toggle-password {
+    position: absolute;
+    top: 38px;
+    right: 0px;
+    cursor: pointer;
+    color: black;
+    font-size: 18px;
+    user-select: none;
+}
+/*error alert-box*/
+.alert {
+  position: relative;
+  padding: 15px 50px 15px 15px; /* extra right padding for close button */
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center; /* vertical center */
+  justify-content: space-between; /* space between text and close button */
+  border: 1px solid transparent;
+}
+
+.alert-danger {
+  color: #842029;
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+}
+
+.alert .btn-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #000;
+  opacity: 0.5;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transition: opacity 0.2s ease;
+}
+
+.alert .btn-close:hover {
+  opacity: 1;
+}
+
+/* Success message styling */
+.success-message {
+    color: #4F8A10; /* green */
+    background-color: #DFF2BF;
+    border: 1px solid #4F8A10;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
 /* Responsive Design */
+/* Responsive styles for PC and larger screens */
+@media screen and (min-width: 1024px) {
+    body {
+        /* Optionally adjust body styles for large screens */
+        background-color: #e3a5a5; /* Keep soft pink or change if desired */
+        justify-content: flex-start; /* Align content to start for wider screens */
+        padding: 40px; /* Add some padding around */
+        min-height: auto; /* Remove full viewport height constraint */
+    }
+
+    .wrapper {
+        width: 600px;       /* Fixed or max width for desktop */
+        max-width: 80%;     /* Optional max width relative to viewport */
+        padding: 60px 80px; /* Increase padding for spacious layout */
+        margin: 60px auto;  /* More vertical margin for breathing room */
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25); /* Slightly stronger shadow */
+    }
+
+    .logo-text {
+        justify-content: flex-start; /* Align logo and text left on desktop */
+        margin-bottom: 30px;
+    }
+
+    .logo-text h1 {
+        font-size: 28px; /* Larger heading on desktop */
+    }
+
+    .logo-text p {
+        font-size: 16px; /* Larger subtitle */
+    }
+
+    .input-box input {
+        font-size: 16px; /* Larger input text */
+        padding: 14px 50px 14px 20px; /* Adjust padding for bigger inputs */
+    }
+
+    .btn {
+        font-size: 18px; /* Larger buttons */
+        padding: 14px;
+    }
+
+    .forgot-password {
+        font-size: 16px; /* Larger link text */
+        margin-top: 30px;
+        text-align: left;
+    }
+
+    .divider span {
+        font-size: 16px; /* Larger divider text */
+    }
+}
 
 /* For small screens like tablets and phones */
 @media (max-width: 768px) {

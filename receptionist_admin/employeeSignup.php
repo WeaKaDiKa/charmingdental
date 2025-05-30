@@ -12,7 +12,7 @@ require_once('../db/db_users_employee.php');
 <body>
     <div class="wrapper">
         <div class="logo-text">
-            <img src="pfp.jpg" alt="Logo">
+            <img src="../img/pfp.jpg" alt="Logo">
             <div>
                 <h1>CHARMING SMILE</h1>
                 <p>DENTAL CLINIC</p>

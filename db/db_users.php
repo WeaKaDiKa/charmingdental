@@ -305,6 +305,7 @@ if (isset($_POST['login'])) {
         $errors['password'] = "Password is required";
     }
 
+
     if (count($errors) == 0) {
         // Check both users and users_employee tables
         $sql = "SELECT id, first_name, gender, password, usertype, status, last_login FROM users WHERE username = ?
@@ -356,6 +357,7 @@ if (isset($_POST['login'])) {
                 mysqli_stmt_close($stmt_update);
 
                 $_SESSION['id'] = htmlspecialchars($user['id']);
+                $_SESSION['username'] = $user['username'];
                 $_SESSION['first_name'] = htmlspecialchars($user['first_name']);
                 $_SESSION['gender'] = htmlspecialchars($user['gender']);
                 $_SESSION['usertype'] = htmlspecialchars($user['usertype']);
@@ -382,9 +384,11 @@ if (isset($_POST['login'])) {
                 exit();
             } else {
                 array_push($errors, "Invalid username or password.");
+                $errors['login'] = 'Incorrect username or password.';
             }
         } else {
             array_push($errors, "Invalid username or password.");
+            $errors['login'] = 'Incorrect username or password.';
         }
 
         mysqli_stmt_close($stmt_login);

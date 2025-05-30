@@ -13,9 +13,45 @@ if (!$db) {
 
 $userId = $_SESSION['id'];
 $id = $_SESSION['id'];
-if (isset($_POST['update_profile'])) {
+// Handle profile picture update
+if (isset($_POST['update_profile_pic'])) {
+    if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        $fileType = $_FILES['profile_picture']['type'];
 
-    $query = "SELECT password, profilepic FROM users WHERE id = ?";
+        if (!in_array($fileType, $allowedTypes)) {
+            $_SESSION['message'] = "Invalid image type. Only JPG and PNG allowed.";
+            header("Location: patRecord.php");
+            exit();
+        }
+
+        $ext = pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION);
+        $newFilename = "uploads/profile_" . time() . "_" . uniqid() . "." . $ext;
+
+        if (!move_uploaded_file($_FILES['profile_picture']['tmp_name'], $newFilename)) {
+            $_SESSION['message'] = "Failed to upload profile picture.";
+            header("Location: patRecord.php");
+            exit();
+        }
+
+        $updateQuery = "UPDATE users SET profile_picture = ? WHERE id = ?";
+        $updateStmt = $db->prepare($updateQuery);
+        $updateStmt->bind_param("si", $newFilename, $userId);
+        $updateStmt->execute();
+
+        $_SESSION['message'] = "Profile picture updated successfully.";
+        header("Location: patRecord.php");
+        exit();
+    } else {
+        $_SESSION['message'] = "No file uploaded or upload error.";
+        header("Location: patRecord.php");
+        exit();
+    }
+}
+
+if (isset($_POST['update_password'])) {
+    // Fetch current password hash
+    $query = "SELECT password FROM users WHERE id = ?";
     $stmt = $db->prepare($query);
     $stmt->bind_param("i", $userId);
     $stmt->execute();
@@ -25,84 +61,60 @@ if (isset($_POST['update_profile'])) {
     if (!$user) {
         $_SESSION['message'] = "User not found.";
         header("Location: patRecord.php");
-        exit;
+        exit();
     }
 
-    if (isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] === UPLOAD_ERR_OK) {
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-        $fileType = $_FILES['profile_picture']['type'];
+    $current = trim($_POST['current_password'] ?? '');
+    $new = trim($_POST['new_password'] ?? '');
+    $confirm = trim($_POST['confirm_password'] ?? '');
 
-        if (!in_array($fileType, $allowedTypes)) {
-            $_SESSION['message'] = "Invalid image type. Only JPG and PNG allowed.";
-            header("Location: patRecord.php");
-            exit;
-        }
-
-        $ext = pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION);
-        $newFilename = "uploads/profile_" . time() . "_" . uniqid() . "." . $ext;
-
-        if (!move_uploaded_file($_FILES['profile_picture']['tmp_name'], $newFilename)) {
-            $_SESSION['message'] = "Failed to upload profile picture.";
-            header("Location: patRecord.php");
-            exit;
-        }
-
-        $updateQuery = "UPDATE users SET profilepic = ? WHERE id = ?";
-        $updateStmt = $db->prepare($updateQuery);
-        $updateStmt->bind_param("si", $newFilename, $userId);
-        $updateStmt->execute();
+    if ($current === '' || $new === '' || $confirm === '') {
+        $_SESSION['message'] = "All password fields are required to change password.";
+        header("Location: patRecord.php");
+        exit();
     }
 
-    $current = $_POST['current_password'] ?? '';
-    $new = $_POST['new_password'] ?? '';
-    $confirm = $_POST['confirm_password'] ?? '';
-
-    if (!empty($current) || !empty($new) || !empty($confirm)) {
-        if (empty($current) || empty($new) || empty($confirm)) {
-            $_SESSION['message'] = "All password fields are required to change password.";
-            header("Location: patRecord.php");
-            exit;
-        }
-
-        if (!password_verify($current, $user['password'])) {
-            $_SESSION['message'] = "Current password is incorrect.";
-            header("Location: patRecord.php");
-            exit;
-        }
-
-        if ($new !== $confirm) {
-            $_SESSION['message'] = "New passwords do not match.";
-            header("Location: patRecord.php");
-            exit;
-        }
-
-        // Password requirement check
-        $pattern = "/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/";
-        if (!preg_match($pattern, $new)) {
-            $_SESSION['message'] = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.";
-            header("Location: patRecord.php");
-            exit;
-        }
-
-        $hashedNewPassword = password_hash($new, PASSWORD_DEFAULT);
-
-        $passQuery = "UPDATE users SET password = ? WHERE id = ?";
-        $passStmt = $db->prepare($passQuery);
-        $passStmt->bind_param("si", $hashedNewPassword, $userId);
-        $passStmt->execute();
+    if (!password_verify($current, $user['password'])) {
+        $_SESSION['message'] = "Current password is incorrect.";
+        header("Location: patRecord.php");
+        exit();
     }
 
+    if ($new !== $confirm) {
+        $_SESSION['message'] = "New passwords do not match.";
+        header("Location: patRecord.php");
+        exit();
+    }
 
-    $_SESSION['message'] = "Profile updated successfully.";
+    $pattern = "/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/";
+    if (!preg_match($pattern, $new)) {
+        $_SESSION['message'] = "Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character.";
+        header("Location: patRecord.php");
+        exit();
+    }
+
+    $hashedNewPassword = password_hash($new, PASSWORD_DEFAULT);
+
+    $passQuery = "UPDATE users SET password = ? WHERE id = ?";
+    $passStmt = $db->prepare($passQuery);
+    $passStmt->bind_param("si", $hashedNewPassword, $userId);
+
+    if ($passStmt->execute()) {
+        $_SESSION['message'] = "Password updated successfully.";
+    } else {
+        $_SESSION['message'] = "Failed to update password. Please try again.";
+    }
+
     header("Location: patRecord.php");
-    exit;
+    exit();
 }
+
 // Initialize variables with default values
 $firstName = $middleName = $lastName = $email = $gender = $birthdate = $mobile = $address = '';
 $treatment = $appointment_time = $appointment_date = $dentist_name = ''; // Initialize appointment-related variables
 
 // Query 1: Fetch user details from the `users` table
-$query1 = "SELECT first_name, middle_name, emergencyname,emergencycontact,last_name, email, gender, birthdate, mobile, profilepic, address FROM users WHERE id = ?";
+$query1 = "SELECT first_name, middle_name, emergencyname,emergencycontact,last_name, email, gender, birthdate, mobile, profile_picture, address FROM users WHERE id = ?";
 $stmt1 = mysqli_prepare($db, $query1);
 if (!$stmt1) {
     die("Failed to prepare statement: " . mysqli_error($db));
@@ -130,7 +142,7 @@ if ($user = mysqli_fetch_assoc($result1)) {
     $birthdate = htmlspecialchars($user['birthdate']);
     $mobile = htmlspecialchars($user['mobile']);
     $address = htmlspecialchars($user['address']);
-    $profilepic = htmlspecialchars($user['profilepic']);
+    $profilepic = htmlspecialchars($user['profile_picture']);
     $emergencyname = htmlspecialchars($user['emergencyname']);
     $emergencycontact = htmlspecialchars($user['emergencycontact']);
 
@@ -200,11 +212,12 @@ mysqli_stmt_close($stmt2);
             <div class="patient-details">
                 <div class="patient-header">
                     <div class="patient-avatar">
-                        <?php if (!empty($profilepic)): ?>
-                            <img src="<?php echo $profilepic; ?>" alt="Profile Picture"
+                        <?php if (!empty($profilepic) && $profilepic !== 'pfp_default.jpg'): ?>
+                            <img src="<?php echo htmlspecialchars($profilepic); ?>" alt="Profile Picture"
                                 style="width: 80px; height: 80px; border-radius: 50%;">
                         <?php else: ?>
-                            <i class="fas fa-user-circle fa-2x"></i>
+                            <img src="pfp_default.jpg" alt="Default Profile Picture"
+                                style="width: 80px; height: 80px; border-radius: 50%;">
                         <?php endif; ?>
                     </div>
 
@@ -232,49 +245,48 @@ mysqli_stmt_close($stmt2);
                     <p><strong>Time:</strong> <?php //echo !empty($appointment_time) ? $appointment_time : 'No time scheduled'; ?></p>
                 </div> -->
             </div>
+            <!-- Change Profile Picture Form -->
             <form method="POST" enctype="multipart/form-data" class="container mt-4">
                 <div class="patient-details">
-                    <?php if (!empty($_SESSION['message'])): ?>
-                        <div class="alert alert-info">
-                            <?php echo $_SESSION['message'];
-                            unset($_SESSION['message']); ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <div class="mb-4">
-                        <h4 class="form-label">Change Profile Picture</h4>
-                        <input type="file" class="form-control" name="profile_picture" accept="image/*">
-                    </div>
-
-                    <!-- Change Password Section -->
-                    <div class="change-password-section mb-4">
-                        <h4 class="form-label">Change Password</h4>
-
-                        <div class="mb-3">
-                            <label for="current_password" class="form-label">Current Password</label>
-                            <input type="password" class="form-control" id="current_password" name="current_password">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="new_password" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="new_password" name="new_password">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="confirm_password" class="form-label">Confirm New Password</label>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
-                        </div>
-                    </div>
-
-                    <div class="text-end">
-                        <button type="submit" name="update_profile" class="btn btn-primary">Save Changes</button>
+                    <h4 class="form-label">Change Profile Picture</h4>
+                    <input type="file" class="form-control" name="profile_picture" accept="image/*">
+                    <div class="text-end mt-2">
+                        <button type="submit" name="update_profile_pic" class="btn btn-primary">Save Profile Picture</button>
                     </div>
                 </div>
             </form>
 
+            <form method="POST" name="change_password_form" class="container mt-4">
+                <div class="patient-details">
+                    <h4 class="form-label">Change Password</h4>
+
+                    <div class="mb-3 position-relative">
+                    <label for="current_password" class="form-label">Current Password</label>
+                    <input type="password" class="form-control" id="current_password" name="current_password" />
+                    <i class="fa-regular fa-eye toggle-password" data-target="current_password" style="position: absolute; top: 38px; right: 10px; cursor: pointer; color: black;"></i>
+                    </div>
+
+                    <div class="mb-3 position-relative">
+                    <label for="new_password" class="form-label">New Password</label>
+                    <input type="password" class="form-control" id="new_password" name="new_password" />
+                    <i class="fa-regular fa-eye toggle-password" data-target="new_password" style="position: absolute; top: 38px; right: 10px; cursor: pointer; color: black;"></i>
+                    </div>
+
+                    <div class="mb-3 position-relative">
+                    <label for="confirm_password" class="form-label">Confirm New Password</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" />
+                    <i class="fa-regular fa-eye toggle-password" data-target="confirm_password" style="position: absolute; top: 38px; right: 10px; cursor: pointer; color: black;"></i>
+                    </div>
+
+                    <div class="text-end">
+                    <button type="submit" name="update_password" class="btn btn-primary">Save Password</button>
+                    </div>
+                </div>
+            </form>
+
+
             <script>
-                // Require all password fields only if one is filled
-                document.querySelector('form').addEventListener('submit', function (e) {
+                document.querySelector('form[name="change_password_form"]').addEventListener('submit', function (e) {
                     const current = document.getElementById('current_password');
                     const newPass = document.getElementById('new_password');
                     const confirm = document.getElementById('confirm_password');
@@ -290,6 +302,75 @@ mysqli_stmt_close($stmt2);
                     }
                 });
             </script>
+
+            <script>
+                const inputFile = document.getElementById('profile_picture');
+                const previewImage = document.getElementById('previewImage');
+
+                inputFile.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                    if (!allowedTypes.includes(file.type)) {
+                        alert('Invalid image type. Only JPG and PNG allowed.');
+                        this.value = ''; // Clear the input
+                        previewImage.style.display = 'none';
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                    } else {
+                    previewImage.style.display = 'none';
+                    }
+                });
+
+                /*// Optional: AJAX submission (uncomment if you want to submit without page reload)
+                
+                document.getElementById('profilePicForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const formData = new FormData(this);
+
+                    fetch('patRecord.php', {
+                    method: 'POST',
+                    body: formData
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                    alert('Profile picture updated successfully.');
+                    // Optionally reload or update UI here
+                    })
+                    .catch(error => {
+                    alert('Error uploading profile picture.');
+                    console.error(error);
+                    });
+                });
+                
+            </script>
+            
+            <script>
+                    document.querySelectorAll('.toggle-password').forEach(icon => {
+                        icon.addEventListener('click', () => {
+                        const targetId = icon.getAttribute('data-target');
+                        const input = document.getElementById(targetId);
+
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                        } else {
+                            input.type = 'password';
+                            icon.classList.remove('fa-eye-slash');
+                            icon.classList.add('fa-eye');
+                        }
+                        });
+                    });
+                </script>    
 
         </div>
     </div>
@@ -317,10 +398,9 @@ mysqli_stmt_close($stmt2);
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            setInterval(fetchCurrentTime, 1000);
-            fetchCurrentTime();
-        });
+
+        setInterval(fetchCurrentTime, 1000);
+        fetchCurrentTime();
 
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.dropdown-btn').forEach(function (button) {

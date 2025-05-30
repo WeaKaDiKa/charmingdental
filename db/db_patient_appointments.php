@@ -81,12 +81,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['otpsubmit']) && !isse
         $email = $_SESSION['email'] ?? '';
         $refnum = $_POST['refnum'] ?? '';
         // Prepare SQL statement
-        $stmt = $conn->prepare("INSERT INTO appointments (p_name, p_contact, dentist_name, service_name, appointment_date, appointment_time, username, email, transaction)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO appointments (patient_id, p_name, p_contact, dentist_name, service_name, appointment_date, appointment_time, username, email, transaction)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         if (!$stmt) {
             die(json_encode(['success' => false, 'message' => "Error preparing insert statement: " . $conn->error]));
         }
-        $stmt->bind_param("sssssssss", $patient_name, $patient_contact, $dentist_name, $service_name, $appointment_date, $appointment_time, $username, $email, $refnum);
+       $stmt->bind_param("isssssssss", $userId, $patient_name, $patient_contact, $dentist_name, $service_name, $appointment_date, $appointment_time, $username, $email, $refnum);
 
         if ($stmt->execute()) {
             $appointmentid = $stmt->insert_id;

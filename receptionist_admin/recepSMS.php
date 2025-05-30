@@ -9,11 +9,10 @@ require_once '../db/config.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMS</title>
-
+    <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="adminStyles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <?php require_once "../db/head.php" ?>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .user-management {
             padding: 2rem;
@@ -230,8 +229,8 @@ require_once '../db/config.php';
 
                 </div>
                 <div class="card-body">
-                    <table id="emailScheduleTable" class="table table-striped table-bordered">
-                        <thead>
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-dark">
                             <tr>
                                 <th>ID</th>
                                 <th>Patient Name</th>
@@ -289,21 +288,6 @@ require_once '../db/config.php';
                         </tbody>
                     </table>
 
-                    <script>
-                        $(document).ready(function () {
-                            $('#emailScheduleTable').DataTable({
-                                responsive: true,
-                                language: {
-                                    searchPlaceholder: "Search...",
-                                    lengthMenu: "Show _MENU_ entries",
-                                    zeroRecords: "No matching records found",
-                                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                                    infoEmpty: "No entries available",
-                                    infoFiltered: "(filtered from _MAX_ total entries)"
-                                }
-                            });
-                        });
-                    </script>
                 </div>
             </div>
 
@@ -547,10 +531,11 @@ require_once '../db/config.php';
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            setInterval(fetchCurrentTime, 1000);
-            fetchCurrentTime();
-        });
+        // Fetch current time every second (1000 milliseconds)
+        setInterval(fetchCurrentTime, 1000);
+
+        // Initial call to display time immediately on page load
+        fetchCurrentTime();
 
 
         function confirmLogout() {

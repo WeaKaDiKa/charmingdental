@@ -264,7 +264,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['resched'])) {
                                     <div class="appointment-details">
                                         <div>
                                             <strong>Appointment No.</strong><br>
-                                            <?php echo htmlspecialchars($appointment['patient_id']); ?>
+                                            <?php echo htmlspecialchars($appointment['id']); ?>
                                         </div>
                                         <div>
                                             <strong>Treatment and Price (₱)</strong><br>
@@ -532,10 +532,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['resched'])) {
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            setInterval(fetchCurrentTime, 1000);
-            fetchCurrentTime();
-        });
+        // Fetch current time every second (1000 milliseconds)
+        setInterval(fetchCurrentTime, 1000);
+
+        // Initial call to display time immediately on page load
+        fetchCurrentTime();
 
 
         document.addEventListener('DOMContentLoaded', function () {

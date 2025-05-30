@@ -236,8 +236,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <th>Appointment No.</th>
                             <th>Appointment Date</th>
                             <th>Appointment Time</th>
-                            <th>Name</th>
+                            <th>Patient No.</th>
+                            <th>Patient Name</th>
                             <th>Treatment</th>
+
                             <?php if ($_SESSION['usertype'] == 'dentist'): ?>
                                 <th class="action-column">Action</th>
                             <?php endif; ?>
@@ -266,9 +268,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                             ?>
                             <tr class="appointment-row" data-status="<?php echo $status; ?>">
-                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
+                               <td><?php echo htmlspecialchars($row['id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
                                 <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
                                 <td><?php echo htmlspecialchars($row['treatment']); ?></td>
                                 <?php if ($_SESSION['usertype'] == 'dentist'): ?>
@@ -309,8 +312,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <th>Appointment No.</th>
                             <th>Appointment Date</th>
                             <th>Appointment Time</th>
-                            <th>Name</th>
+                            <th>Patient No.</th>
+                            <th>Patient Name</th>
                             <th>Treatment</th>
+
                             <?php if ($_SESSION['usertype'] == 'dentist'): ?>
                                 <th class="action-column">Action</th>
                             <?php endif; ?>
@@ -341,9 +346,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                             ?>
                             <tr class="appointment-row" data-status="<?php echo $status; ?>">
-                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
                                 <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
                                 <td><?php echo htmlspecialchars($row['treatment']); ?></td>
                                 <?php if ($_SESSION['usertype'] == 'dentist'): ?>
@@ -388,7 +394,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <th>Appointment No.</th>
                             <th>Appointment Date</th>
                             <th>Appointment Time</th>
-                            <th>Name</th>
+                            <th>Patient No.</th>
+                            <th>Patient Name</th>
                             <th>Treatment</th>
 
                             <th class="reason-column">Notes</th>
@@ -411,9 +418,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                             ?>
                             <tr class="appointment-row" data-status="<?php echo $status; ?>">
-                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
+                                <td><?php echo htmlspecialchars($row['id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
                                 <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
                                 <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
                                 <td><?php echo htmlspecialchars($row['treatment']); ?></td>
 

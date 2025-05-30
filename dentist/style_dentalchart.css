@@ -1,0 +1,499 @@
+/* Styled by Jade Allen Cook 2016 */
+
+html,
+body {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Helvetica';
+    background-color: darkcyan;
+}
+
+#app {
+    margin: 25px;
+    width: 800px;
+    height: 373px;
+    display: inline-block;
+    background-color: #fff;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-left: 5px;
+    border-top-right-radius: 5px;
+}
+
+.outside-ctrls {
+    margin-left: 25px;
+    color: darkcyan;
+    text-decoration: none;
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 3px;
+    display: inline-block;
+    
+}
+
+input {
+    margin-left: 25px;
+    display: inline-block;
+    margin-bottom: 5px;
+    padding: 5px;
+    border: none;
+    border-radius: 3px;
+}
+
+#guml {
+    margin-bottom: 25px;
+}
+
+button {
+    margin-left: 25px;
+    color: darkcyan;
+    text-decoration: none;
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 3px;
+    display: inline-block;
+    border: none;
+    font-size: 1em;
+}
+
+span.input-tag {
+    display: inline-block;
+    color: #fff;
+    margin-left: 25px;
+    font-size: .75em;
+}
+
+.container {
+    display: block;
+    width: 100%;
+}
+
+.tooth-container {
+    width: 50px;
+    display: inline-block;
+}
+
+.gum-num-container {
+    display: inline-block;
+    width: 100%;
+    height: 25px;
+}
+
+.top-container {
+    float: left;
+}
+
+.bottom-container {
+    float: right;
+}
+
+#btn-container {
+    background-color: #333;
+    display: inline-block;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    width: 810px;
+    margin-left: -5px;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #333;
+    float: left;
+    padding: 2.5px 5px;
+    color: #ccc;
+    font-size: .75em;
+    font-weight: 100;
+    cursor: pointer;
+    height: 15px;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Chrome/Safari/Opera */
+    -khtml-user-select: none;
+    /* Konqueror */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE/Edge */
+    user-select: none;
+}
+
+.btn:hover {
+    background-color: #ccc;
+    color: #333;
+}
+
+.btn:first-child {
+    border-bottom-left-radius: 5px;
+}
+
+.number {
+    padding: 5px 0px;
+    width: 45px;
+    text-align: center;
+    font-size: .75em;
+    cursor: pointer;
+    margin: 2.5px 2.5px;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Chrome/Safari/Opera */
+    -khtml-user-select: none;
+    /* Konqueror */
+    -moz-user-select: none;
+    /* Firefox */
+    -ms-user-select: none;
+    /* IE/Edge */
+    user-select: none;
+}
+
+.number:hover {
+    border-radius: 3px;
+    background-color: #ccc;
+}
+
+.roots {
+    display: block;
+    width: 100%;
+    text-align: center;
+}
+
+
+/* TOP TEETH */
+
+div.top-molar div,
+div.top-standard div {
+    display: inline-block;
+    border: solid thin black;
+}
+
+div.top-molar div.root,
+div.top-standard div.root {
+    width: 5px;
+    height: 45px;
+    z-index: 0;
+    border-top-right-radius: 5px;
+}
+
+div.top-molar div.root:first-child {
+    margin-right: 4px;
+}
+
+div.top-molar div.root {
+    margin-right: -6px;
+}
+
+div.top-molar div.v,
+div.top-standard div.v {
+    width: 26px;
+    height: 20px;
+    margin-left: -17px;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    background-color: #fff;
+    z-index: 9;
+    margin-bottom: -3px;
+}
+
+div.top-standard div.v {
+    margin-left: -10px;
+}
+
+div.top-molar div.v {
+    margin-right: -5px;
+}
+
+div.top-tooth-container {
+    width: 100%;
+    text-align: center;
+    display: block;
+    margin-top: -5px;
+}
+
+div.top-container div.tooth {
+    text-align: center;
+    display: inline-block;
+    border: solid black thin;
+    width: 40px;
+    height: 40px;
+}
+
+
+div.top-standard div.center-root {
+    margin-right: -7px;
+}
+
+div.top-standard div.v {
+    margin-right: -11px;
+}
+
+/* BOTTOM TEETH */
+
+div.bottom-molar div,
+div.bottom-standard div {
+    display: inline-block;
+    border: solid thin black;
+}
+
+div.bottom-molar div.root,
+div.bottom-standard div.root {
+    width: 5px;
+    height: 45px;
+    z-index: 0;
+    border-bottom-right-radius: 15px;
+}
+
+div.bottom-molar div.root:first-child {
+    margin-right: 4px;
+}
+
+div.bottom-standard div.root {
+    margin-right: -8px;
+}
+
+div.bottom-molar div.v,
+div.bottom-standard div.v {
+    width: 26px;
+    height: 20px;
+    margin-left: -23px;
+    margin-top: -3px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    background-color: #fff;
+    vertical-align: top;
+}
+
+div.bottom-molar div.v {
+    margin-right: -5px;
+}
+
+div.bottom-standard div.v {
+    margin-right: -10px;
+}
+
+div.bottom-standard div.v {
+    margin-left: -10px;
+}
+
+div.bottom-tooth-container {
+    width: 100%;
+    text-align: center;
+    display: block;
+    margin-bottom: -5px;
+    margin-top: 5px;
+}
+
+div.bottom-container div.tooth {
+    text-align: center;
+    display: inline-block;
+    border: solid black thin;
+    width: 40px;
+    height: 40px;
+}
+
+
+/* CAVITY SECTION */
+
+
+/* all cavitys */
+
+div.tooth {
+    overflow: hidden;
+    position: relative;
+    border-radius: 15px;
+}
+
+
+/* all selection quads */
+
+div.tooth div.quad {
+    display: inline-block;
+    height: 14px;
+    position: absolute;
+    background-color: #fff;
+}
+
+
+/* set proper border */
+
+div.top-tooth div.top,
+div.bottom-tooth div.bottom {
+    border-bottom: solid thin black;
+    border-radius: 15px;
+}
+
+div.bottom-tooth div.top,
+div.top-tooth div.bottom {
+    border-top: solid thin black;
+    border-radius: 15px;
+}
+
+
+/* all widths and centers */
+
+div.tooth div.vertical {
+    width: 42px;
+}
+
+div.tooth div.middle {
+    width: 18px;
+}
+
+div.tooth div.center {
+    width: 20px;
+    position: absolute;
+    border: solid thin black;
+    position: absolute;
+    margin-left: -11px;
+    margin-top: 13px;
+    z-index: 99;
+    border-radius: 15px;
+    background-color: #fff;
+}
+
+
+/* top sections */
+
+div.top-tooth div.top,
+div.bottom-tooth div.bottom {
+    margin-left: -22px;
+    margin-top: -1px;
+}
+
+div.top-tooth div.left,
+div.bottom-tooth div.right {
+    margin-left: -25px;
+    margin-top: 14px;
+}
+
+div.top-tooth div.right,
+div.bottom-tooth div.left {
+    margin-top: 14px;
+    margin-left: 8px;
+}
+
+div.top-tooth div.bottom,
+div.bottom-tooth div.top {
+    margin-left: -22px;
+    margin-top: 28px;
+}
+
+div.top-container img.screw {
+    height: 65px;
+    margin-left: 17px;
+    margin-top: 20px;
+}
+
+div.bottom-container img.screw {
+    height: 65px;
+    margin-top: 5px;
+    margin-left: 17px;
+    margin-bottom: 23px;
+}
+
+.selected {
+    color: red;
+}
+
+div.roots {
+    height: 51px;
+}
+
+form {
+    margin: 23px;
+}
+
+input {
+    display: block;
+    margin-top: 5px;
+    width: 500px;
+}
+
+div.bottom-blank, div.top-blank {
+    display: block;
+    height: 93.5px;
+}
+
+div.bottom-blank {
+    margin-top: 3px;
+}
+
+span.extraction-x {
+    position: absolute;
+    color: red;
+    font-weight: bold;
+    font-size: 2em;
+}
+
+div.top-molar span.extraction-x, div.bottom-molar span.extraction-x {
+    margin-left: -18px;
+}
+
+div.top-standard span.extraction-x, div.bottom-standard span.extraction-x {
+    margin-left: -13px;
+}
+
+div.bottom-molar span.extraction-x, div.bottom-standard span.extraction-x { 
+    margin-top: 5px;
+}
+
+#red-blue {
+    background-color: red;
+    width: 10px;
+}
+
+#bridge, #v {
+    margin-right: 25px;
+}
+
+#canvas {
+    display: inline-block;
+    position: absolute;
+    z-index: 9999;
+}
+
+/* GUM NUMBERS */
+
+.gum-num {
+    border-radius: 3px;
+    display: inline-block;
+    width: 45px;
+    height: 20px;
+    margin-bottom: -5px;
+    margin: 2.5px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 100;
+    font-size: .75em;
+}
+
+div#bottom-gum-f-container div.gum-num, div#bottom-gum-l-container div.gum-num {
+    float: right;
+}
+
+div.gum-num span {
+    line-height: 1.75em;
+    font-style: italic;
+}
+
+.gum-num:hover {
+    background-color: #ccc;
+}
+
+.gum-select {
+    background-color: #ccc;
+}
+
+.gum-label {
+    margin-top: 4px;
+    margin-left: 5px;
+    z-index: 9999;
+    position: absolute;
+}

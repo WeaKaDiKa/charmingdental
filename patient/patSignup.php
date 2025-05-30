@@ -245,7 +245,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
     </div>
     <div class="wrapper">
         <div class="logo-text">
-            <img src="pfp.jpg" alt="Logo">
+            <img src="../img/pfp.jpg" alt="Logo">
             <div>
                 <h1>CHARMING SMILE</h1>
                 <p>DENTAL CLINIC</p>
@@ -263,7 +263,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
                     <?php endif; ?>
                 </div>
                 <div class="input-group col">
-                    <label for="middle-name">Middle Name <span class="text-danger">*</span></label>
+                    <label for="middle-name">Middle Name <span class="text-danger"></span></label>
                     <input type="text" id="middle-name" name="middle-name" placeholder="Enter your name.."
                         value="<?php echo isset($middleName) ? htmlspecialchars($middleName) : ''; ?>">
                 </div>

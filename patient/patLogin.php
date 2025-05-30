@@ -12,6 +12,7 @@ require_once('../db/db_users.php');
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="patLogin.css">
 
+
 </head>
 
 <body>
@@ -19,13 +20,28 @@ require_once('../db/db_users.php');
         <form action="patLogin.php" method="post">
             <!-- Add a flex container for the logo and text -->
             <div class="logo-text">
-                <img src="pfp.jpg" alt="Profile Picture" class="profile-pic">
+                <img src="../img/pfp.jpg" alt="Logo" class="profile-pic">
                 <div>
                     <h1>CHARMING SMILE</h1>
-                    <p>DENTAL CLINIC</p>
+                    <p>  DENTAL CLINIC  </p>
                 </div>
             </div>
             <p1>Login into your account</p1>
+
+            <!-- alert box -->
+           <?php if (!empty($errors['login'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?php echo htmlspecialchars($errors['login']); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+
+            <?php if (isset($_SESSION['success'])) {
+                echo '<div class="success-message">' . htmlspecialchars($_SESSION['success']) . '</div>';
+                unset($_SESSION['success']);
+                }
+            ?>
 
             <!-- Username field -->
             <p>Username</p>
@@ -36,15 +52,17 @@ require_once('../db/db_users.php');
                     <div class='error-message'><?php echo htmlspecialchars($errors['username']); ?></div>
                 <?php endif; ?>
             </div>
-            <!-- Password field -->
+         <!-- Password field -->
             <p>Password</p>
-            <div class="input-box">
-                <input type="password" name="password" id="password" placeholder="Enter your password" required>
-                <img src="password.png" alt="Password Icon" class="icon">
-                <?php if (!empty($errors['password'])): ?>
-                    <div class='error-message'><?php echo htmlspecialchars($errors['password']); ?></div>
-                <?php endif; ?>
-            </div>
+                <div class="input-box" style="position: relative;">
+                    <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                    <?php if (!empty($errors['password'])): ?>
+                        <div class='error-message'><?php echo htmlspecialchars($errors['password']); ?></div>
+                    <?php endif; ?>
+                    <!-- Toggle icon button -->
+                    <img src="password.png" alt="Show Password" id="togglePassword" class="icon" style="cursor: pointer; position: absolute; right: px; top: 50%; transform: translateY(-50%);" />
+                </div>
+
 
             <!-- Forgot password and buttons -->
             <div class="extras">
@@ -190,7 +208,24 @@ require_once('../db/db_users.php');
     </script>
 
     <script>
+      
+        const passwordInput = document.getElementById('password');
+        const togglePassword = document.getElementById('togglePassword');
 
+        togglePassword.addEventListener('click', function () {
+            // Toggle the type attribute
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            // Toggle the icon image and alt text
+            if (type === 'text') {
+                togglePassword.src = 'hide-password.png'; // icon for hiding password
+                togglePassword.alt = 'Hide Password';
+            } else {
+                togglePassword.src = 'password.png'; // icon for showing password
+                togglePassword.alt = 'Show Password';
+            }
+        });
 
         function signupRedirect() {
             window.location.href = "patSignup.php"; // Replace with your signup page

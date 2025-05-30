@@ -6,6 +6,95 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
     header('location: patLogin.php');
     exit();
 }
+// Count submitted appointments in appointments table
+$checkSql1 = "SELECT COUNT(*) FROM appointments WHERE patient_id = ? AND status = 'submitted'";
+$stmtCheck1 = $conn->prepare($checkSql1);
+$stmtCheck1->bind_param("i", $userId);
+$stmtCheck1->execute();
+$stmtCheck1->bind_result($submittedCount);
+$stmtCheck1->fetch();
+$stmtCheck1->close();
+
+// Count approved appointments in approved_requests table
+$checkSql2 = "SELECT COUNT(*) FROM approved_requests WHERE patient_id = ? AND status = 'upcoming'";
+$stmtCheck2 = $conn->prepare($checkSql2);
+$stmtCheck2->bind_param("i", $userId);
+$stmtCheck2->execute();
+$stmtCheck2->bind_result($approvedCount);
+$stmtCheck2->fetch();
+$stmtCheck2->close();
+
+$activeCount = $submittedCount + $approvedCount;
+if ($activeCount > 0) {
+    // Show policy reminder and exit before rendering form
+    ?>
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments - Charming Smile Dental Clinic</title>
+    <?php require_once "../db/head.php" ?>
+    <link rel="stylesheet" href="patAppointments.css">
+    <link rel="stylesheet" href="main.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <title>Booking Policy Reminder</title>
+        <style>
+            body { font-family: Arial, sans-serif; background: #f9f9f9; }
+            .policy-reminder {
+                max-width: 500px;
+                margin: 80px auto;
+                padding: 40px 30px;
+                background: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+                text-align: center;
+            }
+            .policy-reminder h2 { color: #d9534f; }
+            .policy-reminder p { font-size: 1.1em; }
+            p {
+                max-width: 600px;        /* Limit width for better readability */
+                margin: 20px auto;       /* Center horizontally with vertical spacing */
+                font-size: 16px;         /* Comfortable font size */
+                line-height: 1.6;        /* Spacing between lines */
+                color: #333333;          /* Dark gray text for good contrast */
+                text-align: left;        /* Align text to the left */
+                font-family: Arial, sans-serif; /* Clean font */
+                }
+
+            p strong, p b {
+                font-weight: 700;        /* Make sure strong/b are bold */
+                color: #000000;          /* Optional: make bold text fully black */
+                text-align: center;
+            }
+
+        </style>
+    </head>
+    <body>
+    <!-- Top Header -->
+    <?php require_once "../db/header.php" ?>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <script>step = 1;</script>
+        <!-- Sidebar -->
+        <?php
+        $navactive = "patCalendar";
+        require_once "../db/nav.php" ?>
+        <div class="policy-reminder">
+            <h2>Booking Policy Reminder</h2>
+            <p>
+                You are only allowed to have <strong>one active appointment</strong> at a time.<br> Please wait until your current appointment is <b>completed, cancelled, or rejected</b> before booking another.<br><br>
+                Thank you for your understanding!
+            </p>
+        </div>
+        </div>
+    </body>
+    </html>
+    <?php
+    exit();
+}
 
 ?>
 
@@ -479,7 +568,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
                     <div class="mb-2">
                         <label>Do you have any history of present disease or allergies?</label>
                         <input type="radio" name="hasDisease" value="yes"> Yes
-                        <input type="radio" name="hasDisease" value="no" checked> No
+                        <input type="radio" name="hasDisease" value="no"> No
                     </div>
                     <div class="mb-3" id="diseaseField" style="display:none;">
                         <label for="disease" class="form-label">If yes, please specify:</label>
@@ -491,7 +580,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
                     <div class="mb-2">
                         <label>Have you undergone any recent surgery?</label>
                         <input type="radio" name="hasSurgery" value="yes"> Yes
-                        <input type="radio" name="hasSurgery" value="no" checked> No
+                        <input type="radio" name="hasSurgery" value="no"> No
                     </div>
                     <div class="mb-3" id="surgeryField" style="display:none;">
                         <label for="recent_surgery" class="form-label">If yes, please specify:</label>
@@ -503,7 +592,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
                     <div class="mb-2">
                         <label>Do you have any current diseases (e.g., hypertension, diabetes)?</label>
                         <input type="radio" name="hasCurrentDisease" value="yes"> Yes
-                        <input type="radio" name="hasCurrentDisease" value="no" checked> No
+                        <input type="radio" name="hasCurrentDisease" value="no"> No
                     </div>
                     <div class="mb-3" id="currentDiseaseField" style="display:none;">
                         <label for="current_disease" class="form-label">If yes, please specify:</label>
@@ -630,27 +719,19 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
                     </div>
 
                     <div id="fieldContainer" style="display:none">
-                        <h4>Companion</h4>
-                        <div class="field-set">
+                    <h4>Companion</h4>
+                    <div class="field-set">
                             <div class="mb-3">
                                 <label for="name1" class="form-label">Name</label>
                                 <input type="text" class="form-control" id="name1" name="name[]">
                             </div>
                             <div class="mb-3">
-                                <label for="gender1" class="form-label">Gender</label>
-                                <select class="form-select" id="gender1" name="gender[]">
-                                    <option value="" disabled selected>Select gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="age1" class="form-label">Age</label>
-                                <input type="number" class="form-control" id="age1" name="age[]">
+                                <label for="relationship1" class="form-label">Relationship to Patient</label>
+                                <input type="text" class="form-control" id="relationship1" name="relationship[]" placeholder="e.g., Spouse, Parent, Friend">
                             </div>
                         </div>
                     </div>
+
 
                     <button type="button" class="btn btn-secondary" id="addMoreFields" disabled>Add More</button>
                     <div class="navigation-buttons mt-3">
@@ -707,7 +788,7 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
                     <h3>Downpayment</h3>
                     <div class="row">
                         <div class="col-lg-8 px-5 mt-3">
-                            <p>To continue, please send the following amount as 15% downpayment for our services to our
+                            <p>To continue, please send the following amount as <b>15% downpayment</b> for our services to our
                                 GCash account using the QR. Upload the
                                 receipt in the form below.</p>
 
@@ -833,10 +914,9 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
 
             function checkFields() {
                 const lastNameField = document.querySelector(`#name${currentFieldCount}`);
-                const lastGenderField = document.querySelector(`#gender${currentFieldCount}`);
-                const lastAgeField = document.querySelector(`#age${currentFieldCount}`);
-
-                if (lastNameField.value && lastGenderField.value && lastAgeField.value) {
+                const lastRelationshipField = document.querySelector(`#relationship${currentFieldCount}`);
+            
+                if (lastNameField.value && lastRelationshipField.value ) {
                     addMoreFieldsButton.disabled = false;
                 } else {
                     addMoreFieldsButton.disabled = true;
@@ -858,17 +938,8 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
                     <input type="text" class="form-control" id="name${currentFieldCount}" name="name[]" required>
                 </div>
                 <div class="mb-3">
-                    <label for="gender${currentFieldCount}" class="form-label">Gender</label>
-                    <select class="form-select" id="gender${currentFieldCount}" name="gender[]" required>
-                        <option value="" disabled selected>Select gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="age${currentFieldCount}" class="form-label">Age</label>
-                    <input type="number" class="form-control" id="age${currentFieldCount}" name="age[]" required>
+                    <label for="relationship${currentFieldCount}" class="form-label">Relationship to the Patient</label>
+                    <input type="number" class="form-control" id="relationship${currentFieldCount}" name="relationship[]" required>
                 </div>
             `;
                     fieldContainer.appendChild(fieldSet);
@@ -1168,12 +1239,13 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
 
         }
 
+
         function fetchCurrentTime() {
             $.ajax({
-                url: '../db/current_timezone.php', // URL of the PHP script
+                url: '../db/current_timezone.php',
                 method: 'GET',
                 success: function (data) {
-                    $('#datetime').html(data); // Update the HTML with the fetched data
+                    $('#datetime').html(data);
                 },
                 error: function () {
                     console.error('Error fetching time.');
@@ -1181,10 +1253,9 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            setInterval(fetchCurrentTime, 1000);
-            fetchCurrentTime();
-        });
+        setInterval(fetchCurrentTime, 1000);
+        fetchCurrentTime();
+
         document.addEventListener('DOMContentLoaded', function () {
             var dropdownButtons = document.querySelectorAll('.dropdown-btn');
 

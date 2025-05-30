@@ -26,6 +26,20 @@ require_once('../db/db_users_employee.php');
                 </div>
             </div>
             <p1>Login into your account</p1>
+            
+            <!-- alert box -->
+            <?php if (!empty($errors['login'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <?php echo htmlspecialchars($errors['login']); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['success'])) {
+                echo '<div class="success-message">' . htmlspecialchars($_SESSION['success']) . '</div>';
+                unset($_SESSION['success']);
+                }
+            ?>
 
             <!-- Username field -->
             <p>Username</p>

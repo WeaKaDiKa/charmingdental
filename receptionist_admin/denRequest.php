@@ -19,9 +19,8 @@ if (!$result) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Request Approval</title>
     <link rel="stylesheet" href="denRequest.css">
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <?php require_once "../db/head.php" ?>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <style>
     .logout-confirm-dialog {
@@ -216,8 +215,7 @@ if (!$result) {
                 </div> -->
             </div>
             <div class="request-content">
-                <table id="appointmentTable" class="approval-table display">
-
+                <table class="approval-table">
                     <thead>
                         <tr>
                             <th>Appointment No.</th>
@@ -225,7 +223,6 @@ if (!$result) {
                             <th>Treatment and Price (₱)</th>
                             <th>Time</th>
                             <th>Date</th>
-                            <th>Email</th>
                             <th>GCash Reference</th>
                             <th>Action</th>
                         </tr>
@@ -247,7 +244,7 @@ if (!$result) {
                                     <td><?php echo htmlspecialchars($row['service_name']); ?></td>
                                     <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
                                     <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['email']); ?></td>
+                                    <td class="hidden"><?php echo htmlspecialchars($row['email']); ?></td>
                                     <td><?php echo htmlspecialchars($row['transaction']); ?></td>
                                     <td>
                                         <div class="action-buttons">
@@ -272,18 +269,6 @@ if (!$result) {
                         <?php } ?>
                     </tbody>
                 </table>
-                <script>
-                    $(document).ready(function () {
-                        $('#appointmentTable').DataTable({
-                            responsive: true,
-                            pageLength: 10,
-                            columnDefs: [
-                                { targets: [5], visible: false } // Hide the email column if needed
-                            ]
-                        });
-                    });
-                </script>
-
             </div>
         </div>
     </div>
@@ -517,32 +502,25 @@ if (!$result) {
                         email: email, // Added email to the request
                         reason: rejectionReason
                     },
-                    success(response) {
+                    success: function (response) {
                         console.log('Server response:', response);
-                        currentRow.remove();//dito dapat ito pag offline site
-                        if (!response) {
-                            console.error('Empty response from server.');
-                            showPopupMessage('Server error: Empty response.');
-                            return;
-                        }
-
                         try {
                             const result = JSON.parse(response);
-
                             if (result.status === 'success') {
-                                if (currentRow) {
-                                    currentRow.remove();//dito dapat ito pag online site
-                                }
+                                currentRow.remove();
                                 showPopupMessage('Appointment rejected and email sent successfully.');
                             } else {
                                 showPopupMessage(result.message || 'Error rejecting appointment.');
                             }
-                        } catch (error) {
-                            console.error('JSON parse error:', error, 'Raw response:', response);
+                        } catch (e) {
+                            console.error('Error parsing response:', e);
                             showPopupMessage('Error processing server response.');
                         }
                     },
-
+                    error: function (xhr, status, error) {
+                        console.error('AJAX error:', status, error);
+                        showPopupMessage('Error rejecting appointment: ' + error);
+                    }
                 });
 
                 // Clear the rejection reason and hide the modal
@@ -583,10 +561,11 @@ if (!$result) {
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            setInterval(fetchCurrentTime, 1000);
-            fetchCurrentTime();
-        });
+        // Fetch current time every second (1000 milliseconds)
+        setInterval(fetchCurrentTime, 1000);
+
+        // Initial call to display time immediately on page load
+        fetchCurrentTime();
 
         document.addEventListener('DOMContentLoaded', function () {
             var dropdownButtons = document.querySelectorAll('.dropdown-btn');
