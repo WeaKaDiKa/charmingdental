@@ -1,4 +1,6 @@
-/* Styled by Jade Allen Cook 2016 */
+* {
+    box-sizing: content-box !important;
+}
 
 html,
 body {
@@ -8,7 +10,7 @@ body {
     width: 100%;
     overflow: hidden;
     font-family: 'Helvetica';
-    background-color: darkcyan;
+    background-color: #da9393;
 }
 
 #app {
@@ -34,7 +36,7 @@ body {
     padding: 5px;
     border-radius: 3px;
     display: inline-block;
-    
+
 }
 
 input {
@@ -72,6 +74,8 @@ span.input-tag {
 .container {
     display: block;
     width: 100%;
+    max-width: none !important;
+
 }
 
 .tooth-container {
@@ -416,7 +420,8 @@ input {
     width: 500px;
 }
 
-div.bottom-blank, div.top-blank {
+div.bottom-blank,
+div.top-blank {
     display: block;
     height: 93.5px;
 }
@@ -432,15 +437,18 @@ span.extraction-x {
     font-size: 2em;
 }
 
-div.top-molar span.extraction-x, div.bottom-molar span.extraction-x {
+div.top-molar span.extraction-x,
+div.bottom-molar span.extraction-x {
     margin-left: -18px;
 }
 
-div.top-standard span.extraction-x, div.bottom-standard span.extraction-x {
+div.top-standard span.extraction-x,
+div.bottom-standard span.extraction-x {
     margin-left: -13px;
 }
 
-div.bottom-molar span.extraction-x, div.bottom-standard span.extraction-x { 
+div.bottom-molar span.extraction-x,
+div.bottom-standard span.extraction-x {
     margin-top: 5px;
 }
 
@@ -449,7 +457,8 @@ div.bottom-molar span.extraction-x, div.bottom-standard span.extraction-x {
     width: 10px;
 }
 
-#bridge, #v {
+#bridge,
+#v {
     margin-right: 25px;
 }
 
@@ -474,7 +483,8 @@ div.bottom-molar span.extraction-x, div.bottom-standard span.extraction-x {
     font-size: .75em;
 }
 
-div#bottom-gum-f-container div.gum-num, div#bottom-gum-l-container div.gum-num {
+div#bottom-gum-f-container div.gum-num,
+div#bottom-gum-l-container div.gum-num {
     float: right;
 }
 

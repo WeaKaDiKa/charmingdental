@@ -138,26 +138,43 @@ if (!$result) {
                             </td>
                             <td><?php echo !empty($row['emergencycontact']) ? htmlspecialchars($row['emergencycontact']) : "N/A"; ?>
                             </td>
-                            <?php if (mysqli_num_rows($resultmedical) > 0):
-                                while ($medical = mysqli_fetch_assoc($resultmedical)): ?>
-                                    <td class="no-print">
+                            <td class="no-print d-flex justify-content-between">
+                                <?php if (mysqli_num_rows($resultmedical) > 0):
+                                    while ($medical = mysqli_fetch_assoc($resultmedical)): ?>
                                         <button class="btn btn-primary btn-view" data-bs-toggle="modal"
                                             data-bs-target="#viewMedical"
-                                            data-disease="<?= htmlspecialchars($medical['disease']) ?>"
-                                            data-surgery="<?= htmlspecialchars($medical['recent_surgery']) ?>"
-                                            data-current="<?= htmlspecialchars($medical['current_disease']) ?>"
-                                            data-medcert="<?= htmlspecialchars($medical['medcertlink']) ?>"
-                                            data-upload="<?= date("F j, Y", strtotime(htmlspecialchars($medical['dateuploaded']))); ?>">
+                                            data-disease="<?= htmlspecialchars($medical['disease'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                            data-surgery="<?= htmlspecialchars($medical['recent_surgery'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                            data-current="<?= htmlspecialchars($medical['current_disease'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                            data-medcert="<?= htmlspecialchars($medical['medcertlink'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                            data-upload="<?php
+                                            // handle a potentially NULL or empty date
+                                            echo htmlspecialchars(
+                                                !empty($medical['dateuploaded'])
+                                                ? date('F j, Y', strtotime($medical['dateuploaded']))
+                                                : '',
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            );
+                                            ?>">
                                             View Medical
                                         </button>
-                                    </td>
-                                <?php endwhile; else: ?>
-                                <td class="no-print">
-                                    <button class="btn btn-primary btn-view" ...>View Medical</button>
-                                </td>
-                            <?php endif; ?>
+
+
+
+
+                                    <?php endwhile; else: ?>
+
+                                    <button class="btn btn-secondary " disabled>Unavailable</button>
+
+                                <?php endif; ?>
+                                <a class="btn btn-primary btn-dental" target="_blank" href="dentalchartconvert.php">
+                                    View Dental
+                                </a>
+                            </td>
                         </tr>
                     <?php endwhile; ?>
+
                 </tbody>
             </table>
             <script>
@@ -264,7 +281,6 @@ if (!$result) {
                 </div>
             </div>
         </div>
-
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 document.querySelectorAll(".btn-view").forEach(button => {
@@ -286,6 +302,8 @@ if (!$result) {
                         }
                     });
                 });
+
+
             });
         </script>
 
