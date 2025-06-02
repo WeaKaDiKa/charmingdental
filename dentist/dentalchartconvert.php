@@ -276,7 +276,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['patientid'])) {
         font-size: 18px;
         color: #5C3A31;
     }
+
+    @media screen and (max-width: 768px) {
+        body {
+            min-width: 1200px;
+            transform: rotate(-90deg);
+            transform-origin: left top;
+            width: 100vh;
+            height: 100vw;
+
+            position: absolute;
+            top: 100%;
+            left: 0;
+        }
+
+        .card {
+            overflow-x: scroll;
+            overflow-y: scroll;
+        }
+    }
 </style>
+<script>
+    if (window.innerHeight > window.innerWidth) {
+        alert("For best experience, please rotate your device to landscape mode.");
+    }
+
+</script>
 
 <body>
     <!-- Top Header -->
@@ -295,11 +320,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['patientid'])) {
 
         require_once "../db/nav.php" ?>
         <!-- Main Dashboard Content -->
-        <div class="main-content">
+        <div class="main-content overflow-hidden">
             <!-- Main Dashboard Area -->
             <div class="card">
 
-                <div class="card-body d-flex align-items-center justify-content-center flex-column w-100">
+                <div class="card-body w-100 h-100 d-flex align-items-center justify-content-center flex-column">
                     <h2>Dental Chart</h2>
                     <div id="app">
                         <!-- tops -->
@@ -406,15 +431,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['patientid'])) {
 
         // Initial call to display time immediately on page load
         fetchCurrentTime();
-        function updateDate() {
-            const dateElement = document.getElementById('current-date');
-            const today = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            dateElement.innerHTML = today.toLocaleDateString('en-US', options);
-        }
 
-        updateDate();
-        setInterval(updateDate, 60000); // Update every minute
 
         function showPopup() {
             document.getElementById("notificationPopup").style.display = "block";
@@ -424,82 +441,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['patientid'])) {
             document.getElementById("notificationPopup").style.display = "none";
         }
 
-        // Get the total appointments count from the PHP variable
-        let totalAppointments = parseInt(document.getElementById("totalAppointments").textContent);
-
-        // Show pop-up if there is a new appointment request
-        if (totalAppointments > 0) {
-            showPopup();
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Dropdown functionality
-            const dropdownButtons = document.querySelectorAll('.dropdown-btn');
-            dropdownButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    this.classList.toggle('active');
-                    const dropdownContainer = this.nextElementSibling;
-                    dropdownContainer.style.display = dropdownContainer.style.display === 'block' ? 'none' : 'block';
-                });
-            });
-
-            // Bar Chart with Chart.js
-            const ctx = document.getElementById('bar-chart').getContext('2d');
-
-            // Data for different time periods
-            const chartData = {
-                monthly: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    data: [10, 5, 8, 7, 12, 20, 18, 15, 10, 8, 6, 4]
-                },
-                weekly: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    data: [25, 18, 15, 20]
-                },
-                daily: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    data: [3, 5, 2, 8, 6, 4, 7]
-                }
-            };
-
-            // Chart configuration
-            let barChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: chartData.monthly.labels,
-                    datasets: [{
-                        label: 'Appointments',
-                        data: chartData.monthly.data,
-                        backgroundColor: 'rgba(234, 84, 85, 0.7)',
-                        borderColor: 'rgba(234, 84, 85, 1)',
-                        borderWidth: 1,
-                        borderRadius: 5, // Rounded bar corners
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Event listener for switching datasets
-            const chartButtons = document.querySelectorAll('.chart-button');
-            chartButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const period = this.dataset.period;
-                    barChart.data.labels = chartData[period].labels;
-                    barChart.data.datasets[0].data = chartData[period].data;
-                    barChart.update();
-
-                    // Highlight active button
-                    chartButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-        });
 
         // Add this new function for logout confirmation
         function confirmLogout() {
@@ -520,17 +461,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['patientid'])) {
             window.location.href = 'logout.php';
         }
 
-
-        //Real-Time Notifications and Date Updates   
-        function updateDate() {
-            const dateElement = document.getElementById('current-date');
-            const today = new Date();
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            dateElement.innerHTML = today.toLocaleDateString('en-US', options);
-        }
-
-        updateDate();
-        setInterval(updateDate, 60000); // Update every minute
 
         // Real-Time Appointment Check
         function showPopup() {

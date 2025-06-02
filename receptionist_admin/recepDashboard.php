@@ -98,7 +98,6 @@ if ($result->num_rows > 0) {
     <link rel="stylesheet" href="adminStyles.css">
     <?php require_once "../db/head.php" ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- For current_timezone -->
     <script src="recepScript.js" defer></script>
 </head>
 <style>
@@ -221,7 +220,7 @@ if ($result->num_rows > 0) {
         <strong>New Appointment!</strong><br><br>A patient has submitted an appointment request.
     </div>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <!-- Sidebar Menu -->
         <?php
         $navactive = "recepDashboard";
@@ -229,24 +228,27 @@ if ($result->num_rows > 0) {
         require_once "../db/nav.php" ?>
 
         <!-- Main Dashboard Content -->
-        <div class="main-content">
+        <div class="main-content overflow-hidden">
             <!-- Greeting Section -->
-            <div class="greeting">
-                <h2>Good Day, <br>
-                    <?php
-                    if ($gender == 'Male') {
-                        echo "Mr. " . htmlspecialchars($firstName);
-                    } elseif ($gender == 'Female') {
-                        echo "Ms. " . htmlspecialchars($firstName);
-                    } else {
-                        echo htmlspecialchars($firstName); // Fallback for other values
-                    }
-                    ?>
-                </h2>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2>Good Day, <br>
+                        <?php
+                        if ($gender == 'Male') {
+                            echo "Mr. " . htmlspecialchars($firstName);
+                        } elseif ($gender == 'Female') {
+                            echo "Ms. " . htmlspecialchars($firstName);
+                        } else {
+                            echo htmlspecialchars($firstName); // Fallback for other values
+                        }
+                        ?>
+                    </h2>
+                </div>
             </div>
+
             <!-- Main Dashboard Area -->
-            <div class="dashboard">
-                <div class="appointment-report">
+            <div class="card mb-3">
+                <div class="card-body">
                     <!-- <div class="report-header">
                         <h3>Appointment Statistical Report</h3>
                         <div class="view-buttons">
@@ -297,19 +299,27 @@ if ($result->num_rows > 0) {
                 </div>
             </div>
             <!-- Statistics Summary -->
-            <div class="statistics">
-                <div class="stat-box">
-                    <h4>Total System Users</h4>
-                    <p><?php echo htmlspecialchars($total_users); ?></p>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="card ">
+                        <div class="card-body">
+                            <h4>Total System Users</h4>
+                            <p><?php echo htmlspecialchars($total_users); ?></p>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-box">
-                    <h4>Total Upcoming Appointments</h4>
-                    <p><?php echo htmlspecialchars($approved_requests); ?></p>
-                </div>
-                <!-- <div class="stat-box">
+                <div class="col-md-6 mb-3">
+                    <div class="card ">
+                        <div class="card-body">
+                            <h4>Total Upcoming Appointments</h4>
+                            <p><?php echo htmlspecialchars($approved_requests); ?></p>
+                        </div>
+                        <!-- <div class="stat-box">
                     <h4>Total Patients Notified with SMS This Month</h4>
                     <p>0</p>
                 </div> -->
+                    </div>
+                </div>
             </div>
         </div>
         <div id="logoutConfirmDialog" class="logout-confirm-dialog" style="display: none;">
@@ -354,62 +364,62 @@ if ($result->num_rows > 0) {
                     });
                 });
 
-                // Bar Chart with Chart.js
-                const ctx = document.getElementById('bar-chart').getContext('2d');
-
-                // Data for different time periods
-                const chartData = {
-                    monthly: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                        data: [10, 5, 8, 7, 12, 20, 18, 15, 10, 8, 6, 4]
-                    },
-                    weekly: {
-                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                        data: [25, 18, 15, 20]
-                    },
-                    daily: {
-                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                        data: [3, 5, 2, 8, 6, 4, 7]
-                    }
-                };
-
-                // Chart configuration
-                let barChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: chartData.monthly.labels,
-                        datasets: [{
-                            label: 'Appointments',
-                            data: chartData.monthly.data,
-                            backgroundColor: 'rgba(234, 84, 85, 0.7)',
-                            borderColor: 'rgba(234, 84, 85, 1)',
-                            borderWidth: 1,
-                            borderRadius: 5, // Rounded bar corners
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-
-                // Event listener for switching datasets
-                const chartButtons = document.querySelectorAll('.chart-button');
-                chartButtons.forEach(button => {
-                    button.addEventListener('click', function () {
-                        const period = this.dataset.period;
-                        barChart.data.labels = chartData[period].labels;
-                        barChart.data.datasets[0].data = chartData[period].data;
-                        barChart.update();
-
-                        // Highlight active button
-                        chartButtons.forEach(btn => btn.classList.remove('active'));
-                        this.classList.add('active');
-                    });
-                });
+                /*       // Bar Chart with Chart.js
+                      const ctx = document.getElementById('bar-chart').getContext('2d');
+      
+                      // Data for different time periods
+                      const chartData = {
+                          monthly: {
+                              labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                              data: [10, 5, 8, 7, 12, 20, 18, 15, 10, 8, 6, 4]
+                          },
+                          weekly: {
+                              labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                              data: [25, 18, 15, 20]
+                          },
+                          daily: {
+                              labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                              data: [3, 5, 2, 8, 6, 4, 7]
+                          }
+                      };
+      
+                      // Chart configuration
+                      let barChart = new Chart(ctx, {
+                          type: 'bar',
+                          data: {
+                              labels: chartData.monthly.labels,
+                              datasets: [{
+                                  label: 'Appointments',
+                                  data: chartData.monthly.data,
+                                  backgroundColor: 'rgba(234, 84, 85, 0.7)',
+                                  borderColor: 'rgba(234, 84, 85, 1)',
+                                  borderWidth: 1,
+                                  borderRadius: 5, // Rounded bar corners
+                              }]
+                          },
+                          options: {
+                              scales: {
+                                  y: {
+                                      beginAtZero: true
+                                  }
+                              }
+                          }
+                      });
+      
+                      // Event listener for switching datasets
+                      const chartButtons = document.querySelectorAll('.chart-button');
+                      chartButtons.forEach(button => {
+                          button.addEventListener('click', function () {
+                              const period = this.dataset.period;
+                              barChart.data.labels = chartData[period].labels;
+                              barChart.data.datasets[0].data = chartData[period].data;
+                              barChart.update();
+      
+                              // Highlight active button
+                              chartButtons.forEach(btn => btn.classList.remove('active'));
+                              this.classList.add('active');
+                          });
+                      }); */
             });
 
             // Add this new function for logout confirmation

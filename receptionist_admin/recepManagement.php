@@ -133,7 +133,6 @@ $result = mysqli_query($db, $query);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script> <!-- For current_timezone -->
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="adminStyles.css">
 
@@ -429,7 +428,7 @@ $result = mysqli_query($db, $query);
     <?php require_once "../db/header.php" ?>
 
     <!-- Main Wrapper -->
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <!-- Sidebar -->
         <?php
         $navactive = "recepManagement";
@@ -437,147 +436,153 @@ $result = mysqli_query($db, $query);
         require_once "../db/nav.php" ?>
 
         <!-- Main Content -->
-        <div class="main-content">
-            <div class="user-management">
-                <h2>User Management
-                    <button class="add-user-button" onclick="openAddUserModal()">+ Add User</button>
-                    <!-- <button class="archive-button">Archives</button> -->
-                </h2>
-                <!-- Add User Modal -->
-                <div id="addUserModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close-button" onclick="closeAddUserModal()">&times;</span>
-                        <h2>Add New User</h2>
-                        <form action="recepManagement.php" method="post">
-                            <div class="row">
-                                <div class="input-group">
-                                    <label for="first-name">First Name:</label>
-                                    <input type="text" id="first-name" name="first-name"
-                                        placeholder="Enter your name..." required>
-                                </div>
-                                <div class="input-group">
-                                    <label for="middle-name">Middle Name:</label>
-                                    <input type="text" id="middle-name" name="middle-name"
-                                        placeholder="Enter your name...">
-                                </div>
-                                <div class="input-group">
-                                    <label for="last-name">Last Name:</label>
-                                    <input type="text" id="last-name" name="last-name" placeholder="Enter your name..."
-                                        required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-group">
-                                    <label for="address">Address:</label>
-                                    <input type="text" id="address" name="address" placeholder="Enter your address..."
-                                        required>
-                                </div>
-                                <div class="input-group">
-                                    <label for="birthdate">Birthdate:</label>
-                                    <input type="date" id="birthdate" name="birthdate" required>
-                                </div>
-                                <div class="input-group">
-                                    <label for="gender">Gender:</label>
-                                    <select id="gender" name="gender" required>
-                                        <option value="">Select your gender...</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-group">
-                                    <label for="mobile">Mobile No.:</label>
-                                    <input type="text" id="mobile" name="mobile" placeholder="+63- 912 345 6789"
-                                        required>
-                                </div>
-                                <div class="input-group">
-                                    <label for="email">Email Address:</label>
-                                    <input type="email" id="email" name="email"
-                                        placeholder="Enter your email address..." required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-group">
-                                    <label for="username">Username:</label>
-                                    <input type="text" id="username" name="username" placeholder="Enter your username"
-                                        required>
-                                </div>
-                                <div class="input-group">
-                                    <label for="password">Password:</label>
-                                    <input type="password" id="password" name="password"
-                                        placeholder="Enter your password" required>
-                                </div>
-                                <div class="input-group">
-                                    <label for="confirm-password">Confirm Password:</label>
-                                    <input type="password" id="confirm-password" name="confirm-password"
-                                        placeholder="Confirm your password" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-group">
-                                    <label for="usertype">User Type:</label>
-                                    <select id="usertype" name="usertype" required>
-                                        <option value="">Select User Type</option>
-                                        <option value="dentist">Dentist</option>
-                                        <option value="clinic_receptionist">Clinic Receptionist</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button type="submit" name="signup">Add User</button>
-                        </form>
+        <div class="main-content overflow-hidden">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h2>User Management </h2>
+                        <button class="add-user-button" onclick="openAddUserModal()">+ Add User</button>
+                        <!-- <button class="archive-button">Archives</button> -->
+
                     </div>
-                </div>
-                <!-- Main User Table -->
-                <div class="user-table">
-                    <table id="userTable" class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Contact No.</th>
-                                <th>Date Created</th>
-                                <th>User Type</th>
-                                <!-- <th>Action</th> -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+
+                    <!-- Add User Modal -->
+                    <div id="addUserModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close-button" onclick="closeAddUserModal()">&times;</span>
+                            <h2>Add New User</h2>
+                            <form action="recepManagement.php" method="post">
+                                <div class="row">
+                                    <div class="input-group">
+                                        <label for="first-name">First Name:</label>
+                                        <input type="text" id="first-name" name="first-name"
+                                            placeholder="Enter your name..." required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="middle-name">Middle Name:</label>
+                                        <input type="text" id="middle-name" name="middle-name"
+                                            placeholder="Enter your name...">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="last-name">Last Name:</label>
+                                        <input type="text" id="last-name" name="last-name"
+                                            placeholder="Enter your name..." required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-group">
+                                        <label for="address">Address:</label>
+                                        <input type="text" id="address" name="address"
+                                            placeholder="Enter your address..." required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="birthdate">Birthdate:</label>
+                                        <input type="date" id="birthdate" name="birthdate" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="gender">Gender:</label>
+                                        <select id="gender" name="gender" required>
+                                            <option value="">Select your gender...</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-group">
+                                        <label for="mobile">Mobile No.:</label>
+                                        <input type="text" id="mobile" name="mobile" placeholder="+63- 912 345 6789"
+                                            required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="email">Email Address:</label>
+                                        <input type="email" id="email" name="email"
+                                            placeholder="Enter your email address..." required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-group">
+                                        <label for="username">Username:</label>
+                                        <input type="text" id="username" name="username"
+                                            placeholder="Enter your username" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="password">Password:</label>
+                                        <input type="password" id="password" name="password"
+                                            placeholder="Enter your password" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="confirm-password">Confirm Password:</label>
+                                        <input type="password" id="confirm-password" name="confirm-password"
+                                            placeholder="Confirm your password" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-group">
+                                        <label for="usertype">User Type:</label>
+                                        <select id="usertype" name="usertype" required>
+                                            <option value="">Select User Type</option>
+                                            <option value="dentist">Dentist</option>
+                                            <option value="clinic_receptionist">Clinic Receptionist</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" name="signup">Add User</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Main User Table -->
+                    <div class="d-flex justify-content-center overflow-x-scroll">
+                        <table id="userTable" class="table table-striped table-bordered w-100">
+                            <thead>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($row['full_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['username']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['email']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['mobile']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['created_at']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['usertype']); ?></td>
-                                    <!-- <td>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Contact No.</th>
+                                    <th>Date Created</th>
+                                    <th>User Type</th>
+                                    <!-- <th>Action</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($row['full_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['username']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['email']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['mobile']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['created_at']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['usertype']); ?></td>
+                                        <!-- <td>
                                     <button class="action-button archive">Archive</button>
                                 </td> -->
-                                </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </tbody>
+                        </table>
 
-                    <script>
-                        $(document).ready(function () {
-                            $('#userTable').DataTable({
-                                responsive: true,
-                                language: {
-                                    searchPlaceholder: "Search users...",
-                                    lengthMenu: "Show _MENU_ users",
-                                    zeroRecords: "No matching users found",
-                                    info: "Showing _START_ to _END_ of _TOTAL_ users",
-                                    infoEmpty: "No users available",
-                                    infoFiltered: "(filtered from _MAX_ total users)"
-                                }
+                        <script>
+                            $(document).ready(function () {
+                                $('#userTable').DataTable({
+                                    responsive: true,
+                                    language: {
+                                        searchPlaceholder: "Search users...",
+                                        lengthMenu: "Show _MENU_ users",
+                                        zeroRecords: "No matching users found",
+                                        info: "Showing _START_ to _END_ of _TOTAL_ users",
+                                        infoEmpty: "No users available",
+                                        infoFiltered: "(filtered from _MAX_ total users)"
+                                    }
+                                });
                             });
-                        });
-                    </script>
-                    <div class="pagination" id="paginationContainer"></div>
+                        </script>
+
+                    </div>
+                    <!-- Close the database connection -->
+                    <?php mysqli_close($db); ?>
                 </div>
-                <!-- Close the database connection -->
-                <?php mysqli_close($db); ?>
+
             </div>
         </div>
     </div>

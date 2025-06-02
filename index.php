@@ -6,7 +6,7 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>Charming Smile Dental Clinic</title>
   <?php require_once 'db/head.php' ?>
-
+  <link href="css/style.css" rel="stylesheet">
   <style>
     #home {
       width: 100%;
@@ -14,14 +14,14 @@
       background: url("img/home.jpg") top center;
       background-size: cover;
       background-attachment: fixed;
-      
+
     }
 
     @media only screen and (max-width: 768px) {
 
       #home {
         height: 70vh;
-              background: url("img/home.jpg") right center ;
+        background: url("img/home.jpg") right center;
       }
 
     }
@@ -52,30 +52,35 @@
     }
 
     .left-section {
-        display: flex;
-        align-items: center; /* This will vertically align the logo and text */
-        gap: 10px;
+      display: flex;
+      align-items: center;
+      /* This will vertically align the logo and text */
+      gap: 10px;
     }
 
     .logoDental {
-        font-weight: 900;
-        font-size: 22px;
-        line-height: 1; /* Remove extra line height */
-        white-space: nowrap; /* Prevent text from wrapping */
+      font-weight: 900;
+      font-size: 22px;
+      line-height: 1;
+      /* Remove extra line height */
+      white-space: nowrap;
+      /* Prevent text from wrapping */
     }
 
     .logo {
       width: 55px;
       height: 50px;
-      background-color: #d99e9e; /* Light pink for profile icon */
-      border-radius: 20%; /* Make profile icon circular */
+      background-color: #d99e9e;
+      /* Light pink for profile icon */
+      border-radius: 20%;
+      /* Make profile icon circular */
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 20px; /* Font size for initials inside the profile icon */
+      font-size: 20px;
+      /* Font size for initials inside the profile icon */
       margin-right: 20px;
     }
-
   </style>
 </head>
 
@@ -86,20 +91,20 @@
     <div class="container d-flex align-items-center">
       <div class="top-header">
         <div class="left-section">
-            <img src="img/pfp.jpg" alt="Profile Picture" class="logo">
-            <div class="logoDental">CHARMING SMILE<br>DENTAL CLINIC</div>
+          <img src="img/pfp.jpg" alt="Profile Picture" class="logo">
+          <div class="logoDental">CHARMING SMILE<br>DENTAL CLINIC</div>
         </div>
 
-<!--       <h1 class="logo me-auto d-block d-md-none"><a href="index.php">CSDC</a></h1> -->
-      <nav id="navbar" class="navbar order-last order-lg-0">
-        <ul>
-          <li><a class="nav-link scrollto active" href="#home">Home</a></li>
-          <li><a class="nav-link scrollto" href="#services">Services</a></li>
-          <li><a class="nav-link scrollto" href="#contact">Clinic info</a></li>
-        </ul>
-        <i class="bi bi-list mobile-nav-toggle"></i>
-      </nav><!-- .navbar -->
-    </div>
+        <!--       <h1 class="logo me-auto d-block d-md-none"><a href="index.php">CSDC</a></h1> -->
+        <nav id="navbar" class="navbar order-last order-lg-0">
+          <ul>
+            <li><a class="nav-link scrollto active" href="#home">Home</a></li>
+            <li><a class="nav-link scrollto" href="#services">Services</a></li>
+            <li><a class="nav-link scrollto" href="#contact">Clinic info</a></li>
+          </ul>
+          <i class="bi bi-list mobile-nav-toggle"></i>
+        </nav><!-- .navbar -->
+      </div>
   </header><!-- End Header -->
 
   <!-- ======= Home Section ======= -->

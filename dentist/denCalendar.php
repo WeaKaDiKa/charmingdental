@@ -151,7 +151,7 @@ require_once '../db/config.php';
     <!-- Top Header -->
     <?php require_once "../db/header.php" ?>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <!-- Sidebar Menu -->
         <?php
         $navactive = "denCalendar";

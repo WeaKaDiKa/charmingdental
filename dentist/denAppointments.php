@@ -205,7 +205,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="d-flex gap-2">
                                     <label for="from-<?php echo $activeTab; ?>">From: </label>
                                     <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-
+                                </div>
+                                <div class="d-flex gap-2">
                                     <label for="to-<?php echo $activeTab; ?>">To: </label>
                                     <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
                                 </div>
@@ -216,8 +217,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </form>
                         </div>
-                        <div class="overflow-x-scroll d-flex">
-                            <table id="appointment-approve-upcoming">
+                        <div class="overflow-x-scroll d-flex justify-content-center">
+                            <table id="appointment-approve-upcoming" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>
@@ -285,7 +286,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="d-flex gap-2">
                                     <label for="from-<?php echo $activeTab; ?>">From: </label>
                                     <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-
+                                </div>
+                                <div class="d-flex gap-2">
                                     <label for="to-<?php echo $activeTab; ?>">To: </label>
                                     <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
                                 </div>
@@ -296,8 +298,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </form>
                         </div>
-                        <div class="overflow-x-scroll d-flex">
-                            <table id="appointment-approve-rescheduled">
+                        <div class="overflow-x-scroll d-flex justify-content-center">
+                            <table id="appointment-approve-rescheduled" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>
@@ -370,7 +372,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="d-flex gap-2">
                                     <label for="from-<?php echo $activeTab; ?>">From: </label>
                                     <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-
+                                </div>
+                                <div class="d-flex gap-2">
                                     <label for="to-<?php echo $activeTab; ?>">To: </label>
                                     <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
                                 </div>
@@ -381,8 +384,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </form>
                         </div>
-                        <div class="overflow-x-scroll d-flex">
-                            <table id="appointment-approve-completed">
+                        <div class="overflow-x-scroll d-flex justify-content-center">
+                            <table id="appointment-approve-completed" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>
@@ -436,7 +439,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="d-flex gap-2">
                                     <label for="from-<?php echo $activeTab; ?>">From: </label>
                                     <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-
+                                </div>
+                                <div class="d-flex gap-2">
                                     <label for="to-<?php echo $activeTab; ?>">To: </label>
                                     <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
                                 </div>
@@ -447,8 +451,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </form>
                         </div>
-                        <div class="overflow-x-scroll d-flex">
-                            <table id="appointment-approve-cancelled">
+                        <div class="overflow-x-scroll d-flex justify-content-center">
+                            <table id="appointment-approve-cancelled" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>
@@ -523,7 +527,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="d-flex gap-2">
                                     <label for="from-<?php echo $activeTab; ?>">From: </label>
                                     <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-
+                                </div>
+                                <div class="d-flex gap-2">
                                     <label for="to-<?php echo $activeTab; ?>">To: </label>
                                     <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
                                 </div>
@@ -534,8 +539,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </form>
                         </div>
-                        <div class="overflow-x-scroll d-flex">
-                            <table id="appointment-rejected">
+                        <div class="overflow-x-scroll d-flex justify-content-center">
+                            <table id="appointment-rejected" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>

@@ -20,7 +20,6 @@ if (!$result) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient List</title>
     <link rel="stylesheet" href="denPatientlist.css">
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <?php require_once "../db/head.php" ?>
 
     <script src="recepScript.js" defer></script>
@@ -91,123 +90,128 @@ if (!$result) {
         margin-right: 10px;
         border-radius: 20%;
     }
+
+    
 </style>
 
 <body>
     <!-- Top Header -->
     <?php require_once "../db/header.php" ?>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <!-- Sidebar Menu -->
         <?php
         $navactive = "denPatientlist";
 
         require_once "../db/nav.php" ?>
-        <div class="user-table">
-            <div class="table-header">
-                <div>
-                    <h2>Patient List</h2>
-                    <!-- <div class="search-bar">
+        <div class="main-content overflow-hidden">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-header">
+                        <div>
+                            <h2>Patient List</h2>
+                            <!-- <div class="search-bar">
                         <input type="text" placeholder="Search by name">
                     </div> -->
-                </div>
-            </div>
-            <div class="mb-3 d-flex flex-row justify-content-end">
-                <button class="btn btn-success btn-sm me-2" onclick="printUsersTable()">Print</button>
-                <button class="btn btn-secondary btn-sm" onclick="saveUsersTableToPDF()">Save to PDF</button>
-            </div>
-
-            <table id="usersTable" class="display">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Gender</th>
-                        <th>Phone No.</th>
-                        <th>Email</th>
-                        <th>Username</th>
-                        <th>Emergency Name</th>
-                        <th>Emergency Phone</th>
-                        <th class="no-print">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($result)):
-                        $querymedical = "SELECT * FROM medical WHERE usersid = " . $row['id'] . " ORDER BY dateuploaded DESC LIMIT 1";
-                        $resultmedical = mysqli_query($db, $querymedical);
-                        ?>
-                        <tr data-id="<?php echo $row['id']; ?>">
-                            <td><?php echo htmlspecialchars($row['full_name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['gender']); ?></td>
-                            <td><?php echo htmlspecialchars($row['mobile']); ?></td>
-                            <td><?php echo htmlspecialchars($row['email']); ?></td>
-                            <td><?php echo htmlspecialchars($row['username']); ?></td>
-                            <td><?php echo !empty($row['emergencyname']) ? htmlspecialchars($row['emergencyname']) : "N/A"; ?>
-                            </td>
-                            <td><?php echo !empty($row['emergencycontact']) ? htmlspecialchars($row['emergencycontact']) : "N/A"; ?>
-                            </td>
-                            <td class="no-print d-flex justify-content-between">
-                                <?php if (mysqli_num_rows($resultmedical) > 0):
-                                    while ($medical = mysqli_fetch_assoc($resultmedical)): ?>
-                                        <button class="btn btn-primary btn-view" data-bs-toggle="modal"
-                                            data-bs-target="#viewMedical"
-                                            data-disease="<?= htmlspecialchars($medical['disease'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                            data-surgery="<?= htmlspecialchars($medical['recent_surgery'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                            data-current="<?= htmlspecialchars($medical['current_disease'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                            data-medcert="<?= htmlspecialchars($medical['medcertlink'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                            data-upload="<?php
-                                            // handle a potentially NULL or empty date
-                                            echo htmlspecialchars(
-                                                !empty($medical['dateuploaded'])
-                                                ? date('F j, Y', strtotime($medical['dateuploaded']))
-                                                : '',
-                                                ENT_QUOTES,
-                                                'UTF-8'
-                                            );
-                                            ?>">
-                                            View Medical
-                                        </button>
-
-
+                        </div>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center flex-row justify-content-center gap-2">
+                        <button class="btn btn-success btn-sm me-2" onclick="printUsersTable()">Print</button>
+                        <button class="btn btn-secondary btn-sm" onclick="saveUsersTableToPDF()">Save to PDF</button>
+                    </div>
+                    <div class="overflow-x-scroll d-flex">
+                        <table id="usersTable" class="display">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Gender</th>
+                                    <th>Phone No.</th>
+                                    <th>Email</th>
+                                    <th>Username</th>
+                                    <th>Emergency Name</th>
+                                    <th>Emergency Phone</th>
+                                    <th class="no-print">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while ($row = mysqli_fetch_assoc($result)):
+                                    $querymedical = "SELECT * FROM medical WHERE usersid = " . $row['id'] . " ORDER BY dateuploaded DESC LIMIT 1";
+                                    $resultmedical = mysqli_query($db, $querymedical);
+                                    ?>
+                                    <tr data-id="<?php echo $row['id']; ?>">
+                                        <td><?php echo htmlspecialchars($row['full_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['gender']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['mobile']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['email']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['username']); ?></td>
+                                        <td><?php echo !empty($row['emergencyname']) ? htmlspecialchars($row['emergencyname']) : "N/A"; ?>
+                                        </td>
+                                        <td><?php echo !empty($row['emergencycontact']) ? htmlspecialchars($row['emergencycontact']) : "N/A"; ?>
+                                        </td>
+                                        <td class="no-print d-flex gap-2 justify-content-between">
+                                            <?php if (mysqli_num_rows($resultmedical) > 0):
+                                                while ($medical = mysqli_fetch_assoc($resultmedical)): ?>
+                                                    <button class="btn btn-primary btn-view" data-bs-toggle="modal"
+                                                        data-bs-target="#viewMedical"
+                                                        data-disease="<?= htmlspecialchars($medical['disease'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                                        data-surgery="<?= htmlspecialchars($medical['recent_surgery'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                                        data-current="<?= htmlspecialchars($medical['current_disease'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                                        data-medcert="<?= htmlspecialchars($medical['medcertlink'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+                                                        data-upload="<?php
+                                                        // handle a potentially NULL or empty date
+                                                        echo htmlspecialchars(
+                                                            !empty($medical['dateuploaded'])
+                                                            ? date('F j, Y', strtotime($medical['dateuploaded']))
+                                                            : '',
+                                                            ENT_QUOTES,
+                                                            'UTF-8'
+                                                        );
+                                                        ?>">
+                                                        View Medical
+                                                    </button>
 
 
-                                    <?php endwhile; else: ?>
 
-                                    <button class="btn btn-secondary " disabled>Unavailable</button>
 
-                                <?php endif; ?>
-                                <a class="btn btn-primary btn-dental"
-                                    href="dentalchartconvert.php?patientid=<?= $row['id'] ?>">
-                                    View Dental
-                                </a>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
+                                                <?php endwhile; else: ?>
 
-                </tbody>
-            </table>
-            <script>
-                $(document).ready(function () {
-                    $('#usersTable').DataTable({
-                        "pageLength": 10,
-                        "lengthMenu": [5, 10, 25, 50],
-                        "order": [[0, "asc"]], // default sort by Name ascending
-                        "columnDefs": [
-                            { "orderable": false, "targets": 7 } // disable sorting on 'Action' column
-                        ]
-                    });
-                });
+                                                <button class="btn btn-secondary " disabled>Unavailable</button>
 
-                function printUsersTable() {
-                    const table = document.getElementById('usersTable');
-                    if (!table) return;
+                                            <?php endif; ?>
+                                            <a class="btn btn-primary btn-dental"
+                                                href="dentalchartconvert.php?patientid=<?= $row['id'] ?>">
+                                                View Dental
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
 
-                    const clone = table.cloneNode(true);
-                    clone.querySelectorAll('.no-print').forEach(el => el.remove());
+                            </tbody>
+                        </table>
+                    </div>
+                    <script>
+                        $(document).ready(function () {
+                            $('#usersTable').DataTable({
+                                "pageLength": 10,
+                                "lengthMenu": [5, 10, 25, 50],
+                                "order": [[0, "asc"]], // default sort by Name ascending
+                                "columnDefs": [
+                                    { "orderable": false, "targets": 7 } // disable sorting on 'Action' column
+                                ]
+                            });
+                        });
 
-                    const printWindow = window.open('', '_blank');
-                    printWindow.document.write('<html><head><title>Print Users</title>');
-                    printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">');
-                    printWindow.document.write(`
+                        function printUsersTable() {
+                            const table = document.getElementById('usersTable');
+                            if (!table) return;
+
+                            const clone = table.cloneNode(true);
+                            clone.querySelectorAll('.no-print').forEach(el => el.remove());
+
+                            const printWindow = window.open('', '_blank');
+                            printWindow.document.write('<html><head><title>Print Users</title>');
+                            printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">');
+                            printWindow.document.write(`
       <style>
         @page { size: landscape; }
         table {
@@ -220,46 +224,47 @@ if (!$result) {
         }
       </style>
     `);
-                    printWindow.document.write('</head><body>');
-                    printWindow.document.write('<h4>User Information</h4>');
-                    printWindow.document.write(clone.outerHTML);
-                    printWindow.document.write('</body></html>');
-                    printWindow.document.close();
-                    printWindow.print();
-                }
+                            printWindow.document.write('</head><body>');
+                            printWindow.document.write('<h4>User Information</h4>');
+                            printWindow.document.write(clone.outerHTML);
+                            printWindow.document.write('</body></html>');
+                            printWindow.document.close();
+                            printWindow.print();
+                        }
 
-                async function saveUsersTableToPDF() {
-                    const table = document.getElementById('usersTable');
-                    if (!table) return;
+                        async function saveUsersTableToPDF() {
+                            const table = document.getElementById('usersTable');
+                            if (!table) return;
 
-                    const clone = table.cloneNode(true);
-                    clone.querySelectorAll('.no-print').forEach(el => el.remove());
+                            const clone = table.cloneNode(true);
+                            clone.querySelectorAll('.no-print').forEach(el => el.remove());
 
-                    const wrapper = document.createElement('div');
-                    wrapper.appendChild(clone);
-                    document.body.appendChild(wrapper);
-                    wrapper.style.position = 'absolute';
-                    wrapper.style.left = '-9999px';
+                            const wrapper = document.createElement('div');
+                            wrapper.appendChild(clone);
+                            document.body.appendChild(wrapper);
+                            wrapper.style.position = 'absolute';
+                            wrapper.style.left = '-9999px';
 
-                    const canvas = await html2canvas(wrapper);
-                    const imgData = canvas.toDataURL('image/png');
-                    const { jsPDF } = window.jspdf;
-                    const pdf = new jsPDF('l', 'mm', 'a4');
+                            const canvas = await html2canvas(wrapper);
+                            const imgData = canvas.toDataURL('image/png');
+                            const { jsPDF } = window.jspdf;
+                            const pdf = new jsPDF('l', 'mm', 'a4');
 
-                    const pageWidth = pdf.internal.pageSize.getWidth();
-                    const imgWidth = pageWidth - 20;
-                    const imgHeight = canvas.height * imgWidth / canvas.width;
+                            const pageWidth = pdf.internal.pageSize.getWidth();
+                            const imgWidth = pageWidth - 20;
+                            const imgHeight = canvas.height * imgWidth / canvas.width;
 
-                    pdf.text('User Information', 14, 10);
-                    pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
-                    pdf.save('user_information.pdf');
+                            pdf.text('User Information', 14, 10);
+                            pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
+                            pdf.save('user_information.pdf');
 
-                    document.body.removeChild(wrapper);
-                }
+                            document.body.removeChild(wrapper);
+                        }
 
-            </script>
+                    </script>
+                </div>
+            </div>
         </div>
-
         <div class="modal fade" id="viewMedical" tabindex="-1" aria-labelledby="viewMedicalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
