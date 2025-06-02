@@ -24,6 +24,13 @@ if (!$result) {
     <?php require_once "../db/head.php" ?>
 
     <script src="recepScript.js" defer></script>
+    <?php
+    if (isset($_GET['message'])) {
+        if ($_GET['message'] = 'dentalsaved'): ?>
+            <script>alert('Dental Chart Saved');</script>
+        <?php endif;
+    }
+    ?>
 </head>
 <style>
     .logout-confirm-dialog {
@@ -168,7 +175,8 @@ if (!$result) {
                                     <button class="btn btn-secondary " disabled>Unavailable</button>
 
                                 <?php endif; ?>
-                                <a class="btn btn-primary btn-dental" target="_blank" href="dentalchartconvert.php">
+                                <a class="btn btn-primary btn-dental"
+                                    href="dentalchartconvert.php?patientid=<?= $row['id'] ?>">
                                     View Dental
                                 </a>
                             </td>

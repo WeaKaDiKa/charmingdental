@@ -13,6 +13,10 @@ body {
     background-color: #da9393;
 }
 
+img {
+    vertical-align: baseline!important;
+}
+
 #app {
     margin: 25px;
     width: 800px;

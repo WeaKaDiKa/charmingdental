@@ -5,7 +5,72 @@ $result = mysqli_query($db, $query);
 if (!$result) {
     die("Query Error: " . mysqli_error($db));
 }
+if (!isset($_GET['patientid'])) {
+    header("Location: denPatientlist.php");
+    exit;
+}
 
+$patientid = intval($_GET['patientid']);
+$stmt = $db->prepare("SELECT id FROM users WHERE id = ?");
+$stmt->bind_param("i", $patientid);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    header("Location: denPatientlist.php");
+    exit;
+}
+
+// Initialize dental chart values
+$teeth = '';
+$cavity = '';
+$gum_d = '';
+$gum_m = '';
+
+// Check if dentalchart exists
+$stmt = $db->prepare("SELECT teeth, cavity, gum_d, gum_m FROM dentalchart WHERE usersid = ?");
+$stmt->bind_param("i", $patientid);
+$stmt->execute();
+$chartResult = $stmt->get_result();
+$exist = 0;
+
+if ($chartResult->num_rows > 0) {
+    $row = $chartResult->fetch_assoc();
+    $teeth = htmlspecialchars($row['teeth']);
+    $cavity = htmlspecialchars($row['cavity']);
+    $gum_d = htmlspecialchars($row['gum_d']);
+    $gum_m = htmlspecialchars($row['gum_m']);
+    $exist = 1;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['patientid'])) {
+    $usersid = intval($_GET['patientid']);
+    $teeth = $_POST['teeth'] ?? '';
+    $cavity = $_POST['cavity'] ?? '';
+    $gumf = $_POST['gumf'] ?? '';
+    $guml = $_POST['guml'] ?? '';
+
+    // Check if the record already exists
+    $stmt = $db->prepare("SELECT * FROM dentalchart WHERE usersid = ?");
+    $stmt->bind_param("i", $usersid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        // Update
+        $update = $db->prepare("UPDATE dentalchart SET teeth = ?, cavity = ?, gum_d = ?, gum_m = ? WHERE usersid = ?");
+        $update->bind_param("ssssi", $teeth, $cavity, $gumf, $guml, $usersid);
+        $update->execute();
+    } else {
+        // Insert
+        $insert = $db->prepare("INSERT INTO dentalchart (usersid, teeth, cavity, gum_d, gum_m) VALUES (?, ?, ?, ?, ?)");
+        $insert->bind_param("issss", $usersid, $teeth, $cavity, $gumf, $guml);
+        $insert->execute();
+    }
+
+    header("Location: denPatientlist.php?message=dentalsaved"); // redirect as needed
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -226,7 +291,7 @@ if (!$result) {
     <div class="main-wrapper">
         <!-- Sidebar Menu -->
         <?php
-        $navactive = "denDashboard";
+        $navactive = "denPatientlist";
 
         require_once "../db/nav.php" ?>
         <!-- Main Dashboard Content -->
@@ -286,19 +351,27 @@ if (!$result) {
 
                 <br />
                 <form method="post">
-                    <input type="hidden" id="teeth" placeholder="Teeth Data" />
+                    <input type="hidden" id="teeth" name="teeth" value="<?= $teeth ?>" placeholder="Teeth Data" />
+                    <input type="hidden" id="cavity" name="cavity" value="<?= $cavity ?>" placeholder="Cavity Data" />
+                    <input type="hidden" id="gumf" name="gumf" value="<?= $gum_d ?>" placeholder="Gum F Data" />
+                    <input type="hidden" id="guml" name="guml" value="<?= $gum_m ?>" placeholder="Gum L Data" />
 
-                    <input type="hidden" id="cavity" placeholder="Cavity Data" />
-
-                    <input type="hidden" id="gumf" placeholder="Gum F Data" />
-
-                    <input type="hidden" id="guml" placeholder="Gum L Data" />
                     <div style="display:flex; justify-content: center;">
-                        <a id="download" download="chart.png" href="#" class="outside-ctrls">Generate Image</a>
-                        <button type="submit">Save</button>
+                        <a id="download" class="btn btn-secondary outside-ctrls" download="chart.png" href="#">Generate
+                            Image</a>
+                        <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </form>
                 <script src="app.js"></script>
+                <?php if ($exist): ?>
+                    <script>
+                        data.teeth = JSON.parse($('#teeth').val() || '[]');
+                        data.cavity = JSON.parse($('#cavity').val() || '[]');
+                        data.gumsF = JSON.parse($('#gumf').val() || '[]');
+                        data.gumsL = JSON.parse($('#guml').val() || '[]');
+                        build.table();
+                    </script>
+                <?php endif; ?>
             </div>
         </div>
     </div>
