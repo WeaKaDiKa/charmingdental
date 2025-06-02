@@ -81,20 +81,22 @@ body::-webkit-scrollbar {
     /* Expand to fill available space */
 }
 
-/* Sidebar Styling */
-.sidebar {
-    margin-top: 12px;
-    width: 250px;
-    background-color: #FFFFFF;
-    /* White background for sidebar */
+.main-content {
+    margin-left: 250px;
+    /* Offset content to the right of the sidebar */
+    padding: 20px;
     box-sizing: border-box;
-    /* Include padding and borders in width/height */
-    height: 100vh;
+    /* Ensure padding is included in width */
+    flex-grow: 1;
+    /* Expand to fill available space */
+    background-color: #da9393;
+    /* Light pink background for main content */
+    min-height: 100vh;
     /* Full viewport height */
-    position: fixed;
-    top: 80px;
-    /* Place the sidebar below the header */
-    left: 0;
+}
+
+table {
+    min-width: 100%;
 }
 
 .nav {
@@ -195,7 +197,7 @@ body::-webkit-scrollbar {
 .appointments-tabs {
     display: flex;
     margin-top: 2%;
-    gap: 242px;
+    gap: 25px;
     border-bottom: 2px solid #ddd;
 }
 
@@ -254,7 +256,7 @@ body::-webkit-scrollbar {
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 16px;
-    width: 200px;
+
     background-color: #f9f1f1;
     color: #5C3A31;
 }

@@ -66,17 +66,6 @@ body::-webkit-scrollbar {
     padding-top: 90px; /* Offset content to account for fixed header */
 }
 
-/* Sidebar Styling */
-.sidebar {
-    margin-top: 12px;
-    width: 250px;
-    background-color: #FFFFFF; /* White background for sidebar */
-    box-sizing: border-box; /* Include padding and borders in width/height */
-    height: 100vh; /* Full viewport height */
-    position: fixed;
-    top: 80px; /* Place the sidebar below the header */
-    left: 0;
-}
 
 .nav {
     list-style-type: none; /* Remove default list styling */

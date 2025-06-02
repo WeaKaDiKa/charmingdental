@@ -252,7 +252,7 @@ $gender = $_SESSION['gender'];
         <strong>New Appointment!</strong><br><br>A patient has submitted an appointment request.
     </div>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <!-- Sidebar Menu -->
         <?php
         $navactive = "denDashboard";
@@ -261,112 +261,126 @@ $gender = $_SESSION['gender'];
         <!-- Main Dashboard Content -->
         <div class="main-content">
             <!-- Main Dashboard Area -->
-            <div class="dashboard">
-                <div class="appointment-report">
-                    <div class="report-header">
-                        <div class="greeting">
-                            <h2>Good Day, <br>
-                                <?php
-                                if ($gender == 'Male') {
-                                    echo "Dr. " . htmlspecialchars($firstName);
-                                } elseif ($gender == 'Female') {
-                                    echo "Dra. " . htmlspecialchars($firstName);
-                                } else {
-                                    echo htmlspecialchars($firstName); // Fallback for other values
-                                }
-                                ?>
-                            </h2>
-                            <!-- <div class="statistics-report">
+            <div class="row">
+                <div class="col-lg-8 p-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="report-header">
+                                <div class="greeting">
+                                    <h2>Good Day, <br>
+                                        <?php
+                                        if ($gender == 'Male') {
+                                            echo "Dr. " . htmlspecialchars($firstName);
+                                        } elseif ($gender == 'Female') {
+                                            echo "Dra. " . htmlspecialchars($firstName);
+                                        } else {
+                                            echo htmlspecialchars($firstName); // Fallback for other values
+                                        }
+                                        ?>
+                                    </h2>
+                                    <!-- <div class="statistics-report">
                                 <h3>APPOINTMENT STATISTICS</h3>
                             </div> -->
-                        </div>
-                        <div class="date-today">
-                            <p id="current-date"></p>
-                            <!-- <div class="view-buttons">
+                                </div>
+                                <div class="date-today">
+                                    <p id="current-date"></p>
+                                    <!-- <div class="view-buttons">
                                 <button class="chart-button" data-period="monthly">Monthly</button>
                                 <button class="chart-button" data-period="weekly">Weekly</button>
                                 <button class="chart-button" data-period="daily">Daily</button>
                             </div> -->
-                        </div>
-                    </div>
-                    <div class="appointment-section">
-                        <h3>YOUR NEXT PATIENT</h3>
-                        <?php if (!empty($upcomingAppointments)): ?>
-                            <?php foreach ($upcomingAppointments as $appointment): ?>
-                                <div class="appointment-card">
-                                    <div class="date-display">
-                                        <?php echo date('d M Y', strtotime($appointment['appointment_date'])); ?>
-                                    </div>
-                                    <div class="appointment-details">
-                                        <div>
-                                            <strong>Appointment No.</strong><br>
-                                            <?php echo htmlspecialchars($appointment['id']); ?>
-                                        </div>
-                                        <div>
-                                            <strong>Treatment</strong><br>
-                                            <?php echo htmlspecialchars($appointment['treatment']); ?>
-                                        </div>
-                                        <div>
-                                            <strong>Time</strong><br>
-                                            <?php echo htmlspecialchars($appointment['appointment_time']); ?>
-                                        </div>
-                                        <div>
-                                            <strong>Patient Name</strong><br>
-                                            <?php echo htmlspecialchars($appointment['patient_name']); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div class="appointment-card">
-                                <div class="appointment-details">
-                                    <p>No Appointments Yet.</p>
                                 </div>
                             </div>
-                        <?php endif; ?>
-                    </div>
-                    <!-- Bar Chart -->
-                    <!-- <div class="bar-chart">
+                            <div class="appointment-section">
+                                <h3>YOUR NEXT PATIENT</h3>
+                                <?php if (!empty($upcomingAppointments)): ?>
+                                    <?php foreach ($upcomingAppointments as $appointment): ?>
+                                        <div class="appointment-card">
+                                            <div class="date-display">
+                                                <?php echo date('d M Y', strtotime($appointment['appointment_date'])); ?>
+                                            </div>
+                                            <div class="appointment-details">
+                                                <div>
+                                                    <strong>Appointment No.</strong><br>
+                                                    <?php echo htmlspecialchars($appointment['id']); ?>
+                                                </div>
+                                                <div>
+                                                    <strong>Treatment</strong><br>
+                                                    <?php echo htmlspecialchars($appointment['treatment']); ?>
+                                                </div>
+                                                <div>
+                                                    <strong>Time</strong><br>
+                                                    <?php echo htmlspecialchars($appointment['appointment_time']); ?>
+                                                </div>
+                                                <div>
+                                                    <strong>Patient Name</strong><br>
+                                                    <?php echo htmlspecialchars($appointment['patient_name']); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="appointment-card">
+                                        <div class="appointment-details">
+                                            <p>No Appointments Yet.</p>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <!-- Bar Chart -->
+                            <!-- <div class="bar-chart">
                         <canvas id="bar-chart" width="800" height="300"></canvas>
                     </div> -->
+                        </div>
+                    </div>
+
                 </div>
-                <div class="approval-request">
+
+
+
+                <div class="col-lg-4 p-3">
                     <!-- <div><p>APPROVAL REQUEST</p></div>
-                    <div><p1 id = "totalAppointments"><?php echo htmlspecialchars($total_appointments); ?></p1></div>
+                    <div><p1 id = "totalAppointments"><?php //echo htmlspecialchars($total_appointments); ?></p1></div>
                     <div class="description">
                         <p3>Pending Appointments to Approved
                             <button class="more-buttons" onclick="window.location.href='denRequest.php'">More</button>
                         </p3>
                     </div> -->
-                    <div>
-                        <p>UPCOMING APPOINTMENTS</p>
+                    <div class="card">
+                        <div class="card-body">
+                            <div>
+                                <p>UPCOMING APPOINTMENTS</p>
+                            </div>
+                            <div>
+                                <p1 id="totalAppointments"><?php echo htmlspecialchars($approved_requests); ?></p1>
+                            </div>
+                            <div class="description">
+                                <button class="more-buttons"
+                                    onclick="window.location.href='denAppointments.php'">More</button>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <p1><?php echo htmlspecialchars($approved_requests); ?></p1>
-                    </div>
-                    <div class="description">
-                        <button class="more-buttons" onclick="window.location.href='denAppointments.php'">More</button>
-                    </div>
+
                 </div>
             </div>
             <!-- Statistics Summary -->
-            <div class="statistics">
-                <div class="stat-box">
+            <div class="card">
+                <div class="card-body">
                     <h4>TOTAL PATIENTS THIS MONTH</h4>
                     <div class="number">
                         <p><?php echo htmlspecialchars($total_patients); ?></p>
                     </div>
                 </div>
-                <div class="stat-box1">
+                <!--  <div class="stat-box1">
                     <h4></h4>
                     <div class="number">
-                        <!-- <p class="date-now"><?php echo htmlspecialchars($approved_requests); ?></p>
+                       <p class="date-now"><?php //echo htmlspecialchars($approved_requests); ?></p>
                         <div class="treatment-container">
                             <div id="treatment-box-container">
-                                <?php
-                                if ($result && mysqli_num_rows($result) > 0) {
-                                    while ($row = mysqli_fetch_assoc($result)) {
-                                        echo "<div class='treatment-box'>
+                                <?php if (false):
+                                    if ($result && mysqli_num_rows($result) > 0) {
+                                        while ($row = mysqli_fetch_assoc($result)) {
+                                            echo "<div class='treatment-box'>
                                                 <div class='treatment-item'>
                                                     <strong>Treatment:</strong> " . htmlspecialchars($row['treatment']) . "
                                                 </div>
@@ -374,15 +388,16 @@ $gender = $_SESSION['gender'];
                                                     <strong>Time:</strong> " . htmlspecialchars($row['appointment_time']) . "
                                                 </div>
                                             </div>";
+                                        }
+                                    } else {
+                                        echo "<div class='no-data'>No data available</div>";
                                     }
-                                } else {
-                                    echo "<div class='no-data'>No data available</div>";
-                                }
+                                endif;
                                 ?>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -455,61 +470,61 @@ $gender = $_SESSION['gender'];
             });
 
             // Bar Chart with Chart.js
-            const ctx = document.getElementById('bar-chart').getContext('2d');
-
-            // Data for different time periods
-            const chartData = {
-                monthly: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    data: [10, 5, 8, 7, 12, 20, 18, 15, 10, 8, 6, 4]
-                },
-                weekly: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-                    data: [25, 18, 15, 20]
-                },
-                daily: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    data: [3, 5, 2, 8, 6, 4, 7]
-                }
-            };
-
-            // Chart configuration
-            let barChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: chartData.monthly.labels,
-                    datasets: [{
-                        label: 'Appointments',
-                        data: chartData.monthly.data,
-                        backgroundColor: 'rgba(234, 84, 85, 0.7)',
-                        borderColor: 'rgba(234, 84, 85, 1)',
-                        borderWidth: 1,
-                        borderRadius: 5, // Rounded bar corners
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Event listener for switching datasets
-            const chartButtons = document.querySelectorAll('.chart-button');
-            chartButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const period = this.dataset.period;
-                    barChart.data.labels = chartData[period].labels;
-                    barChart.data.datasets[0].data = chartData[period].data;
-                    barChart.update();
-
-                    // Highlight active button
-                    chartButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
+            /*        const ctx = document.getElementById('bar-chart').getContext('2d');
+       
+                   // Data for different time periods
+                   const chartData = {
+                       monthly: {
+                           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                           data: [10, 5, 8, 7, 12, 20, 18, 15, 10, 8, 6, 4]
+                       },
+                       weekly: {
+                           labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                           data: [25, 18, 15, 20]
+                       },
+                       daily: {
+                           labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                           data: [3, 5, 2, 8, 6, 4, 7]
+                       }
+                   };
+       
+                   // Chart configuration
+                   let barChart = new Chart(ctx, {
+                       type: 'bar',
+                       data: {
+                           labels: chartData.monthly.labels,
+                           datasets: [{
+                               label: 'Appointments',
+                               data: chartData.monthly.data,
+                               backgroundColor: 'rgba(234, 84, 85, 0.7)',
+                               borderColor: 'rgba(234, 84, 85, 1)',
+                               borderWidth: 1,
+                               borderRadius: 5, // Rounded bar corners
+                           }]
+                       },
+                       options: {
+                           scales: {
+                               y: {
+                                   beginAtZero: true
+                               }
+                           }
+                       }
+                   });
+       
+                   // Event listener for switching datasets
+                   const chartButtons = document.querySelectorAll('.chart-button');
+                   chartButtons.forEach(button => {
+                       button.addEventListener('click', function () {
+                           const period = this.dataset.period;
+                           barChart.data.labels = chartData[period].labels;
+                           barChart.data.datasets[0].data = chartData[period].data;
+                           barChart.update();
+       
+                           // Highlight active button
+                           chartButtons.forEach(btn => btn.classList.remove('active'));
+                           this.classList.add('active');
+                       });
+                   }); */
         });
 
         // Add this new function for logout confirmation

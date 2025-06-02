@@ -1,3 +1,32 @@
+<style>
+        .sidebar {
+                width: 250px;
+                background-color: #FFFFFF;
+                box-sizing: border-box;
+                height: 100%;
+                position: fixed;
+                top: 90px;
+                left: 0;
+                transition: transform 0.3s ease;
+                z-index: 1040;
+        }
+
+        @media (max-width: 768px) {
+                .sidebar {
+                        transform: translateX(-100%);
+                        top: 0px;
+                }
+
+                .sidebar.active {
+                        transform: translateX(0);
+                }
+
+                .main-content {
+                        margin-left: 0;
+                }
+        }
+</style>
+
 <?php if ($_SESSION['usertype'] == 'patient'):
         ?>
 
@@ -38,7 +67,8 @@
                                         onclick="window.location.href='denDashboard.php';"><i class="fas fa-tachometer-alt"></i>
                                         Home</span></li>
                         <li class="<?= $navactive == "denAppointments" ? "active" : "" ?> w-100"><span
-                                        onclick="window.location.href='denAppointments.php';"><i class="fas fa-calendar" aria-hidden="true"></i> Patient Appointments</span></li>
+                                        onclick="window.location.href='denAppointments.php';"><i class="fas fa-calendar"
+                                                aria-hidden="true"></i> Patient Appointments</span></li>
                         <!-- <li><span onclick="window.location.href='denRequest.php';"><i class="fas fa-notes-medical"></i> Request Approval</span></li> -->
                         <li class="<?= $navactive == "denCalendar" ? "active" : "" ?> w-100"><span
                                         onclick="window.location.href='denCalendar.php';"><i class="fas fa-calendar-alt"></i>
@@ -53,20 +83,23 @@
                         </li>
                 </ul>
                 <?php if ($navactive == "denCalendar"): ?>
-                    <div class="legend">
-                        <div class="legend-item">
-                                <span class="legend-color legend-primary" style="width:16px; height:16px; background:#007bff; border-radius:3px; display:inline-block;"></span>
-                                Upcoming Appointment
+                        <div class="legend">
+                                <div class="legend-item">
+                                        <span class="legend-color legend-primary"
+                                                style="width:16px; height:16px; background:#007bff; border-radius:3px; display:inline-block;"></span>
+                                        Upcoming Appointment
+                                </div>
+                                <div class="legend-item">
+                                        <span class="legend-color legend-danger"
+                                                style="width:16px; height:16px; background:#dc3545; border-radius:3px; display:inline-block;"></span>
+                                        Cancelled Appointment
+                                </div>
+                                <div class="legend-item">
+                                        <span class="legend-color legend-secondary"
+                                                style="width:16px; height:16px; background:#6c757d; border-radius:3px; display:inline-block;"></span>
+                                        Completed Appointment
+                                </div>
                         </div>
-                        <div class="legend-item">
-                                <span class="legend-color legend-danger" style="width:16px; height:16px; background:#dc3545; border-radius:3px; display:inline-block;"></span>
-                                Cancelled Appointment
-                        </div>
-                        <div class="legend-item">
-                                <span class="legend-color legend-secondary" style="width:16px; height:16px; background:#6c757d; border-radius:3px; display:inline-block;"></span>
-                                Completed Appointment
-                        </div>
-                     </div>
                 <?php endif; ?>
         </div>
 
@@ -116,22 +149,48 @@
                         </li>
                 </ul>
                 <?php if ($navactive == "recepCalendar"): ?>
-                    <div class="legend">
-                        <div class="legend-item">
-                                <span class="legend-color legend-primary" style="width:16px; height:16px; background:#007bff; border-radius:3px; display:inline-block;"></span>
-                                Upcoming Appointment
+                        <div class="legend">
+                                <div class="legend-item">
+                                        <span class="legend-color legend-primary"
+                                                style="width:16px; height:16px; background:#007bff; border-radius:3px; display:inline-block;"></span>
+                                        Upcoming Appointment
+                                </div>
+                                <div class="legend-item">
+                                        <span class="legend-color legend-danger"
+                                                style="width:16px; height:16px; background:#dc3545; border-radius:3px; display:inline-block;"></span>
+                                        Cancelled Appointment
+                                </div>
+                                <div class="legend-item">
+                                        <span class="legend-color legend-secondary"
+                                                style="width:16px; height:16px; background:#6c757d; border-radius:3px; display:inline-block;"></span>
+                                        Completed Appointment
+                                </div>
                         </div>
-                        <div class="legend-item">
-                                <span class="legend-color legend-danger" style="width:16px; height:16px; background:#dc3545; border-radius:3px; display:inline-block;"></span>
-                                Cancelled Appointment
-                        </div>
-                        <div class="legend-item">
-                                <span class="legend-color legend-secondary" style="width:16px; height:16px; background:#6c757d; border-radius:3px; display:inline-block;"></span>
-                                Completed Appointment
-                        </div>
-                     </div>
                 <?php endif; ?>
         </div>
 
 
 <?php endif; ?>
+
+<div class="sidebar-overlay d-md-none" onclick="toggleSidebar()" style="display: none;"></div>
+
+<script>
+        function toggleSidebar() {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.querySelector('.sidebar-overlay');
+                sidebar.classList.toggle('active');
+                overlay.style.display = sidebar.classList.contains('active') ? 'block' : 'none';
+        }
+</script>
+
+<style>
+        .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, 0.4);
+                z-index: 1030;
+        }
+</style>

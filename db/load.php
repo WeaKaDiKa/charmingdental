@@ -1,9 +1,11 @@
 <?php
 
 //load.php
-function readevents($db_hostname, $db_database, $db_username, $db_password)
+function readevents($db_hostname, $db_database, $db_username, $db_password, $db_port)
 {
-    $connect = new PDO('mysql:host=' . $db_hostname . ';dbname=' . $db_database, $db_username, $db_password);
+    $dsn = 'mysql:host=' . $db_hostname . ';port=' . $db_port . ';dbname=' . $db_database;
+    $connect = new PDO($dsn, $db_username, $db_password);
+
 
     $data = [];
 

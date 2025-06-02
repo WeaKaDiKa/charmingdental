@@ -12,29 +12,25 @@ require_once '../db/config.php';
     <link rel="stylesheet" href="../receptionist_admin/adminStyles.css">
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
     <script src="recepScript.js" defer></script>
 </head>
 <style>
-   /* Center the calendar horizontally and vertically */
+    /* Center the calendar horizontally and vertically */
     body {
         background-color: #d99e9e;
     }
 
     #calendar {
         max-width: none;
-        width: 81%;
+
         margin: 0 auto;
         margin-top: 1px;
-        margin-left: 16.28%;
+        margin-left: 250px;
         justify-content: center;
-    }
-
-    .container {
-        padding: none;
     }
 
 
@@ -42,6 +38,7 @@ require_once '../db/config.php';
         #calendar {
             width: 100%;
             padding: 10px;
+            margin-left: 0;
         }
     }
 
@@ -103,45 +100,51 @@ require_once '../db/config.php';
         margin-right: 10px;
         border-radius: 20%;
     }
-     .legend {
+
+    .legend {
         display: flex;
-        flex-direction: column; 
+        flex-direction: column;
         gap: 10px;
-        margin: 20px 0 0 0;    
-        padding: 0 16px;        
-        width: 100%;            
+        margin: 20px 0 0 0;
+        padding: 0 16px;
+        width: 100%;
         box-sizing: border-box;
     }
+
     .legend-item {
         display: flex;
         align-items: center;
         gap: 8px;
         font-size: 14px;
     }
+
     .legend-color {
         width: 16px;
         height: 16px;
         border-radius: 3px;
         display: inline-block;
     }
+
     /* Match your appointment colors */
     .legend-danger {
         background-color: #dc3545;
         border: 1px solid #dc3545;
     }
+
     .legend-primary {
         background-color: #007bff;
         border: 1px solid #007bff;
     }
+
     .legend-secondary {
         background-color: #6c757d;
         border: 1px solid #6c757d;
     }
+
     .legend-task {
         background-color: rgb(0, 133, 22);
         border: 1px solid rgb(0, 133, 22);
     }
-
 </style>
 
 <body>
@@ -155,9 +158,9 @@ require_once '../db/config.php';
 
         require_once "../db/nav.php" ?>
 
-       <div class="container w-100">
+        <div class="container">
             <div class="legend"></div>
-            <div id="calendar" class="w-100"></div>
+            <div id="calendar"></div>
         </div>
     </div>
     <div id="logoutConfirmDialog" class="logout-confirm-dialog" style="display: none;">
@@ -171,7 +174,7 @@ require_once '../db/config.php';
         </div>
     </div>
 
-     <!-- 
+    <!-- 
     <div id="taskModal" class="custom-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -233,7 +236,7 @@ require_once '../db/config.php';
         }
     }
     require_once "../db/load.php";
-    $data = readevents($db_hostname, $db_database, $db_username, $db_password);
+    $data = readevents($db_hostname, $db_database, $db_username, $db_password, $db_port);
 
     foreach ($data as $datum) {
         $events[] = $datum;
