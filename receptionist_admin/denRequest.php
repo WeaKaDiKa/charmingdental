@@ -20,7 +20,6 @@ if (!$result) {
     <title>Request Approval</title>
     <link rel="stylesheet" href="denRequest.css">
     <?php require_once "../db/head.php" ?>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <style>
     .logout-confirm-dialog {
@@ -200,75 +199,81 @@ if (!$result) {
     <!-- Top Header -->
     <?php require_once "../db/header.php" ?>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <!-- Sidebar Menu -->
         <?php
         $navactive = "denRequest";
 
         require_once "../db/nav.php" ?>
         <!-- Request Approval Content -->
-        <div class="request-approval">
-            <div class="request-title">
-                <h1>Request Approval</h1>
-                <!-- <div class="search-bar">
+        <div class="main-content overflow-hidden">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-header">
+                        <div>
+                            <h2>Request Approval</h2>
+                        </div>
+                        <!-- <div class="search-bar">
                     <input type="text" placeholder="Search by name">
                 </div> -->
-            </div>
-            <div class="request-content">
-                <table class="approval-table">
-                    <thead>
-                        <tr>
-                            <th>Appointment No.</th>
-                            <th>Name</th>
-                            <th>Treatment and Price (₱)</th>
-                            <th>Time</th>
-                            <th>Date</th>
-                            <th>GCash Reference</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ($result && mysqli_num_rows($result) > 0) { ?>
-                            <?php while ($row = mysqli_fetch_assoc($result)):
-
-
-                                $queryreceipt = "SELECT proofimg FROM downpayment WHERE appointmentid = " . $row['appointment_id'] . " LIMIT 1";
-
-                                $resultreceipt = mysqli_query($db, $queryreceipt);
-
-
-                                ?>
-                                <tr data-id="<?php echo $row['appointment_id']; ?>">
-                                    <td><?php echo htmlspecialchars($row['appointment_id']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['p_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['service_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                    <td class="hidden"><?php echo htmlspecialchars($row['email']); ?></td>
-                                    <td><?php echo htmlspecialchars($row['transaction']); ?></td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="btn accept-btn" onclick="acceptRequest(this)">Accept</button>
-                                            <button class="btn reject-btn" onclick="rejectRequest(this)">Reject</button>
-                                            <?php while ($downpayment = mysqli_fetch_assoc($resultreceipt)): ?>
-                                                <button class="btn btn-primary btn-view" data-bs-toggle="modal"
-                                                    data-bs-target="#viewModal"
-                                                    data-proofimg="../uploads/payment/<?= $downpayment['proofimg']; ?>">View
-                                                </button>
-                                            <?php endwhile; ?>
-                                        </div>
-                                    </td>
+                    </div>
+                    <div class="request-content">
+                        <table class="approval-table">
+                            <thead>
+                                <tr>
+                                    <th>Appointment No.</th>
+                                    <th>Name</th>
+                                    <th>Treatment and Price (₱)</th>
+                                    <th>Time</th>
+                                    <th>Date</th>
+                                    <th>GCash Reference</th>
+                                    <th>Action</th>
                                 </tr>
-                            <?php endwhile; ?>
-                        <?php } else { ?>
-                            <tr>
-                                <td colspan="6">
-                                    <h2>No Appointment Requests</h2>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                <?php if ($result && mysqli_num_rows($result) > 0) { ?>
+                                    <?php while ($row = mysqli_fetch_assoc($result)):
+
+
+                                        $queryreceipt = "SELECT proofimg FROM downpayment WHERE appointmentid = " . $row['appointment_id'] . " LIMIT 1";
+
+                                        $resultreceipt = mysqli_query($db, $queryreceipt);
+
+
+                                        ?>
+                                        <tr data-id="<?php echo $row['appointment_id']; ?>">
+                                            <td><?php echo htmlspecialchars($row['appointment_id']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['p_name']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['service_name']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
+                                            <td class="hidden"><?php echo htmlspecialchars($row['email']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['transaction']); ?></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn accept-btn" onclick="acceptRequest(this)">Accept</button>
+                                                    <button class="btn reject-btn" onclick="rejectRequest(this)">Reject</button>
+                                                    <?php while ($downpayment = mysqli_fetch_assoc($resultreceipt)): ?>
+                                                        <button class="btn btn-primary btn-view" data-bs-toggle="modal"
+                                                            data-bs-target="#viewModal"
+                                                            data-proofimg="../uploads/payment/<?= $downpayment['proofimg']; ?>">View
+                                                        </button>
+                                                    <?php endwhile; ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                <?php } else { ?>
+                                    <tr>
+                                        <td colspan="6">
+                                            <h2>No Appointment Requests</h2>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

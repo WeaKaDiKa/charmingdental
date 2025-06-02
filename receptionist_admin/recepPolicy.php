@@ -39,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['policy_content'])) {
     <title>Policy Management</title>
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="adminStyles.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.ckeditor.com/4.21.0/full/ckeditor.js"></script>
     <script src="AdminScript.js" defer></script>
     <style>
@@ -193,14 +192,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['policy_content'])) {
     <?php require_once "../db/header.php" ?>
 
     <div class="main-wrapper">
-    <?php
+        <?php
         $navactive = "recepPolicy";
 
         require_once "../db/nav.php" ?>
-      
 
-        <div class="main-content">
-            <div class="user-management">
+
+        <div class="main-content overflow-hidden">
+            <div class="user-management overflow-hidden">
                 <h2 class="page-title">Manage Policies - Add Policy</h2>
 
                 <?php if (isset($_SESSION['message'])): ?>
@@ -223,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['policy_content'])) {
 
                 <form method="POST" action="">
                     <div class="form-group">
-                        <label class="policy-label">Policy Details:</label>
+              
                         <textarea id="policy-textarea" name="policy_content" class="policy-textarea" rows="10"><?php
                         $sql = "SELECT content FROM policy_content WHERE section = 'main_policy'";
                         $result = $db->query($sql);
@@ -232,7 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['policy_content'])) {
                         }
                         ?></textarea>
                     </div>
-                    <div class="form-actions">
+                    <div class="d-flex justify-content-center">
                         <button type="submit" class="btn-save">Save Changes</button>
                     </div>
                 </form>

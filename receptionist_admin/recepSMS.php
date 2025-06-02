@@ -11,8 +11,7 @@ require_once '../db/config.php';
     <title>SMS</title>
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="adminStyles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <style>
         .user-management {
             padding: 2rem;
@@ -219,18 +218,15 @@ require_once '../db/config.php';
         <!-- Main Content -->
         <div class="main-content">
             <div class="card">
-                <div class="card-header">
-                    <div class="d-flex justify-content-between">
-                        <h4 class=" mt-2">Email Schedule</h4>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between my-3">
+                        <h4>Email Schedule</h4>
                         <button class="btn btn-sm btn-primary" id="addScheduleBtn">Add Schedule</button>
-
                     </div>
 
 
-                </div>
-                <div class="card-body">
                     <table class="table table-striped table-bordered">
-                        <thead class="table-dark">
+                        <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Patient Name</th>
