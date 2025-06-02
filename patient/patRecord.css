@@ -66,19 +66,6 @@ body::-webkit-scrollbar {
 }
 
 
-/* Sidebar Styling */
-.sidebar {
-    margin-top: 12px;
-    width: 250px;
-    background-color: #fff; /* White background */
-    box-sizing: border-box;
-    position: fixed;
-    top: 80px; /* Fixed below header */
-    left: 0;
-    height: calc(100vh - 80px);
-    overflow-y: auto;
-}
-
 .nav {
     list-style: none;
     padding: 0;
@@ -116,7 +103,6 @@ body::-webkit-scrollbar {
     margin-left: 250px;
     padding: 20px;
     flex-grow: 1;
-    background-color: #f9f1f1;
     min-height: 100vh;
 }
 

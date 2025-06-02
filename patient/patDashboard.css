@@ -65,18 +65,6 @@ body::-webkit-scrollbar {
     font-size: 20px; /* Font size for initials inside the profile icon */
 }
 
-/* Sidebar Styling */
-.sidebar {
-    margin-top: 12px;
-    width: 250px;
-    background-color: #fff; /* White background */
-    box-sizing: border-box;
-    position: fixed;
-    top: 80px; /* Fixed below header */
-    left: 0;
-    height: calc(100vh - 80px);
-    overflow-y: auto;
-}
 
 .nav {
     list-style: none;
@@ -115,9 +103,10 @@ body::-webkit-scrollbar {
     margin-left: 250px;
     padding: 20px;
     flex-grow: 1;
-    background-color: #f9f1f1;
+    border: 20px solid #da9393; /* Add a pink border */
     min-height: 100vh;
 }
+
 
 .greeting h1 {
     font-size: 32px;
@@ -300,12 +289,3 @@ body::-webkit-scrollbar {
     margin-left: auto;
 }
 
-.main-content {
-    margin-left: 250px; /* Offset content to the right of the sidebar */
-    padding: 20px;
-    box-sizing: border-box; /* Ensure padding is included in width */
-    flex-grow: 1; /* Expand to fill available space */
-    background-color: #FFFFFF; /* Light pink background for main content */
-    min-height: 100vh; /* Full viewport height */
-    border: 20px solid #da9393; /* Add a pink border */
-}

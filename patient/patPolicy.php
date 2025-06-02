@@ -24,7 +24,6 @@ $policyContent = getPolicyContent($db);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Policies</title>
     <?php require_once "../db/head.php" ?>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="patPolicy.css">
     <link rel="stylesheet" href="main.css">
 </head>
@@ -33,13 +32,13 @@ $policyContent = getPolicyContent($db);
     <!-- Top Header -->
     <?php require_once "../db/header.php" ?>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <?php
         $navactive = "patPolicy";
         require_once "../db/nav.php" ?>
 
 
-        <div class="main-content">
+        <div class="main-content overflow-hidden">
             <div class="user-management">
                 <!-- Policies Title Box -->
                 <div class="policy-title-box">

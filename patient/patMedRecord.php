@@ -204,9 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_health'])) {
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="patAppointments.css">
     <link rel="stylesheet" href="main.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
+     <style>
       
         select {
             width: 100%;
@@ -386,9 +384,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_health'])) {
             color: red;
             font-weight: bold;
         }
-    </style>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
+
     .form-check-input {
         width: 1.25rem !important;
         height: 1.25rem !important;
@@ -399,18 +395,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_health'])) {
 <body>
     <?php require_once "../db/header.php" ?>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <?php
         $navactive = "patMedRecord";
         require_once "../db/nav.php";
         ?>
-        <div class="main-content">
-        <div class="container mt-4">
-        <?php if (!empty($_SESSION['success'])): ?>
-            <div class="alert alert-success"><?php echo $_SESSION['success']; unset($_SESSION['success']); ?></div>
-        <?php endif; ?>
-
-        <?php if (!$hasSubmitted): ?>
+        <div class="main-content overflow-hidden">
+        <div class="card">
+            <div class="card-body">
+           <?php if (!$hasSubmitted): ?>
             <h3>Please fill out your Health Declaration Form before scheduling an appointment</h3>
             <p>
                     To ensure your safety and provide you with the best possible care, please answer the following questions truthfully and accurately. 
@@ -621,10 +614,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_health'])) {
             </div>
         </div>
     </div>
-
-
-    <!-- Bootstrap 5 JS Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
 
     <script>
        document.addEventListener('DOMContentLoaded', function () {

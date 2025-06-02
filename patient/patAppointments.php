@@ -120,7 +120,6 @@ mysqli_close($db);
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="patAppointments.css">
     <link rel="stylesheet" href="main.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -128,96 +127,101 @@ mysqli_close($db);
     <?php require_once "../db/header.php" ?>
 
     <!-- Main Wrapper -->
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <!-- Sidebar -->
         <?php
         $navactive = "patAppointments";
         require_once "../db/nav.php" ?>
         <!-- Main Content -->
-        <div class="main-content">
-            <div class="user-management">
-                <div class="appointments-section">
+        <div class="main-content overflow-hidden">
+            <div class="card">
+                <div class="card-body">
                     <div class="appointments-header">
                         <h2>Appointment Lists</h2>
                     </div>
-                    <div class="appointments-tabs">
+                    <div class="appointments-tabs overflow-x-scroll overflow-y-hidden" style="margin-bottom:10px;">
+
                         <button class="tab active" data-tab="upcoming">Upcoming</button>
                         <button class="tab" data-tab="rescheduled">Re-scheduled</button>
                         <button class="tab" data-tab="Completed">Completed</button>
                         <button class="tab" data-tab="cancelled">Cancelled</button>
                         <button class="tab" data-tab="rejected">Rejected</button>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Appointment No.</th>
-                                <th>Appointment Date</th>
-                                <th>Appointment Time</th>
-                                <th>Treatment and Price (₱)</th>
-                                <th>Dentist</th>
-                                <th class="action-column">Action</th>
-                                <th class="reason-column" style="display: none;">Feedback</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (empty($appointments)): ?>
+                    <div class="overflow-x-scroll">
+
+                        <table class="w-100">
+                            <thead>
                                 <tr>
-                                    <td colspan="6" style="text-align: center;">No Appointments</td>
+                                    <th>Appointment No.</th>
+                                    <th>Appointment Date</th>
+                                    <th>Appointment Time</th>
+                                    <th>Treatment and Price (₱)</th>
+                                    <th>Dentist</th>
+                                    <th class="action-column">Action</th>
+                                    <th class="reason-column" style="display: none;">Feedback</th>
                                 </tr>
-                            <?php else: ?>
-                                <?php foreach ($appointments as $appointment): ?>
-                                    <?php
-                                    $appointmentDateTime = $appointment['appointment_date'] . ' ' . $appointment['appointment_time'];
-                                    $currentDateTime = date('Y-m-d H:i:s');
-                                    $appointmentEndTime = date('H:i:s', strtotime($appointment['appointment_time'] . ' +30 minutes'));
-                                    $appointmentEndDateTime = $appointment['appointment_date'] . ' ' . $appointmentEndTime;
-
-                                    $status = 'upcoming';
-
-                                    if (strtotime($appointmentEndDateTime) < strtotime($currentDateTime)) {
-                                        $status = 'completed';
-                                    }
-
-                                    if (!empty($appointment['status'])) {
-                                        $status = strtolower($appointment['status']);
-                                    }
-                                    ?>
-                                    <tr class="appointment-row" data-status="<?= $status ?>">
-                                        <td><?= htmlspecialchars($appointment['id']) ?></td>
-                                        <td><?= htmlspecialchars($appointment['appointment_date']) ?></td>
-                                        <td><?= htmlspecialchars($appointment['appointment_time']) ?></td>
-                                        <td><?= htmlspecialchars($appointment['treatment']) ?></td>
-                                        <td><?= htmlspecialchars($appointment['dentist_name']) ?></td>
-
-                                        <?php if ($status === 'upcoming' || $status === 'rescheduled'): ?>
-                                            <td class="action-buttons">
-                                                <button class="btn btn-primary" data-bs-toggle="modal"
-                                                    data-bs-target="#rescheduleModal"
-                                                    data-appointmentid="<?php echo htmlspecialchars($appointment['id']); ?>"
-                                                    data-time="<?php echo htmlspecialchars($appointment['appointment_time']); ?>"
-                                                    data-date="<?= $appointment['appointment_date'] ?>">Reschedule</button>
-                                                <button class="btn btn-danger btn-cancel" data-bs-toggle="modal" data-bs-target="#cancelModal"
-                                                    data-id="<?= htmlspecialchars($appointment['id']) ?>">
-                                                    Cancel
-                                                </button>
-
-                                            </td>
-                                        <?php else: ?>
-                                            <td class="action-buttons" style="display: none;"></td>
-                                        <?php endif; ?>
-
-                                        <?php if ($status === 'rejected'): ?>
-                                            <td class="reason-column"><?= htmlspecialchars($appointment['reason']) ?></td>
-                                        <?php else: ?>
-                                            <td class="reason-column" style="display: none;"></td>
-                                        <?php endif; ?>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($appointments)): ?>
+                                    <tr>
+                                        <td colspan="6" style="text-align: center;">No Appointments</td>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
+                                <?php else: ?>
+                                    <?php foreach ($appointments as $appointment): ?>
+                                        <?php
+                                        $appointmentDateTime = $appointment['appointment_date'] . ' ' . $appointment['appointment_time'];
+                                        $currentDateTime = date('Y-m-d H:i:s');
+                                        $appointmentEndTime = date('H:i:s', strtotime($appointment['appointment_time'] . ' +30 minutes'));
+                                        $appointmentEndDateTime = $appointment['appointment_date'] . ' ' . $appointmentEndTime;
+
+                                        $status = 'upcoming';
+
+                                        if (strtotime($appointmentEndDateTime) < strtotime($currentDateTime)) {
+                                            $status = 'completed';
+                                        }
+
+                                        if (!empty($appointment['status'])) {
+                                            $status = strtolower($appointment['status']);
+                                        }
+                                        ?>
+                                        <tr class="appointment-row" data-status="<?= $status ?>">
+                                            <td><?= htmlspecialchars($appointment['id']) ?></td>
+                                            <td><?= htmlspecialchars($appointment['appointment_date']) ?></td>
+                                            <td><?= htmlspecialchars($appointment['appointment_time']) ?></td>
+                                            <td><?= htmlspecialchars($appointment['treatment']) ?></td>
+                                            <td><?= htmlspecialchars($appointment['dentist_name']) ?></td>
+
+                                            <?php if ($status === 'upcoming' || $status === 'rescheduled'): ?>
+                                                <td class="action-buttons">
+                                                    <button class="btn btn-primary" data-bs-toggle="modal"
+                                                        data-bs-target="#rescheduleModal"
+                                                        data-appointmentid="<?php echo htmlspecialchars($appointment['id']); ?>"
+                                                        data-time="<?php echo htmlspecialchars($appointment['appointment_time']); ?>"
+                                                        data-date="<?= $appointment['appointment_date'] ?>">Reschedule</button>
+                                                    <button class="btn btn-danger btn-cancel" data-bs-toggle="modal"
+                                                        data-bs-target="#cancelModal"
+                                                        data-id="<?= htmlspecialchars($appointment['id']) ?>">
+                                                        Cancel
+                                                    </button>
+
+                                                </td>
+                                            <?php else: ?>
+                                                <td class="action-buttons" style="display: none;"></td>
+                                            <?php endif; ?>
+
+                                            <?php if ($status === 'rejected'): ?>
+                                                <td class="reason-column"><?= htmlspecialchars($appointment['reason']) ?></td>
+                                            <?php else: ?>
+                                                <td class="reason-column" style="display: none;"></td>
+                                            <?php endif; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
 
 
-                    </table>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -331,7 +335,7 @@ mysqli_close($db);
         document.addEventListener('DOMContentLoaded', function () {
 
             var rescheduleModal = document.getElementById("rescheduleModal");
-            
+
             rescheduleModal.addEventListener("show.bs.modal", function (event) {
                 var button = event.relatedTarget;
                 var appointmentId = button.getAttribute("data-appointmentid");
@@ -356,7 +360,7 @@ mysqli_close($db);
                             const slot = `${currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${nextTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
                             // Construct full datetime string to check against bookedSlots
-                            const slotStartTime = currentTime.toTimeString().split(' ')[0].slice(0,5); // HH:MM
+                            const slotStartTime = currentTime.toTimeString().split(' ')[0].slice(0, 5); // HH:MM
                             const fullDateTime = `${selectedDate} ${slotStartTime}`;
 
                             // Check if slot is booked

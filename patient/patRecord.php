@@ -196,20 +196,19 @@ mysqli_stmt_close($stmt2);
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="patRecord.css">
     <link rel="stylesheet" href="main.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
     <!-- Top Header -->
     <?php require_once "../db/header.php" ?>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <?php
         $navactive = "patRecord";
         require_once "../db/nav.php" ?>
 
-        <div class="main-content">
-            <div class="patient-details">
+        <div class="main-content overflow-hidden">
+            <div class="patient-details overflow-x-scroll">
                 <div class="patient-header">
                     <div class="patient-avatar">
                         <?php if (!empty($profilepic) && $profilepic !== 'pfp_default.jpg'): ?>
@@ -251,7 +250,8 @@ mysqli_stmt_close($stmt2);
                     <h4 class="form-label">Change Profile Picture</h4>
                     <input type="file" class="form-control" name="profile_picture" accept="image/*">
                     <div class="text-end mt-2">
-                        <button type="submit" name="update_profile_pic" class="btn btn-primary">Save Profile Picture</button>
+                        <button type="submit" name="update_profile_pic" class="btn btn-primary">Save Profile
+                            Picture</button>
                     </div>
                 </div>
             </form>
@@ -261,25 +261,28 @@ mysqli_stmt_close($stmt2);
                     <h4 class="form-label">Change Password</h4>
 
                     <div class="mb-3 position-relative">
-                    <label for="current_password" class="form-label">Current Password</label>
-                    <input type="password" class="form-control" id="current_password" name="current_password" />
-                    <i class="fa-regular fa-eye toggle-password" data-target="current_password" style="position: absolute; top: 38px; right: 10px; cursor: pointer; color: black;"></i>
+                        <label for="current_password" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="current_password" name="current_password" />
+                        <i class="fa-regular fa-eye toggle-password" data-target="current_password"
+                            style="position: absolute; top: 38px; right: 10px; cursor: pointer; color: black;"></i>
                     </div>
 
                     <div class="mb-3 position-relative">
-                    <label for="new_password" class="form-label">New Password</label>
-                    <input type="password" class="form-control" id="new_password" name="new_password" />
-                    <i class="fa-regular fa-eye toggle-password" data-target="new_password" style="position: absolute; top: 38px; right: 10px; cursor: pointer; color: black;"></i>
+                        <label for="new_password" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password" />
+                        <i class="fa-regular fa-eye toggle-password" data-target="new_password"
+                            style="position: absolute; top: 38px; right: 10px; cursor: pointer; color: black;"></i>
                     </div>
 
                     <div class="mb-3 position-relative">
-                    <label for="confirm_password" class="form-label">Confirm New Password</label>
-                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" />
-                    <i class="fa-regular fa-eye toggle-password" data-target="confirm_password" style="position: absolute; top: 38px; right: 10px; cursor: pointer; color: black;"></i>
+                        <label for="confirm_password" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" />
+                        <i class="fa-regular fa-eye toggle-password" data-target="confirm_password"
+                            style="position: absolute; top: 38px; right: 10px; cursor: pointer; color: black;"></i>
                     </div>
 
                     <div class="text-end">
-                    <button type="submit" name="update_password" class="btn btn-primary">Save Password</button>
+                        <button type="submit" name="update_password" class="btn btn-primary">Save Password</button>
                     </div>
                 </div>
             </form>
@@ -307,25 +310,25 @@ mysqli_stmt_close($stmt2);
                 const inputFile = document.getElementById('profile_picture');
                 const previewImage = document.getElementById('previewImage');
 
-                inputFile.addEventListener('change', function() {
+                inputFile.addEventListener('change', function () {
                     const file = this.files[0];
                     if (file) {
-                    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-                    if (!allowedTypes.includes(file.type)) {
-                        alert('Invalid image type. Only JPG and PNG allowed.');
-                        this.value = ''; // Clear the input
-                        previewImage.style.display = 'none';
-                        return;
-                    }
+                        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                        if (!allowedTypes.includes(file.type)) {
+                            alert('Invalid image type. Only JPG and PNG allowed.');
+                            this.value = ''; // Clear the input
+                            previewImage.style.display = 'none';
+                            return;
+                        }
 
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImage.src = e.target.result;
-                        previewImage.style.display = 'block';
-                    }
-                    reader.readAsDataURL(file);
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewImage.src = e.target.result;
+                            previewImage.style.display = 'block';
+                        }
+                        reader.readAsDataURL(file);
                     } else {
-                    previewImage.style.display = 'none';
+                        previewImage.style.display = 'none';
                     }
                 });
 
@@ -352,7 +355,7 @@ mysqli_stmt_close($stmt2);
                 });
                 
             </script>
-            
+
             <script>
                     document.querySelectorAll('.toggle-password').forEach(icon => {
                         icon.addEventListener('click', () => {
@@ -370,7 +373,7 @@ mysqli_stmt_close($stmt2);
                         }
                         });
                     });
-                </script>    
+            </script>
 
         </div>
     </div>

@@ -12,5 +12,8 @@
         </button>
     </div>
 
-
+    <?php if (!empty($_SESSION['success'])): ?>
+        <div class="alert alert-success"><?php echo $_SESSION['success'];
+        unset($_SESSION['success']); ?></div>
+    <?php endif; ?>
 </div>

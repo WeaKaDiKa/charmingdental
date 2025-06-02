@@ -66,18 +66,6 @@ body::-webkit-scrollbar {
     padding-top: 90px; /* Offset content to account for fixed header */
 }
 
-/* Sidebar Styling */
-.sidebar {
-    margin-top: 12px;
-    width: 250px;
-    background-color: #FFFFFF; /* White background for sidebar */
-    box-sizing: border-box; /* Include padding and borders in width/height */
-    height: 100vh; /* Full viewport height */
-    position: fixed;
-    top: 80px; /* Place the sidebar below the header */
-    left: 0;
-}
-
 .nav {
     list-style-type: none; /* Remove default list styling */
     padding: 0;
@@ -242,7 +230,7 @@ body::-webkit-scrollbar {
     padding: 20px;
     box-sizing: border-box; /* Ensure padding is included in width */
     flex-grow: 1; /* Expand to fill available space */
-    background-color: #da9393; /* Light pink background for main content */
+  
     min-height: 100vh; /* Full viewport height */
 }
 

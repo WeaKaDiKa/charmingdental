@@ -222,7 +222,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['resched'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <?php require_once "../db/head.php" ?>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- For current_timezone -->
     <link rel="stylesheet" href="patDashboard.css">
     <link rel="stylesheet" href="main.css">
 </head>
@@ -231,107 +230,114 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['resched'])) {
     <!-- Top Header -->
     <?php require_once "../db/header.php" ?>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper overflow-hidden">
         <?php
         $navactive = "patDashboard";
 
         require_once "../db/nav.php" ?>
 
-        <div class="main-content">
-            <div class="user-management">
-                <div class="greeting">
-                    <h1>Good day,<br>
-                        <?php
-                        if ($gender == 'Male') {
-                            echo "Mr. " . htmlspecialchars($firstName);
-                        } elseif ($gender == 'Female') {
-                            echo "Ms. " . htmlspecialchars($firstName);
-                        } else {
-                            echo htmlspecialchars($firstName); // Fallback for other values
-                        }
-                        ?>
-                    </h1>
-                </div>
-                <?php if (isset($_SESSION['status']) && $_SESSION['status'] == "active"): ?>
-                    <div class="appointment-section">
-                        <h3>APPROVED APPOINTMENTS</h3>
-                        <?php if (!empty($upcomingAppointments)): ?>
-                            <?php foreach ($upcomingAppointments as $appointment): ?>
-                                <div class="appointment-card">
-                                    <div class="date-display">
-                                        <?php echo date('d M Y', strtotime($appointment['appointment_date'])); ?>
-                                    </div>
-                                    <div class="appointment-details">
-                                        <div>
-                                            <strong>Appointment No.</strong><br>
-                                            <?php echo htmlspecialchars($appointment['id']); ?>
-                                        </div>
-                                        <div>
-                                            <strong>Treatment and Price (₱)</strong><br>
-                                            <?php echo htmlspecialchars($appointment['treatment']); ?>
-                                        </div>
-                                        <div>
-                                            <strong>Time</strong><br>
-                                            <?php echo htmlspecialchars($appointment['appointment_time']); ?>
-                                        </div>
-                                        <div>
-                                            <strong>Dentist</strong><br>
-                                            <?php echo htmlspecialchars($appointment['dentist_name']); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div class="appointment-card">
-                                <div class="appointment-details">
-                                    <p>No approved appointments.</p>
-                                </div>
-                            </div>
-                        <?php endif; ?>
+        <div class="main-content overflow-hidden">
+            <div class="user-management overflow-hidden">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2>Good day,<br>
+                            <?php
+                            if ($gender == 'Male') {
+                                echo "Mr. " . htmlspecialchars($firstName);
+                            } elseif ($gender == 'Female') {
+                                echo "Ms. " . htmlspecialchars($firstName);
+                            } else {
+                                echo htmlspecialchars($firstName); // Fallback for other values
+                            }
+                            ?>
+                        </h2>
                     </div>
+                </div>
 
-                    <div class="appointment-section">
-                        <h3>FOR APPROVAL</h3>
-                        <?php if (!empty($previousAppointments)): ?>
-                            <?php foreach ($previousAppointments as $appointment): ?>
+
+                <?php if (isset($_SESSION['status']) && $_SESSION['status'] == "active"): ?>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h3>APPROVED APPOINTMENTS</h3>
+                            <?php if (!empty($upcomingAppointments)): ?>
+                                <?php foreach ($upcomingAppointments as $appointment): ?>
+                                    <div class="appointment-card">
+                                        <div class="date-display">
+                                            <?php echo date('d M Y', strtotime($appointment['appointment_date'])); ?>
+                                        </div>
+                                        <div class="appointment-details">
+                                            <div>
+                                                <strong>Appointment No.</strong><br>
+                                                <?php echo htmlspecialchars($appointment['id']); ?>
+                                            </div>
+                                            <div>
+                                                <strong>Treatment and Price (₱)</strong><br>
+                                                <?php echo htmlspecialchars($appointment['treatment']); ?>
+                                            </div>
+                                            <div>
+                                                <strong>Time</strong><br>
+                                                <?php echo htmlspecialchars($appointment['appointment_time']); ?>
+                                            </div>
+                                            <div>
+                                                <strong>Dentist</strong><br>
+                                                <?php echo htmlspecialchars($appointment['dentist_name']); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
                                 <div class="appointment-card">
-                                    <div class="date-display">
-                                        <?php echo date('d M Y', strtotime($appointment['appointment_date'])); ?>
-                                    </div>
                                     <div class="appointment-details">
-                                        <div>
-                                            <strong>Appointment No.</strong><br>
-                                            <?php echo htmlspecialchars($appointment['appointment_id']); ?>
-                                        </div>
-                                        <div>
-                                            <strong>Treatment and Price (₱)</strong><br>
-                                            <?php echo htmlspecialchars($appointment['service_name']); ?>
-                                        </div>
-                                        <div>
-                                            <strong>Time</strong><br>
-                                            <?php echo htmlspecialchars(string: $appointment['appointment_time']); ?>
-                                        </div>
-                                        <div>
-                                            <strong>Dentist</strong><br>
-                                            <?php echo htmlspecialchars($appointment['dentist_name']); ?>
-                                        </div>
-                                        <div class="d-flex align-items-center justify-content-center">
-                                            <button class="btn btn-secondary" data-bs-toggle="modal"
-                                                data-bs-target="#rescheduleModal"
-                                                data-appointmentid="<?php echo htmlspecialchars($appointment['appointment_id']); ?>"
-                                                data-time="<?php echo htmlspecialchars($appointment['appointment_time']); ?>"
-                                                data-date="<?= $appointment['appointment_date'] ?>">Reschedule</button>
-                                        </div>
+                                        <p>No approved appointments.</p>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div class="appointment-card">
-                                <div class="appointment-details">
-                                    <p>No approval appointments yet.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h3>FOR APPROVAL</h3>
+                            <?php if (!empty($previousAppointments)): ?>
+                                <?php foreach ($previousAppointments as $appointment): ?>
+                                    <div class="appointment-card">
+                                        <div class="date-display">
+                                            <?php echo date('d M Y', strtotime($appointment['appointment_date'])); ?>
+                                        </div>
+                                        <div class="appointment-details">
+                                            <div>
+                                                <strong>Appointment No.</strong><br>
+                                                <?php echo htmlspecialchars($appointment['appointment_id']); ?>
+                                            </div>
+                                            <div>
+                                                <strong>Treatment and Price (₱)</strong><br>
+                                                <?php echo htmlspecialchars($appointment['service_name']); ?>
+                                            </div>
+                                            <div>
+                                                <strong>Time</strong><br>
+                                                <?php echo htmlspecialchars(string: $appointment['appointment_time']); ?>
+                                            </div>
+                                            <div>
+                                                <strong>Dentist</strong><br>
+                                                <?php echo htmlspecialchars($appointment['dentist_name']); ?>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <button class="btn btn-secondary" data-bs-toggle="modal"
+                                                    data-bs-target="#rescheduleModal"
+                                                    data-appointmentid="<?php echo htmlspecialchars($appointment['appointment_id']); ?>"
+                                                    data-time="<?php echo htmlspecialchars($appointment['appointment_time']); ?>"
+                                                    data-date="<?= $appointment['appointment_date'] ?>">Reschedule</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div class="appointment-card">
+                                    <div class="appointment-details">
+                                        <p>No approval appointments yet.</p>
+                                    </div>
                                 </div>
-                            </div>
-                        <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 <?php elseif (isset($_SESSION['status']) && $_SESSION['status'] == "inactive"): ?>
 
