@@ -446,7 +446,7 @@ if ($activeCount > 0) {
                             <h2>Appointment Lists</h2>
                         </div>
                         <form id="appointmentForm" enctype="multipart/form-data" method="POST">
-                            <div class="main-content overflow-hidden" id="stepone">
+                            <div class="stepdiv overflow-hidden" id="stepone">
                                 <div>
                                     <label for="dentist">Choose a Dentist (Required Field):</label>
                                     <select name="dentist" id="dentist" onchange="updateSlots()">
@@ -505,7 +505,7 @@ if ($activeCount > 0) {
                                 serviceSelects.addEventListener('change', validateStepOne);
 
                             </script>
-                            <div class="main-content overflow-x-scroll" id="steptwo" style="display:none">
+                            <div class="stepdiv overflow-x-scroll" id="steptwo" style="display:none">
                                 <h2>Select Date</h2>
 
                                 <div class="month-selector  d-flex gap-2 flex-col flex-md-row">
@@ -572,7 +572,7 @@ if ($activeCount > 0) {
                                 appointmentTime.addEventListener('change', validateStepTwo);
 
                             </script>
-                            <div class="main-content overflow-hidden" id="stepthree" style="display:none">
+                            <div class="stepdiv overflow-hidden" id="stepthree" style="display:none">
                                 <?php
                                 $userid = $_SESSION['id'];
                                 $sql = "SELECT disease, recent_surgery, current_disease FROM medical WHERE usersid = ? ORDER BY medid DESC LIMIT 1";
@@ -812,7 +812,7 @@ if ($activeCount > 0) {
                                 });
                             </script>
 
-                            <div class="main-content overflow-hidden" id="stepfive" style="display:none">
+                            <div class="stepdiv overflow-hidden" id="stepfive" style="display:none">
 
                                 <h3>Downpayment</h3>
                                 <div class="row">
@@ -871,7 +871,7 @@ if ($activeCount > 0) {
                                 proofImg.addEventListener('change', validateStepFive);
                                 refNum.addEventListener('input', validateStepFive);
                             </script>
-                            <div class="main-content overflow-hidden" id="stepsix" style="display:none">
+                            <div class="stepdiv overflow-hidden" id="stepsix" style="display:none">
                                 <div id="summary">
 
                                     <h3>Summary of Your Selection</h3>
@@ -927,7 +927,7 @@ if ($activeCount > 0) {
         <script>
 
             function showStep(step) {
-                const steps = document.querySelectorAll('.main-content');
+                const steps = document.querySelectorAll('.stepdiv');
                 steps.forEach((el, index) => {
                     el.style.display = (index === step - 1) ? 'block' : 'none';
                 });
