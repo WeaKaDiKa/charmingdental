@@ -7,18 +7,19 @@ $_SESSION = array();
 
 // Destroy the session cookie
 if (isset($_COOKIE[session_name()])) {
-    setcookie(session_name(), '', time()-3600, '/');
+    setcookie(session_name(), '', time() - 3600, '/');
 }
 
 // Destroy the session
 session_destroy();
-
+require_once '../db/config.php';
 // Clear any remember me cookies if you have them
 if (isset($_COOKIE['remember_me'])) {
-    setcookie('remember_me', '', time()-3600, '/');
+    setcookie('remember_me', '', time() - 3600, '/');
 }
 
 // Redirect to login page
-header("Location: ../receptionist_admin/employeelogin.php");
+setModalMessage("Success", "Logout successful.", "success");
+header("Location: ../patient/patLogin.php");
 exit();
 ?>

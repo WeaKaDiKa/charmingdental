@@ -23,13 +23,13 @@ require_once('../db/db_users.php');
                 <img src="../img/pfp.jpg" alt="Logo" class="profile-pic">
                 <div>
                     <h1>CHARMING SMILE</h1>
-                    <p>  DENTAL CLINIC  </p>
+                    <p> DENTAL CLINIC </p>
                 </div>
             </div>
             <p1>Login into your account</p1>
 
             <!-- alert box -->
-           <?php if (!empty($errors['login'])): ?>
+            <?php if (!empty($errors['login'])): ?>
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <?php echo htmlspecialchars($errors['login']); ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -37,11 +37,6 @@ require_once('../db/db_users.php');
             <?php endif; ?>
 
 
-            <?php if (isset($_SESSION['success'])) {
-                echo '<div class="success-message">' . htmlspecialchars($_SESSION['success']) . '</div>';
-                unset($_SESSION['success']);
-                }
-            ?>
 
             <!-- Username field -->
             <p>Username</p>
@@ -52,16 +47,17 @@ require_once('../db/db_users.php');
                     <div class='error-message'><?php echo htmlspecialchars($errors['username']); ?></div>
                 <?php endif; ?>
             </div>
-         <!-- Password field -->
+            <!-- Password field -->
             <p>Password</p>
-                <div class="input-box" style="position: relative;">
-                    <input type="password" name="password" id="password" placeholder="Enter your password" required>
-                    <?php if (!empty($errors['password'])): ?>
-                        <div class='error-message'><?php echo htmlspecialchars($errors['password']); ?></div>
-                    <?php endif; ?>
-                    <!-- Toggle icon button -->
-                    <img src="password.png" alt="Show Password" id="togglePassword" class="icon" style="cursor: pointer; position: absolute; right: px; top: 50%; transform: translateY(-50%);" />
-                </div>
+            <div class="input-box" style="position: relative;">
+                <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                <?php if (!empty($errors['password'])): ?>
+                    <div class='error-message'><?php echo htmlspecialchars($errors['password']); ?></div>
+                <?php endif; ?>
+                <!-- Toggle icon button -->
+                <img src="password.png" alt="Show Password" id="togglePassword" class="icon"
+                    style="cursor: pointer; position: absolute; right: px; top: 50%; transform: translateY(-50%);" />
+            </div>
 
 
             <!-- Forgot password and buttons -->
@@ -76,7 +72,40 @@ require_once('../db/db_users.php');
             <button type="button" class="btn signup-btn" onclick="signupRedirect()">Sign Up</button>
         </form>
     </div>
+    <?php
+    if (!empty($_SESSION['modal'])):
+        $modal = $_SESSION['modal'];
+        $modalType = $modal['type'] ?? 'info';
+        $modalTitle = $modal['title'] ?? 'Notice';
+        $modalMessage = $modal['message'] ?? '';
+        //  unset($_SESSION['modal']);
+        ?>
+        <!-- Modal HTML -->
+        <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-<?php echo $modalType; ?>">
+                    <div class="modal-header bg-<?php echo $modalType; ?> text-white">
+                        <h5 class="modal-title" id="alertModalLabel"><?php echo $modalTitle; ?></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <?php echo $modalMessage; ?>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-<?php echo $modalType; ?>" data-bs-dismiss="modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <!-- Auto show script -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var alertModal = new bootstrap.Modal(document.getElementById('alertModal'));
+                alertModal.show();
+            });
+        </script>
+    <?php endif; ?>
     <!-- Email Modal -->
     <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -140,7 +169,6 @@ require_once('../db/db_users.php');
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
             // Handle email form submission
@@ -208,7 +236,7 @@ require_once('../db/db_users.php');
     </script>
 
     <script>
-      
+
         const passwordInput = document.getElementById('password');
         const togglePassword = document.getElementById('togglePassword');
 

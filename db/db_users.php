@@ -175,13 +175,21 @@ if (isset($_POST["signup"])) {
     // Register user if there are no errors
     if (count($errors) == 0) {
         if ($usertype === "patient") {
-            $insert_query = "INSERT INTO users (first_name, middle_name, last_name, address, birthdate, gender, mobile, email, username, password, usertype, emergencyname, emergencycontact, otp) 
-                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // Set expiryotp to 5 minutes from now
+            $expiryotp = date("Y-m-d H:i:s", strtotime("+5 minutes"));
+
+            $insert_query = "INSERT INTO users (
+                        first_name, middle_name, last_name, address, birthdate, gender, mobile, email, 
+                        username, password, usertype, emergencyname, emergencycontact, otp, expiryotp
+                    ) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
             $redirect = 'patSignup.php';
             $insert_stmt = mysqli_prepare($db, $insert_query);
+
             mysqli_stmt_bind_param(
                 $insert_stmt,
-                "ssssssssssssss",
+                "sssssssssssssss",
                 $firstName,
                 $middleName,
                 $lastName,
@@ -195,16 +203,15 @@ if (isset($_POST["signup"])) {
                 $usertype,
                 $emergencyname,
                 $emergencycontact,
-                $otp
+                $otp,
+                $expiryotp
             );
 
             require_once '../db/sendmail.php';
+            $message = "Here is your OTP. Use it to activate your account after signing in: <strong>" . $otp . "</strong><br><br>";
+            $message .= "This OTP will expire in <strong>5 minutes</strong> (at " . date("g:i A", strtotime($expiryotp)) . ").";
 
-            $message = "Here is your OTP. Use it to activate your account after signing in. <strong>" . $otp . "</strong>";
             sendmail($email, $firstName . " " . $lastName, "Confirm your email", $message);
-
-
-
         } else {
             $insert_query = "INSERT INTO users_employee (first_name, middle_name, last_name, address, birthdate, gender, mobile, email, username, password, usertype) 
                              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -246,7 +253,8 @@ if (isset($_POST["signup"])) {
                 );
 
                 if (!mysqli_stmt_execute($stmt_insert_dentist)) {
-                    echo "Error inserting into dentists table: " . mysqli_error($db);
+                    setModalMessage("Danger", "Error inserting into dentists table: " . mysqli_error($db), "danger");
+
                 }
 
                 mysqli_stmt_close($stmt_insert_dentist);
@@ -266,13 +274,14 @@ if (isset($_POST["signup"])) {
                 );
 
                 if (!mysqli_stmt_execute($stmt_insert_receptionist)) {
-                    echo "Error inserting into receptionists table: " . mysqli_error($db);
+                    setModalMessage("Danger", "Error inserting into receptionists table: " . mysqli_error($db), "danger");
                 }
 
                 mysqli_stmt_close($stmt_insert_receptionist);
             }
 
             $_SESSION['registration_success'] = true;
+            setModalMessage("Success", "User registered successfully.", "success");
             if ($usertype === "patient") {
                 $_SESSION['otpmode'] = true;
                 $_SESSION['otpemail'] = $email;
@@ -283,7 +292,7 @@ if (isset($_POST["signup"])) {
                 exit();
             }
         } else {
-            echo "Error creating user: " . mysqli_error($db);
+            setModalMessage("Danger", "Error creating user: " . mysqli_error($db), "danger");
 
         }
 
@@ -319,7 +328,8 @@ if (isset($_POST['login'])) {
         if ($user = mysqli_fetch_assoc($result_login)) {
             // Check if the account is archived
             if ($user['status'] === 'archived') {
-                echo "<script>alert('Your account is archived. Please contact support.'); window.location.href = 'patLogin.php';</script>";
+                setModalMessage("Warning", "Your account has been archived. Please contact support.", "warning");
+                header('location: patLogin.php');
                 exit();
             }
 
@@ -340,7 +350,8 @@ if (isset($_POST['login'])) {
                 mysqli_stmt_execute($stmt_archive);
                 mysqli_stmt_close($stmt_archive);
 
-                echo "<script>alert('Your account has been archived due to inactivity. Please contact support.'); window.location.href = 'patLogin.php';</script>";
+                setModalMessage("Warning", "Your account has been archived due to inactivity. Please contact support.", "warning");
+                header('location: patLogin.php');
                 exit();
             }
 
@@ -361,7 +372,7 @@ if (isset($_POST['login'])) {
                 $_SESSION['first_name'] = htmlspecialchars($user['first_name']);
                 $_SESSION['gender'] = htmlspecialchars($user['gender']);
                 $_SESSION['usertype'] = htmlspecialchars($user['usertype']);
-                $_SESSION['success'] = "You are now logged in";
+                setModalMessage("Success", "You are now logged in.", "success");
 
                 switch ($_SESSION['usertype']) {
                     case 'admin':

@@ -291,9 +291,7 @@ body::-webkit-scrollbar {
     padding: 20px;
     box-sizing: border-box; /* Ensure padding is included in width */
     flex-grow: 1; /* Expand to fill available space */
-    background-color: #FFFFFF; /* Light pink background for main content */
     min-height: 100vh; /* Full viewport height */
-    border: 20px solid #da9393; /* Add a pink border */
 }
 
 /* Updated Patient Record Styles */

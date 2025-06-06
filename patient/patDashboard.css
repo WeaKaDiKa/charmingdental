@@ -103,7 +103,6 @@ body::-webkit-scrollbar {
     margin-left: 250px;
     padding: 20px;
     flex-grow: 1;
-    border: 20px solid #da9393; /* Add a pink border */
     min-height: 100vh;
 }
 

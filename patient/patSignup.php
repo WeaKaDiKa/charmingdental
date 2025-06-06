@@ -4,22 +4,24 @@ require_once '../db/sendmail.php';
 $registration_successful = isset($_SESSION['registration_success']) && $_SESSION['registration_success'];
 unset($_SESSION['registration_success']); // Clear the flag after using it
 
-
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpresend'])) {
     $otp = generateOTP();
     $email = $_SESSION['otpemail'];
-
-    // Update OTP in the database
-    $expiryotp = date("Y-m-d H:i:s", strtotime("+1 minute"));
+    $expiryotp = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 
     $sql = "UPDATE users SET otp = ?, expiryotp = ? WHERE email = ?";
     $stmt = $db->prepare($sql);
     if ($stmt) {
         $stmt->bind_param("sss", $otp, $expiryotp, $email);
         if ($stmt->execute()) {
-            $_SESSION['success'] = "OTP resend successful";
+            $stmt->close();
+            // Success message below
+            setModalMessage("Success", "OTP has been resent successfully.", "success");
+        } else {
+            setModalMessage("Database Error", "Error executing update: " . $stmt->error, "danger");
         }
-        $stmt->close();
+    } else {
+        setModalMessage("Preparation Error", "Failed to prepare OTP resend query: " . $db->error, "danger");
     }
 
     // Fetch user details for email
@@ -27,106 +29,116 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpresend'])) {
     $stmt = $db->prepare($sql);
     if ($stmt) {
         $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->bind_result($firstName, $lastName);
-        $stmt->fetch();
-        $stmt->close();
+        if ($stmt->execute()) {
+            $stmt->bind_result($firstName, $lastName);
+            $stmt->fetch();
+            $stmt->close();
+            // Send email with expiry info
+            $message = "Here is your OTP. Use it to activate your account after signing in: <strong>$otp</strong><br><br>";
+            $message .= "This OTP will expire in <strong>5 minutes</strong> (at " . date("g:i A", strtotime($expiryotp)) . ").";
+
+            sendmail($email, "$firstName $lastName", "Confirm your email", $message);
+        } else {
+            setModalMessage("Database Error", "Error fetching user details: " . $stmt->error, "danger");
+        }
+    } else {
+        setModalMessage("Preparation Error", "Failed to prepare user fetch query: " . $db->error, "danger");
     }
 
-
-    // Send email
-
-    $message = "Here is your OTP. Use it to activate your account after signing in. <strong>" . $otp . "</strong>";
-    sendmail($email, $firstName . " " . $lastName, "Confirm your email", $message);
+    header('location: patSignup.php');
+    exit();
 }
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
     $inputOTP = $_POST['otp'];
     $id = $_SESSION['otpemail'];
 
-    // Fetch stored OTP and expiry time
+    // Fetch stored OTP and expiry
     $sql = "SELECT otp, expiryotp FROM users WHERE email = ?";
     $stmt = $db->prepare($sql);
     if ($stmt) {
         $stmt->bind_param("s", $id);
-
         if ($stmt->execute()) {
             $stmt->bind_result($storedOTP, $expiryOTP);
-
             if ($stmt->fetch()) {
-                $stmt->close(); // Close after fetch
-
+                $stmt->close();
                 $currentTime = date("Y-m-d H:i:s");
+
                 if ($currentTime > $expiryOTP) {
-                    // OTP expired – generate and update new OTP
+                    // OTP expired — generate and send new
                     $newOTP = rand(100000, 999999);
-                    $newExpiry = date("Y-m-d H:i:s", strtotime("+1 minute"));
+                    $newExpiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 
                     $updateOtpSql = "UPDATE users SET otp = ?, expiryotp = ? WHERE email = ?";
                     $updateStmt = $db->prepare($updateOtpSql);
                     if ($updateStmt) {
                         $updateStmt->bind_param("sss", $newOTP, $newExpiry, $id);
                         if ($updateStmt->execute()) {
-                            echo "<script>alert('OTP expired. A new OTP has been sent.');</script>";
-                            // Send email
-                            // Fetch user details for email
+                            $updateStmt->close();
+
+                            // Get user info again
                             $sql = "SELECT first_name, last_name FROM users WHERE email = ?";
                             $stmt = $db->prepare($sql);
                             if ($stmt) {
                                 $stmt->bind_param("s", $id);
-                                $stmt->execute();
-                                $stmt->bind_result($firstName, $lastName);
-                                $stmt->fetch();
-                                $stmt->close();
+                                if ($stmt->execute()) {
+                                    $stmt->bind_result($firstName, $lastName);
+                                    $stmt->fetch();
+                                    $stmt->close();
+                                    $message = "Here is your new OTP: <strong>$newOTP</strong><br><br>";
+                                    $message .= "This OTP will expire in <strong>5 minutes</strong> (at " . date("g:i A", strtotime($newExpiry)) . ").";
+                                    sendmail($id, "$firstName $lastName", "New OTP", $message);
+
+                                    setModalMessage("OTP Expired", "A new OTP has been sent to your email.", "warning");
+                                } else {
+                                    setModalMessage("Database Error", "Error fetching user details: " . $stmt->error, "danger");
+                                }
+                            } else {
+                                setModalMessage("Preparation Error", "Error preparing fetch user details: " . $db->error, "danger");
                             }
-
-                            $message = "Here is your OTP. Use it to activate your account after signing in. <strong>" . $newOTP . "</strong>";
-                            sendmail($id, $firstName . " " . $lastName, "Confirm your email", $message);
-                            // OPTIONAL: Send OTP to user via email
-                            // mail($id, "Your New OTP", "Your OTP is: " . $newOTP);
-
                         } else {
-                            echo "Error updating OTP: " . $updateStmt->error;
+                            setModalMessage("Database Error", "Error updating OTP: " . $updateStmt->error, "danger");
                         }
-                        $updateStmt->close();
                     } else {
-                        echo "Error preparing OTP update statement: " . $db->error;
+                        setModalMessage("Preparation Error", "Error preparing OTP update: " . $db->error, "danger");
                     }
                 } else {
-                    // Check if the input OTP matches
+                    // OTP match check
                     if ($inputOTP == $storedOTP) {
                         $updateSql = "UPDATE users SET status = 'active' WHERE email = ?";
                         $updateStmt = $db->prepare($updateSql);
                         if ($updateStmt) {
                             $updateStmt->bind_param("s", $id);
                             if ($updateStmt->execute()) {
-                                $_SESSION['success'] = "OTP confirmed";
-                                $_SESSION['status'] = "active";
+                                $updateStmt->close();
+                                setModalMessage("Success", "User verified successfully.", "success");
+
                                 unset($_SESSION['otpmode']);
                                 unset($_SESSION['otpemail']);
                                 header("location: patLogin.php");
                                 exit();
                             } else {
-                                echo "Error updating user status: " . $updateStmt->error;
+                                setModalMessage("Database Error", "Error updating user status: " . $updateStmt->error, "danger");
                             }
-                            $updateStmt->close();
                         } else {
-                            echo "<script>alert('Error preparing the update statement: " . $db->error . "');</script>";
+                            setModalMessage("Preparation Error", "Error preparing user update query: " . $db->error, "danger");
                         }
                     } else {
-                        echo "<script>alert('Invalid OTP.');</script>";
+                        setModalMessage("OTP Error", "Invalid OTP entered.", "danger");
                     }
                 }
             } else {
-                echo "<script>alert('User not found.');</script>";
-                $stmt->close();
+                setModalMessage("Verification Error", "User not found or invalid email.", "warning");
             }
         } else {
-            echo "Error executing query: " . $stmt->error;
-            $stmt->close();
+            setModalMessage("Database Error", "Error executing OTP fetch: " . $stmt->error, "danger");
         }
     } else {
-        echo "Error preparing the statement: " . $db->error;
+        setModalMessage("Preparation Error", "Error preparing OTP fetch query: " . $db->error, "danger");
     }
+
+    header('location: patSignup.php');
+    exit();
 }
 
 
@@ -388,28 +400,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['otpsubmit'])) {
         </form>
 
     </div>
-    <script>
-        function closePopup() {
-            const popup = document.getElementById('successPopup');
-            const overlay = document.getElementById('overlay');
-            popup.style.display = 'none';
-            overlay.style.display = 'none';
-            window.location.href = 'patLogin.php';
-        }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            <?php if ($registration_successful): ?>
-                const popup = document.getElementById('successPopup');
-                const overlay = document.getElementById('overlay');
-                if (popup && overlay) {
-                    popup.style.display = 'block';
-                    overlay.style.display = 'block';
-                }
-            <?php endif; ?>
-        });
-    </script>
     <!-- OTP Modal -->
-    <div class="modal fade" id="otpModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

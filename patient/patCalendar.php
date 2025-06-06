@@ -439,449 +439,460 @@ if ($activeCount > 0) {
             <?php
             $navactive = "patCalendar";
             require_once "../db/nav.php" ?>
-            <div class="w-100">
-                <form id="appointmentForm" enctype="multipart/form-data" method="POST">
-                    <div class="main-content overflow-hidden" id="stepone">
-                        <div>
-                            <label for="dentist">Choose a Dentist (Required Field):</label>
-                            <select name="dentist" id="dentist" onchange="updateSlots()">
-                                <option value="" selected disabled>Select a dentist</option>
-                                <?php foreach ($dentists as $dentist): ?>
-                                    <option value="<?php echo htmlspecialchars($dentist['name']); ?>">
-                                        <?php echo htmlspecialchars($dentist['name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+            <div class="main-content overflow-hidden">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="appointments-header">
+                            <h2>Appointment Lists</h2>
                         </div>
-
-                        <label for="service">Choose a Service (Required Field):</label>
-                        <select name="service" id="service" onchange="updateSlots()">
-                            <option value="" selected disabled>Select a service</option>
-                            <?php foreach ($services as $service): ?>
-                                <option data-cost="<?php echo htmlspecialchars($service['rate']); ?>"
-                                    value="<?php echo htmlspecialchars($service['name']); ?> <?php echo htmlspecialchars($service['rate']); ?>"
-                                    data-duration="<?php echo htmlspecialchars($service['duration']); ?>">
-                                    <?php echo htmlspecialchars($service['name']); ?> -
-                                    <?php echo htmlspecialchars($service['rate']); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <div class="navigation-buttons mt-3">
-                            <button type="button" class="btn btn-primary" id="nextStepOne" onclick="nextStep(2)"
-                                disabled>Next</button>
-                        </div>
-
-                    </div>
-
-                    <script>
-                        const dentistSelect = document.getElementById('dentist');
-                        const serviceSelects = document.getElementById('service');
-                        const nextButton = document.getElementById('nextStepOne');
-
-                        function validateStepOne() {
-                            if (dentistSelect.value && serviceSelects.value) {
-                                nextButton.disabled = false;
-                            } else {
-                                nextButton.disabled = true;
-                            }
-                            var select = document.getElementById('service');
-                            var selectedOption = select.options[select.selectedIndex];
-
-                            if (selectedOption) {
-                                var cost = parseFloat(selectedOption.getAttribute('data-cost')) || 0;
-                                var discount = cost * 0.15; // 15% of the cost
-
-                                document.getElementById('costDisplay').innerHTML = discount.toFixed(2);
-                            }
-                        }
-
-                        // Listen for changes
-                        dentistSelect.addEventListener('change', validateStepOne);
-                        serviceSelects.addEventListener('change', validateStepOne);
-
-                    </script>
-                    <div class="main-content overflow-x-scroll" id="steptwo" style="display:none">
-                        <h2>Select Date</h2>
-
-                        <div class="month-selector  d-flex gap-2 flex-col flex-md-row">
-                            <label for="yearSelect">Choose a year:</label>
-                            <select id="yearSelect">
-                                <option value="2025">2025</option>
-                            </select>
-
-                            <label for="monthSelect">Choose a month:</label>
-                            <select id="monthSelect"></select>
-                            <div class="color-legend">
-                                <span class="legend-item">
-                                    <span class="legend-box unavailable"></span> Unavailable Days
-                                </span>
-                                <span class="legend-item">
-                                    <span class="legend-box available"></span> Available Days
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Day Labels -->
-                        <div class="day-labels">
-                            <span>Sun</span>
-                            <span>Mon</span>
-                            <span>Tue</span>
-                            <span>Wed</span>
-                            <span>Thu</span>
-                            <span>Fri</span>
-                            <span>Sat</span>
-                        </div>
-
-                        <div id="calendar" class="m-2"></div>
-                        <br>
-
-
-                        <div class="time-slot" id="timeSlotsContainer" style="display:none;">
-                            <h3>Select a Time Slot:</h3>
-                            <label for="appointment_time">Choose a time slot:</label>
-                            <select name="appointment_time" id="appointment_time">
-                                <option value="">Select a time slot</option>
-                                <!-- Options will be populated by JavaScript -->
-                            </select>
-                        </div>
-                        <div class="navigation-buttons mt-3">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Previous</button>
-                            <button type="button" class="btn btn-primary" id="nextStepTwo" onclick="nextStep(3)"
-                                disabled>Next</button>
-
-                        </div>
-
-                    </div>
-                    <script>
-                        const appointmentTime = document.getElementById('appointment_time');
-                        const nextStepTwo = document.getElementById('nextStepTwo');
-
-                        function validateStepTwo() {
-                            if (appointmentTime.value) {
-                                nextStepTwo.disabled = false;
-                            } else {
-                                nextStepTwo.disabled = true;
-                            }
-                        }
-
-                        appointmentTime.addEventListener('change', validateStepTwo);
-
-                    </script>
-                    <div class="main-content overflow-hidden" id="stepthree" style="display:none">
-                        <?php
-                        $userid = $_SESSION['id'];
-                        $sql = "SELECT disease, recent_surgery, current_disease FROM medical WHERE usersid = ? ORDER BY medid DESC LIMIT 1";
-                        $stmt = $conn->prepare($sql);
-                        if ($stmt) {
-                            $stmt->bind_param("i", $userid);
-                            $stmt->execute();
-                            $stmt->bind_result($disease, $recent_surgery, $current_disease);
-                            $stmt->fetch();
-                            $stmt->close();
-                        } else {
-                            echo "<script>alert('Error preparing the statement: " . $conn->error . "');</script>";
-                        }
-                        ?>
-
-                        <h3>Health Declaration Form</h3>
-
-                        <!-- 1. History of Present Disease or Allergies -->
-                        <div class="mb-2">
-                            <label>Do you have any history of present disease or allergies?</label>
-                            <input type="radio" name="hasDisease" value="yes"> Yes
-                            <input type="radio" name="hasDisease" value="no"> No
-                        </div>
-                        <div class="mb-3" id="diseaseField" style="display:none;">
-                            <label for="disease" class="form-label">If yes, please specify:</label>
-                            <textarea class="form-control" id="disease" name="disease"
-                                rows="3"><?php echo htmlspecialchars($disease ?? ''); ?></textarea>
-                        </div>
-
-                        <!-- 2. Recent Surgery -->
-                        <div class="mb-2">
-                            <label>Have you undergone any recent surgery?</label>
-                            <input type="radio" name="hasSurgery" value="yes"> Yes
-                            <input type="radio" name="hasSurgery" value="no"> No
-                        </div>
-                        <div class="mb-3" id="surgeryField" style="display:none;">
-                            <label for="recent_surgery" class="form-label">If yes, please specify:</label>
-                            <input type="text" class="form-control" id="recent_surgery" name="recent_surgery"
-                                value="<?php echo htmlspecialchars($recent_surgery ?? ''); ?>">
-                        </div>
-
-                        <!-- 3. Current Disease -->
-                        <div class="mb-2">
-                            <label>Do you have any current diseases (e.g., hypertension, diabetes)?</label>
-                            <input type="radio" name="hasCurrentDisease" value="yes"> Yes
-                            <input type="radio" name="hasCurrentDisease" value="no"> No
-                        </div>
-                        <div class="mb-3" id="currentDiseaseField" style="display:none;">
-                            <label for="current_disease" class="form-label">If yes, please specify:</label>
-                            <input type="text" class="form-control" id="current_disease" name="current_disease"
-                                value="<?php echo htmlspecialchars($current_disease ?? ''); ?>">
-                        </div>
-
-                        <!-- Medical Certificate -->
-                        <div class="mb-3" id="medicalCertDiv">
-                            <label for="medical_certificate" class="form-label">Medical Certificate (approving you are in
-                                good condition to undergo such treatment)</label>
-                            <input type="file" class="form-control" id="medical_certificate" name="medical_certificate"
-                                accept=".pdf,.jpg,.jpeg,.png">
-                        </div>
-
-
-                        <div class="navigation-buttons mt-3">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Previous</button>
-                            <button type="button" class="btn btn-primary" id="nextStepThree"
-                                onclick="nextStep(4)">Next</button>
-                        </div>
-                    </div>
-
-                    <script>
-                        const disease = document.getElementById('disease');
-                        const recentSurgery = document.getElementById('recent_surgery');
-                        const currentDisease = document.getElementById('current_disease');
-                        const medicalCert = document.getElementById('medical_certificate');
-                        const nextStepThree = document.getElementById('nextStepThree');
-
-                        const diseaseField = document.getElementById('diseaseField');
-                        const surgeryField = document.getElementById('surgeryField');
-                        const currentDiseaseField = document.getElementById('currentDiseaseField');
-
-                        function handleRadioToggle() {
-                            // Disease toggle
-                            if (document.querySelector('input[name="hasDisease"]:checked').value === 'yes') {
-                                diseaseField.style.display = 'block';
-                                disease.value = '';
-                            } else {
-                                diseaseField.style.display = 'none';
-                                disease.value = 'N/A';
-                            }
-
-                            // Surgery toggle
-                            if (document.querySelector('input[name="hasSurgery"]:checked').value === 'yes') {
-                                surgeryField.style.display = 'block';
-                                recentSurgery.value = '';
-                            } else {
-                                surgeryField.style.display = 'none';
-                                recentSurgery.value = 'N/A';
-                            }
-
-                            // Current disease toggle
-                            if (document.querySelector('input[name="hasCurrentDisease"]:checked').value === 'yes') {
-                                currentDiseaseField.style.display = 'block';
-                                currentDisease.value = '';
-                            } else {
-                                currentDiseaseField.style.display = 'none';
-                                currentDisease.value = 'N/A';
-                            }
-
-                            // Show/hide medical cert based on all "no"
-                            const allNo =
-                                document.querySelector('input[name="hasDisease"]:checked').value === 'no' &&
-                                document.querySelector('input[name="hasSurgery"]:checked').value === 'no' &&
-                                document.querySelector('input[name="hasCurrentDisease"]:checked').value === 'no';
-
-                            medicalCertDiv.style.display = allNo ? 'none' : 'block';
-
-                            if (allNo) {
-                                medicalCert.value = '';
-                            }
-
-                            validateStepThree();
-                        }
-
-
-                        function validateStepThree() {
-                            const hasDisease = document.querySelector('input[name="hasDisease"]:checked').value === 'yes';
-                            const hasSurgery = document.querySelector('input[name="hasSurgery"]:checked').value === 'yes';
-                            const hasCurrentDisease = document.querySelector('input[name="hasCurrentDisease"]:checked').value === 'yes';
-
-                            const allNo = !hasDisease && !hasSurgery && !hasCurrentDisease;
-
-                            const filledFields =
-                                disease.value.trim() !== '' &&
-                                recentSurgery.value.trim() !== '' &&
-                                currentDisease.value.trim() !== '';
-
-                            const hasMedicalCert = medicalCert.files.length > 0;
-
-                            // Enable if:
-                            // 1. All answers are no (no file required), OR
-                            // 2. All text inputs are filled AND medical cert uploaded
-                            if (allNo || (filledFields && hasMedicalCert)) {
-                                nextStepThree.disabled = false;
-                            } else {
-                                nextStepThree.disabled = true;
-                            }
-                        }
-
-                        // Add event listeners for radio buttons
-                        document.querySelectorAll('input[name="hasDisease"]').forEach(radio => radio.addEventListener('change', handleRadioToggle));
-                        document.querySelectorAll('input[name="hasSurgery"]').forEach(radio => radio.addEventListener('change', handleRadioToggle));
-                        document.querySelectorAll('input[name="hasCurrentDisease"]').forEach(radio => radio.addEventListener('change', handleRadioToggle));
-
-                        // Input listeners
-                        [disease, recentSurgery, currentDisease].forEach(input => input.addEventListener('input', validateStepThree));
-                        medicalCert.addEventListener('change', validateStepThree);
-
-                        // Initial trigger in case "No" is pre-selected
-                        handleRadioToggle();
-
-                        // Medical cert container
-
-                    </script>
-
-                    <div class="main- overflow-hidden" id="stepfour" style="display:none">
-                        <h3>Will someone accompany you?</h3>
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" id="hasCompanion">
-                            <label class="form-check-label" for="hasCompanion">Yes</label>
-                        </div>
-
-                        <div id="fieldContainer" style="display:none">
-                            <h4>Companion</h4>
-                            <div class="field-set">
-                                <div class="mb-3">
-                                    <label for="name1" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="name1" name="name[]">
+                        <form id="appointmentForm" enctype="multipart/form-data" method="POST">
+                            <div class="main-content overflow-hidden" id="stepone">
+                                <div>
+                                    <label for="dentist">Choose a Dentist (Required Field):</label>
+                                    <select name="dentist" id="dentist" onchange="updateSlots()">
+                                        <option value="" selected disabled>Select a dentist</option>
+                                        <?php foreach ($dentists as $dentist): ?>
+                                            <option value="<?php echo htmlspecialchars($dentist['name']); ?>">
+                                                <?php echo htmlspecialchars($dentist['name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="relationship1" class="form-label">Relationship to Patient</label>
-                                    <input type="text" class="form-control" id="relationship1" name="relationship[]"
-                                        placeholder="e.g., Spouse, Parent, Friend">
-                                </div>
-                            </div>
-                        </div>
 
-
-                        <button type="button" class="btn btn-secondary" id="addMoreFields" disabled>Add More</button>
-                        <div class="navigation-buttons mt-3">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Previous</button>
-                            <button type="button" class="btn btn-primary" id="nextStepFour"
-                                onclick="nextStep(5)">Next</button>
-                        </div>
-                    </div>
-
-                    <script>
-                        const hasCompanion = document.getElementById('hasCompanion');
-                        const fieldContainer = document.getElementById('fieldContainer');
-                        const name1 = document.getElementById('name1');
-                        const gender1 = document.getElementById('gender1');
-                        const age1 = document.getElementById('age1');
-                        const addMoreBtn = document.getElementById('addMoreFields');
-                        const nextStepFour = document.getElementById('nextStepFour');
-
-                        function validateStepFour() {
-                            if (
-                                name1.value.trim() !== '' &&
-                                gender1.value !== '' &&
-                                age1.value.trim() !== ''
-                            ) {
-                                addMoreBtn.disabled = false;
-                                nextStepFour.disabled = false;
-                            } else {
-                                addMoreBtn.disabled = true;
-                                nextStepFour.disabled = true;
-                            }
-                        }
-
-                        // Toggle companion fields
-                        hasCompanion.addEventListener('change', () => {
-                            if (hasCompanion.checked) {
-                                fieldContainer.style.display = 'block';
-                                validateStepFour(); // Initial validation
-                            } else {
-                                fieldContainer.style.display = 'none';
-                                addMoreBtn.disabled = true;
-                                nextStepFour.disabled = false; // Allow to proceed if no companion
-                            }
-                        });
-
-                        // Validate on input changes
-                        [name1, gender1, age1].forEach(input => {
-                            input.addEventListener('input', validateStepFour);
-                            input.addEventListener('change', validateStepFour);
-                        });
-                    </script>
-
-                    <div class="main-content overflow-hidden" id="stepfive" style="display:none">
-
-                        <h3>Downpayment</h3>
-                        <div class="row">
-                            <div class="col-lg-8 px-5 mt-3">
-                                <p>To continue, please send the following amount as <b>15% downpayment</b> for our services
-                                    to our
-                                    GCash account using the QR. Upload the
-                                    receipt in the form below.</p>
-
-                                <h5 id="costlabel">Please pay <span class="fw-bold">PHP<span id="costDisplay"></span></span>
-                                </h5>
-                                <div class="mb-3">
-                                    <label for="proofimg" class="form-label">GCash Payment Receipt</label>
-                                    <input type="file" class="form-control" id="proofimg" name="proofimg"
-                                        accept=".jpg,.jpeg,.png">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="refnum" class="form-label">Reference Number</label>
-                                    <input type="text" class="form-control" id="refnum" name="refnum"
-                                        placeholder="Enter reference number">
+                                <label for="service">Choose a Service (Required Field):</label>
+                                <select name="service" id="service" onchange="updateSlots()">
+                                    <option value="" selected disabled>Select a service</option>
+                                    <?php foreach ($services as $service): ?>
+                                        <option data-cost="<?php echo htmlspecialchars($service['rate']); ?>"
+                                            value="<?php echo htmlspecialchars($service['name']); ?> <?php echo htmlspecialchars($service['rate']); ?>"
+                                            data-duration="<?php echo htmlspecialchars($service['duration']); ?>">
+                                            <?php echo htmlspecialchars($service['name']); ?> -
+                                            <?php echo htmlspecialchars($service['rate']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <div class="navigation-buttons mt-3">
+                                    <button type="button" class="btn btn-primary" id="nextStepOne" onclick="nextStep(2)"
+                                        disabled>Next</button>
                                 </div>
 
                             </div>
-                            <div class="col-lg-4">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <img src="https://crfaphilippines.org/wp-content/uploads/2023/02/bsgc-gcash-qr.jpg"
-                                        class="w-75">
+
+                            <script>
+                                const dentistSelect = document.getElementById('dentist');
+                                const serviceSelects = document.getElementById('service');
+                                const nextButton = document.getElementById('nextStepOne');
+
+                                function validateStepOne() {
+                                    if (dentistSelect.value && serviceSelects.value) {
+                                        nextButton.disabled = false;
+                                    } else {
+                                        nextButton.disabled = true;
+                                    }
+                                    var select = document.getElementById('service');
+                                    var selectedOption = select.options[select.selectedIndex];
+
+                                    if (selectedOption) {
+                                        var cost = parseFloat(selectedOption.getAttribute('data-cost')) || 0;
+                                        var discount = cost * 0.15; // 15% of the cost
+
+                                        document.getElementById('costDisplay').innerHTML = discount.toFixed(2);
+                                    }
+                                }
+
+                                // Listen for changes
+                                dentistSelect.addEventListener('change', validateStepOne);
+                                serviceSelects.addEventListener('change', validateStepOne);
+
+                            </script>
+                            <div class="main-content overflow-x-scroll" id="steptwo" style="display:none">
+                                <h2>Select Date</h2>
+
+                                <div class="month-selector  d-flex gap-2 flex-col flex-md-row">
+                                    <label for="yearSelect">Choose a year:</label>
+                                    <select id="yearSelect">
+                                        <option value="2025">2025</option>
+                                    </select>
+
+                                    <label for="monthSelect">Choose a month:</label>
+                                    <select id="monthSelect"></select>
+                                    <div class="color-legend">
+                                        <span class="legend-item">
+                                            <span class="legend-box unavailable"></span> Unavailable Days
+                                        </span>
+                                        <span class="legend-item">
+                                            <span class="legend-box available"></span> Available Days
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Day Labels -->
+                                <div class="day-labels">
+                                    <span>Sun</span>
+                                    <span>Mon</span>
+                                    <span>Tue</span>
+                                    <span>Wed</span>
+                                    <span>Thu</span>
+                                    <span>Fri</span>
+                                    <span>Sat</span>
+                                </div>
+
+                                <div id="calendar" class="m-2"></div>
+                                <br>
+
+
+                                <div class="time-slot" id="timeSlotsContainer" style="display:none;">
+                                    <h3>Select a Time Slot:</h3>
+                                    <label for="appointment_time">Choose a time slot:</label>
+                                    <select name="appointment_time" id="appointment_time">
+                                        <option value="">Select a time slot</option>
+                                        <!-- Options will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                                <div class="navigation-buttons mt-3">
+                                    <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Previous</button>
+                                    <button type="button" class="btn btn-primary" id="nextStepTwo" onclick="nextStep(3)"
+                                        disabled>Next</button>
+
+                                </div>
+
+                            </div>
+                            <script>
+                                const appointmentTime = document.getElementById('appointment_time');
+                                const nextStepTwo = document.getElementById('nextStepTwo');
+
+                                function validateStepTwo() {
+                                    if (appointmentTime.value) {
+                                        nextStepTwo.disabled = false;
+                                    } else {
+                                        nextStepTwo.disabled = true;
+                                    }
+                                }
+
+                                appointmentTime.addEventListener('change', validateStepTwo);
+
+                            </script>
+                            <div class="main-content overflow-hidden" id="stepthree" style="display:none">
+                                <?php
+                                $userid = $_SESSION['id'];
+                                $sql = "SELECT disease, recent_surgery, current_disease FROM medical WHERE usersid = ? ORDER BY medid DESC LIMIT 1";
+                                $stmt = $conn->prepare($sql);
+                                if ($stmt) {
+                                    $stmt->bind_param("i", $userid);
+                                    $stmt->execute();
+                                    $stmt->bind_result($disease, $recent_surgery, $current_disease);
+                                    $stmt->fetch();
+                                    $stmt->close();
+                                } else {
+                                    echo "<script>alert('Error preparing the statement: " . $conn->error . "');</script>";
+                                }
+                                ?>
+
+                                <h3>Health Declaration Form</h3>
+
+                                <!-- 1. History of Present Disease or Allergies -->
+                                <div class="mb-2">
+                                    <label>Do you have any history of present disease or allergies?</label>
+                                    <input type="radio" name="hasDisease" value="yes"> Yes
+                                    <input type="radio" name="hasDisease" value="no"> No
+                                </div>
+                                <div class="mb-3" id="diseaseField" style="display:none;">
+                                    <label for="disease" class="form-label">If yes, please specify:</label>
+                                    <textarea class="form-control" id="disease" name="disease"
+                                        rows="3"><?php echo htmlspecialchars($disease ?? ''); ?></textarea>
+                                </div>
+
+                                <!-- 2. Recent Surgery -->
+                                <div class="mb-2">
+                                    <label>Have you undergone any recent surgery?</label>
+                                    <input type="radio" name="hasSurgery" value="yes"> Yes
+                                    <input type="radio" name="hasSurgery" value="no"> No
+                                </div>
+                                <div class="mb-3" id="surgeryField" style="display:none;">
+                                    <label for="recent_surgery" class="form-label">If yes, please specify:</label>
+                                    <input type="text" class="form-control" id="recent_surgery" name="recent_surgery"
+                                        value="<?php echo htmlspecialchars($recent_surgery ?? ''); ?>">
+                                </div>
+
+                                <!-- 3. Current Disease -->
+                                <div class="mb-2">
+                                    <label>Do you have any current diseases (e.g., hypertension, diabetes)?</label>
+                                    <input type="radio" name="hasCurrentDisease" value="yes"> Yes
+                                    <input type="radio" name="hasCurrentDisease" value="no"> No
+                                </div>
+                                <div class="mb-3" id="currentDiseaseField" style="display:none;">
+                                    <label for="current_disease" class="form-label">If yes, please specify:</label>
+                                    <input type="text" class="form-control" id="current_disease" name="current_disease"
+                                        value="<?php echo htmlspecialchars($current_disease ?? ''); ?>">
+                                </div>
+
+                                <!-- Medical Certificate -->
+                                <div class="mb-3" id="medicalCertDiv">
+                                    <label for="medical_certificate" class="form-label">Medical Certificate (approving you
+                                        are in
+                                        good condition to undergo such treatment)</label>
+                                    <input type="file" class="form-control" id="medical_certificate"
+                                        name="medical_certificate" accept=".pdf,.jpg,.jpeg,.png">
+                                </div>
+
+
+                                <div class="navigation-buttons mt-3">
+                                    <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Previous</button>
+                                    <button type="button" class="btn btn-primary" id="nextStepThree"
+                                        onclick="nextStep(4)">Next</button>
                                 </div>
                             </div>
 
-                        </div>
-                        <div class="navigation-buttons mt-3">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep(4)">Previous</button>
-                            <button type="button" class="btn btn-primary" id="nextStepFive" onclick="nextStep(6)"
-                                disabled>Next</button>
+                            <script>
+                                const disease = document.getElementById('disease');
+                                const recentSurgery = document.getElementById('recent_surgery');
+                                const currentDisease = document.getElementById('current_disease');
+                                const medicalCert = document.getElementById('medical_certificate');
+                                const nextStepThree = document.getElementById('nextStepThree');
 
-                        </div>
+                                const diseaseField = document.getElementById('diseaseField');
+                                const surgeryField = document.getElementById('surgeryField');
+                                const currentDiseaseField = document.getElementById('currentDiseaseField');
 
+                                function handleRadioToggle() {
+                                    // Disease toggle
+                                    if (document.querySelector('input[name="hasDisease"]:checked').value === 'yes') {
+                                        diseaseField.style.display = 'block';
+                                        disease.value = '';
+                                    } else {
+                                        diseaseField.style.display = 'none';
+                                        disease.value = 'N/A';
+                                    }
+
+                                    // Surgery toggle
+                                    if (document.querySelector('input[name="hasSurgery"]:checked').value === 'yes') {
+                                        surgeryField.style.display = 'block';
+                                        recentSurgery.value = '';
+                                    } else {
+                                        surgeryField.style.display = 'none';
+                                        recentSurgery.value = 'N/A';
+                                    }
+
+                                    // Current disease toggle
+                                    if (document.querySelector('input[name="hasCurrentDisease"]:checked').value === 'yes') {
+                                        currentDiseaseField.style.display = 'block';
+                                        currentDisease.value = '';
+                                    } else {
+                                        currentDiseaseField.style.display = 'none';
+                                        currentDisease.value = 'N/A';
+                                    }
+
+                                    // Show/hide medical cert based on all "no"
+                                    const allNo =
+                                        document.querySelector('input[name="hasDisease"]:checked').value === 'no' &&
+                                        document.querySelector('input[name="hasSurgery"]:checked').value === 'no' &&
+                                        document.querySelector('input[name="hasCurrentDisease"]:checked').value === 'no';
+
+                                    medicalCertDiv.style.display = allNo ? 'none' : 'block';
+
+                                    if (allNo) {
+                                        medicalCert.value = '';
+                                    }
+
+                                    validateStepThree();
+                                }
+
+
+                                function validateStepThree() {
+                                    const hasDisease = document.querySelector('input[name="hasDisease"]:checked').value === 'yes';
+                                    const hasSurgery = document.querySelector('input[name="hasSurgery"]:checked').value === 'yes';
+                                    const hasCurrentDisease = document.querySelector('input[name="hasCurrentDisease"]:checked').value === 'yes';
+
+                                    const allNo = !hasDisease && !hasSurgery && !hasCurrentDisease;
+
+                                    const filledFields =
+                                        disease.value.trim() !== '' &&
+                                        recentSurgery.value.trim() !== '' &&
+                                        currentDisease.value.trim() !== '';
+
+                                    const hasMedicalCert = medicalCert.files.length > 0;
+
+                                    // Enable if:
+                                    // 1. All answers are no (no file required), OR
+                                    // 2. All text inputs are filled AND medical cert uploaded
+                                    if (allNo || (filledFields && hasMedicalCert)) {
+                                        nextStepThree.disabled = false;
+                                    } else {
+                                        nextStepThree.disabled = true;
+                                    }
+                                }
+
+                                // Add event listeners for radio buttons
+                                document.querySelectorAll('input[name="hasDisease"]').forEach(radio => radio.addEventListener('change', handleRadioToggle));
+                                document.querySelectorAll('input[name="hasSurgery"]').forEach(radio => radio.addEventListener('change', handleRadioToggle));
+                                document.querySelectorAll('input[name="hasCurrentDisease"]').forEach(radio => radio.addEventListener('change', handleRadioToggle));
+
+                                // Input listeners
+                                [disease, recentSurgery, currentDisease].forEach(input => input.addEventListener('input', validateStepThree));
+                                medicalCert.addEventListener('change', validateStepThree);
+
+                                // Initial trigger in case "No" is pre-selected
+                                handleRadioToggle();
+
+                                // Medical cert container
+
+                            </script>
+
+                            <div class="main- overflow-hidden" id="stepfour" style="display:none">
+                                <h3>Will someone accompany you?</h3>
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="hasCompanion">
+                                    <label class="form-check-label" for="hasCompanion">Yes</label>
+                                </div>
+
+                                <div id="fieldContainer" style="display:none">
+                                    <h4>Companion</h4>
+                                    <div class="field-set">
+                                        <div class="mb-3">
+                                            <label for="name1" class="form-label">Name</label>
+                                            <input type="text" class="form-control" id="name1" name="name[]">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="relationship1" class="form-label">Relationship to Patient</label>
+                                            <input type="text" class="form-control" id="relationship1" name="relationship[]"
+                                                placeholder="e.g., Spouse, Parent, Friend">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <button type="button" class="btn btn-secondary" id="addMoreFields" disabled>Add
+                                    More</button>
+                                <div class="navigation-buttons mt-3">
+                                    <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Previous</button>
+                                    <button type="button" class="btn btn-primary" id="nextStepFour"
+                                        onclick="nextStep(5)">Next</button>
+                                </div>
+                            </div>
+
+                            <script>
+                                const hasCompanion = document.getElementById('hasCompanion');
+                                const fieldContainer = document.getElementById('fieldContainer');
+                                const name1 = document.getElementById('name1');
+                                const gender1 = document.getElementById('gender1');
+                                const age1 = document.getElementById('age1');
+                                const addMoreBtn = document.getElementById('addMoreFields');
+                                const nextStepFour = document.getElementById('nextStepFour');
+
+                                function validateStepFour() {
+                                    if (
+                                        name1.value.trim() !== '' &&
+                                        gender1.value !== '' &&
+                                        age1.value.trim() !== ''
+                                    ) {
+                                        addMoreBtn.disabled = false;
+                                        nextStepFour.disabled = false;
+                                    } else {
+                                        addMoreBtn.disabled = true;
+                                        nextStepFour.disabled = true;
+                                    }
+                                }
+
+                                // Toggle companion fields
+                                hasCompanion.addEventListener('change', () => {
+                                    if (hasCompanion.checked) {
+                                        fieldContainer.style.display = 'block';
+                                        validateStepFour(); // Initial validation
+                                    } else {
+                                        fieldContainer.style.display = 'none';
+                                        addMoreBtn.disabled = true;
+                                        nextStepFour.disabled = false; // Allow to proceed if no companion
+                                    }
+                                });
+
+                                // Validate on input changes
+                                [name1, gender1, age1].forEach(input => {
+                                    input.addEventListener('input', validateStepFour);
+                                    input.addEventListener('change', validateStepFour);
+                                });
+                            </script>
+
+                            <div class="main-content overflow-hidden" id="stepfive" style="display:none">
+
+                                <h3>Downpayment</h3>
+                                <div class="row">
+                                    <div class="col-lg-8 px-5 mt-3">
+                                        <p>To continue, please send the following amount as <b>15% downpayment</b> for our
+                                            services
+                                            to our
+                                            GCash account using the QR. Upload the
+                                            receipt in the form below.</p>
+
+                                        <h5 id="costlabel">Please pay <span class="fw-bold">PHP<span
+                                                    id="costDisplay"></span></span>
+                                        </h5>
+                                        <div class="mb-3">
+                                            <label for="proofimg" class="form-label">GCash Payment Receipt</label>
+                                            <input type="file" class="form-control" id="proofimg" name="proofimg"
+                                                accept=".jpg,.jpeg,.png">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="refnum" class="form-label">Reference Number</label>
+                                            <input type="text" class="form-control" id="refnum" name="refnum"
+                                                placeholder="Enter reference number">
+                                        </div>
+
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <img src="https://crfaphilippines.org/wp-content/uploads/2023/02/bsgc-gcash-qr.jpg"
+                                                class="w-75">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="navigation-buttons mt-3">
+                                    <button type="button" class="btn btn-secondary" onclick="prevStep(4)">Previous</button>
+                                    <button type="button" class="btn btn-primary" id="nextStepFive" onclick="nextStep(6)"
+                                        disabled>Next</button>
+
+                                </div>
+
+                            </div>
+
+
+                            <script>
+                                const proofImg = document.getElementById('proofimg');
+                                const refNum = document.getElementById('refnum');
+                                const nextStepFive = document.getElementById('nextStepFive');
+
+                                function validateStepFive() {
+                                    const hasImage = proofImg.files.length > 0;
+                                    const hasRef = refNum.value.trim() !== '';
+
+                                    nextStepFive.disabled = !(hasImage && hasRef);
+                                }
+
+                                proofImg.addEventListener('change', validateStepFive);
+                                refNum.addEventListener('input', validateStepFive);
+                            </script>
+                            <div class="main-content overflow-hidden" id="stepsix" style="display:none">
+                                <div id="summary">
+
+                                    <h3>Summary of Your Selection</h3>
+                                    <!-- Changed to include the value properly in the input -->
+                                    <input type="hidden" id="username" name="username"
+                                        value="<?php echo htmlspecialchars($_SESSION['username'] ?? ''); ?>">
+                                    <p><strong>Dentist:</strong> <span id="dentistSummary"></span></p>
+                                    <p><strong>Service:</strong> <span id="serviceSummary"></span></p>
+                                    <p><strong>Date:</strong> <span id="dateSummary"></span></p>
+                                    <p><strong>Time:</strong> <span id="timeSummary"></span></p>
+                                </div>
+                                <div class="navigation-buttons mt-3">
+                                    <button type="button" class="btn btn-secondary" onclick="prevStep(5)">Previous</button>
+                                    <button type="submit" class="btn btn-success" id="submit">Submit</button>
+                                </div>
+                            </div>
+
+
+                        </form>
                     </div>
-
-
-                    <script>
-                        const proofImg = document.getElementById('proofimg');
-                        const refNum = document.getElementById('refnum');
-                        const nextStepFive = document.getElementById('nextStepFive');
-
-                        function validateStepFive() {
-                            const hasImage = proofImg.files.length > 0;
-                            const hasRef = refNum.value.trim() !== '';
-
-                            nextStepFive.disabled = !(hasImage && hasRef);
-                        }
-
-                        proofImg.addEventListener('change', validateStepFive);
-                        refNum.addEventListener('input', validateStepFive);
-                    </script>
-                    <div class="main-content overflow-hidden" id="stepsix" style="display:none">
-                        <div id="summary">
-
-                            <h3>Summary of Your Selection</h3>
-                            <!-- Changed to include the value properly in the input -->
-                            <input type="hidden" id="username" name="username"
-                                value="<?php echo htmlspecialchars($_SESSION['username'] ?? ''); ?>">
-                            <p><strong>Dentist:</strong> <span id="dentistSummary"></span></p>
-                            <p><strong>Service:</strong> <span id="serviceSummary"></span></p>
-                            <p><strong>Date:</strong> <span id="dateSummary"></span></p>
-                            <p><strong>Time:</strong> <span id="timeSummary"></span></p>
-                        </div>
-                        <div class="navigation-buttons mt-3">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep(5)">Previous</button>
-                            <button type="submit" class="btn btn-success" id="submit">Submit</button>
-                        </div>
-                    </div>
-
-
-                </form>
+                </div>
             </div>
         </div>
         <!-- Modal for unavailable time slot -->
@@ -1164,7 +1175,7 @@ if ($activeCount > 0) {
                             const slots = [];
                             let currentTime = new Date(`1970-01-01T${startTime}:00`);
                             const endTimeDate = new Date(`1970-01-01T${endTime}:00`);
-    
+ 
                             while (currentTime < endTimeDate) {
                                 let nextTime = new Date(currentTime.getTime() + duration * 60000);
                                 if (nextTime <= endTimeDate) {
@@ -1181,27 +1192,27 @@ if ($activeCount > 0) {
                             const serviceSelect = document.getElementById('service');
                             const appointmentSelect = document.getElementById('appointment_time');
                             const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
-    
+ 
                             if (!selectedOption.value) {
                                 // If no service is selected, clear the appointment time slots
                                 appointmentSelect.innerHTML = '<option value="">Select a time slot</option>';
                                 return;
                             }
-    
+ 
                             const duration = parseInt(selectedOption.getAttribute('data-duration'));
-    
+ 
                             // Debugging log
                             console.log("Selected Duration:", duration);
-    
+ 
                             // Clear existing options
                             appointmentSelect.innerHTML = '<option value="">Select a time slot</option>';
-    
+ 
                             // Get available slots
                             const availableSlots = getAvailableTimeSlots(start_time, end_time, duration);
-    
+ 
                             // Debugging log for available slots
                             console.log("Available Slots:", availableSlots);
-    
+ 
                             // Populate appointment time slots
                             availableSlots.forEach(slot => {
                                 const option = document.createElement('option');

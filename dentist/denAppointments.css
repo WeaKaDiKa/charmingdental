@@ -75,8 +75,6 @@ body::-webkit-scrollbar {
 .main-wrapper {
     display: flex;
     padding-top: 90px;
-    /* Offset content to account for fixed header */
-    background-color: #da9393;
     min-height: 100vh;
     /* Expand to fill available space */
 }
@@ -89,8 +87,6 @@ body::-webkit-scrollbar {
     /* Ensure padding is included in width */
     flex-grow: 1;
     /* Expand to fill available space */
-    background-color: #da9393;
-    /* Light pink background for main content */
     min-height: 100vh;
     /* Full viewport height */
 }

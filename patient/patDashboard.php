@@ -345,18 +345,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['resched'])) {
                         <div class="card">
 
                             <div class="card-body">
-                                <?php if (isset($_SESSION['success'])): ?>
-                                    <div class="alert alert-success alert-dismissible fade show m-0" role="alert">
-                                        <strong>Success</strong> <?= $_SESSION['success']; ?>
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                            aria-label="Close"></button>
-                                    </div>
-
-                                    <?php unset($_SESSION['success']);
-                                    ?>
-                                    <?php
-
-                                endif; ?>
+     
                                 <h5 class="text-center mb-5">Please activate your account by typing in your OTP sent to your
                                     email to proceed.</h5>
 
