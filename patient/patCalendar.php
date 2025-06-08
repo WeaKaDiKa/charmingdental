@@ -573,71 +573,70 @@ if ($activeCount > 0) {
                                 appointmentTime.addEventListener('change', validateStepTwo);
 
                             </script>
-                            <div class="stepdiv overflow-hidden" id="stepthree" style="display:none">
-                                <?php
-                                $userid = $_SESSION['id'];
-                                $sql = "SELECT disease, recent_surgery, current_disease FROM medical WHERE usersid = ? ORDER BY medid DESC LIMIT 1";
-                                $stmt = $conn->prepare($sql);
-                                if ($stmt) {
-                                    $stmt->bind_param("i", $userid);
-                                    $stmt->execute();
-                                    $stmt->bind_result($disease, $recent_surgery, $current_disease);
-                                    if ($stmt->fetch()) {
-                                        // Set default values if any field is NULL
-                                        $disease = $disease ?? "no";
-                                        $recent_surgery = $recent_surgery ?? "no";
-                                        $current_disease = $current_disease ?? "no";
-                                    } else {
-                                        // If no record found, also assign "no"
-                                        $disease = $recent_surgery = $current_disease = "no";
-                                    }
-                                    $stmt->close();
-                                } else {
-                                    echo "<script>alert('Error preparing the statement: " . $conn->error . "');</script>";
-                                }
+                            <!--    <div class="stepdiv overflow-hidden" id="stepthree" style="display:none"> -->
+                            <?php
+                            /*      $userid = $_SESSION['id'];
+                                 $sql = "SELECT disease, recent_surgery, current_disease FROM medical WHERE usersid = ? ORDER BY medid DESC LIMIT 1";
+                                 $stmt = $conn->prepare($sql);
+                                 if ($stmt) {
+                                     $stmt->bind_param("i", $userid);
+                                     $stmt->execute();
+                                     $stmt->bind_result($disease, $recent_surgery, $current_disease);
+                                     if ($stmt->fetch()) {
+                                         // Set default values if any field is NULL
+                                         $disease = $disease ?? "no";
+                                         $recent_surgery = $recent_surgery ?? "no";
+                                         $current_disease = $current_disease ?? "no";
+                                     } else {
+                                         // If no record found, also assign "no"
+                                         $disease = $recent_surgery = $current_disease = "no";
+                                     }
+                                     $stmt->close();
+                                 } else {
+                                     echo "<script>alert('Error preparing the statement: " . $conn->error . "');</script>";
+                                 }
+  */
+                            ?>
 
-                                ?>
+                            <!--     <h3>Health Declaration Form</h3>
 
-                                <h3>Health Declaration Form</h3>
-
-                                <!-- 1. History of Present Disease or Allergies -->
+                          
                                 <div class="mb-2">
                                     <label>Do you have any history of present disease or allergies?</label>
-                                    <input type="radio" name="hasDisease" value="yes" <?= $disease != "no" ? 'checked' : '' ?>> Yes
-                                    <input type="radio" name="hasDisease" value="no" <?= $disease == "no" ? 'checked' : '' ?>>
+                                    <input type="radio" name="hasDisease" value="yes" < ?= $disease != "no" ? 'checked' : '' ?>> Yes
+                                    <input type="radio" name="hasDisease" value="no" < ?= $disease == "no" ? 'checked' : '' ?>>
                                     No
                                 </div>
                                 <div class="mb-3" id="diseaseField" style="display:none;">
                                     <label for="disease" class="form-label">If yes, please specify:</label>
                                     <textarea class="form-control" id="disease" name="disease"
-                                        rows="3"><?php echo htmlspecialchars($disease ?? ''); ?></textarea>
+                                        rows="3">< ?php echo htmlspecialchars($disease ?? ''); ?></textarea>
                                 </div>
 
-                                <!-- 2. Recent Surgery -->
+                            
                                 <div class="mb-2">
                                     <label>Have you undergone any recent surgery?</label>
-                                    <input type="radio" name="hasSurgery" value="yes" <?= $recent_surgery != "" ? 'checked' : '' ?>> Yes
-                                    <input type="radio" name="hasSurgery" value="no" <?= $recent_surgery == "no" ? 'checked' : '' ?>> No
+                                    <input type="radio" name="hasSurgery" value="yes" < ?= $recent_surgery != "" ? 'checked' : '' ?>> Yes
+                                    <input type="radio" name="hasSurgery" value="no" < ?= $recent_surgery == "no" ? 'checked' : '' ?>> No
                                 </div>
                                 <div class="mb-3" id="surgeryField" style="display:none;">
                                     <label for="recent_surgery" class="form-label">If yes, please specify:</label>
                                     <input type="text" class="form-control" id="recent_surgery" name="recent_surgery"
-                                        value="<?php echo htmlspecialchars($recent_surgery ?? ''); ?>">
+                                        value="< ?php echo htmlspecialchars($recent_surgery ?? ''); ?>">
                                 </div>
 
-                                <!-- 3. Current Disease -->
                                 <div class="mb-2">
                                     <label>Do you have any current diseases (e.g., hypertension, diabetes)?</label>
-                                    <input type="radio" name="hasCurrentDisease" value="yes" <?= $current_disease != "no" ? 'checked' : '' ?>> Yes
-                                    <input type="radio" name="hasCurrentDisease" value="no" <?= $current_disease == "no" ? 'checked' : '' ?>> No
+                                    <input type="radio" name="hasCurrentDisease" value="yes" < ?= $current_disease != "no" ? 'checked' : '' ?>> Yes
+                                    <input type="radio" name="hasCurrentDisease" value="no" < ?= $current_disease == "no" ? 'checked' : '' ?>> No
                                 </div>
                                 <div class="mb-3" id="currentDiseaseField" style="display:none;">
                                     <label for="current_disease" class="form-label">If yes, please specify:</label>
                                     <input type="text" class="form-control" id="current_disease" name="current_disease"
-                                        value="<?php echo htmlspecialchars($current_disease ?? ''); ?>">
+                                        value="< ?php echo htmlspecialchars($current_disease ?? ''); ?>">
                                 </div>
 
-                                <!-- Medical Certificate -->
+                      
                                 <div class="mb-3" id="medicalCertDiv">
                                     <label for="medical_certificate" class="form-label">Medical Certificate (approving you
                                         are in
@@ -651,9 +650,9 @@ if ($activeCount > 0) {
                                     <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Previous</button>
                                     <button type="button" class="btn btn-primary" id="nextStepThree"
                                         onclick="nextStep(4)">Next</button>
-                                </div>
-                            </div>
-
+                                </div> 
+                            </div>-->
+                            <!-- 
                             <script>
                                 const disease = document.getElementById('disease');
                                 const recentSurgery = document.getElementById('recent_surgery');
@@ -748,7 +747,7 @@ if ($activeCount > 0) {
                                 // Medical cert container
 
                             </script>
-
+ -->
                             <div class="stepdiv overflow-hidden" id="stepfour" style="display:none">
                                 <h3>Will someone accompany you?</h3>
                                 <div class="form-check form-switch mb-3">
@@ -775,9 +774,9 @@ if ($activeCount > 0) {
                                 <button type="button" class="btn btn-secondary" id="addMoreFields" disabled>Add
                                     More</button>
                                 <div class="navigation-buttons mt-3">
-                                    <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Previous</button>
+                                    <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Previous</button>
                                     <button type="button" class="btn btn-primary" id="nextStepFour"
-                                        onclick="nextStep(5)">Next</button>
+                                        onclick="nextStep(4)">Next</button>
                                 </div>
                             </div>
                             <script>
@@ -855,8 +854,8 @@ if ($activeCount > 0) {
 
                                 </div>
                                 <div class="navigation-buttons mt-3">
-                                    <button type="button" class="btn btn-secondary" onclick="prevStep(4)">Previous</button>
-                                    <button type="button" class="btn btn-primary" id="nextStepFive" onclick="nextStep(6)"
+                                    <button type="button" class="btn btn-secondary" onclick="prevStep(3)">Previous</button>
+                                    <button type="button" class="btn btn-primary" id="nextStepFive" onclick="nextStep(5)"
                                         disabled>Next</button>
 
                                 </div>
@@ -892,7 +891,7 @@ if ($activeCount > 0) {
                                     <p><strong>Time:</strong> <span id="timeSummary"></span></p>
                                 </div>
                                 <div class="navigation-buttons mt-3">
-                                    <button type="button" class="btn btn-secondary" onclick="prevStep(5)">Previous</button>
+                                    <button type="button" class="btn btn-secondary" onclick="prevStep(4)">Previous</button>
                                     <button type="submit" class="btn btn-success" id="submit">Submit</button>
                                 </div>
                             </div>
@@ -1229,7 +1228,7 @@ if ($activeCount > 0) {
                                 appointmentSelect.appendChild(option);
                             });
                         } */
-
+            let submittedform = false;
             function updateSlots() {
                 const serviceSelect = document.getElementById('service');
                 const appointmentSelect = document.getElementById('appointment_time');
@@ -1248,8 +1247,6 @@ if ($activeCount > 0) {
                     return;
                 }
 
-                appointmentSelect.innerHTML = '<option value="">Loading available slots...</option>';
-
                 // AJAX request to fetch available slots
                 fetch('get_available_slots.php', {
                     method: 'POST',
@@ -1258,28 +1255,43 @@ if ($activeCount > 0) {
                 })
                     .then(response => response.text())
                     .then(text => {
-                        console.log("Raw Response:", text);
                         try {
                             const availableSlots = JSON.parse(text);
-                            console.log("Available Slots:", availableSlots);
 
+                            // Get current options (excluding the placeholder)
+                            const currentOptions = Array.from(appointmentSelect.options)
+                                .slice(1) // skip the first option "Select a time slot"
+                                .map(opt => opt.value);
 
-                            appointmentSelect.innerHTML = '<option value="">Select a time slot</option>';
+                            // Compare arrays: skip update if no change
+                            const slotsChanged = availableSlots.length !== currentOptions.length ||
+                                availableSlots.some((slot, i) => slot !== currentOptions[i]);
 
+                            if (slotsChanged) {
+                                // Update only if there's a change
+                                appointmentSelect.innerHTML = '<option value="">Select a time slot</option>';
+                                availableSlots.forEach(slot => {
+                                    const option = document.createElement('option');
+                                    option.value = slot;
+                                    option.textContent = slot;
+                                    appointmentSelect.appendChild(option);
+                                });
+                                if (!submittedform) { showStep(2); }
 
-                            availableSlots.forEach(slot => {
-                                const option = document.createElement('option');
-                                option.value = slot;
-                                option.textContent = slot;
-                                appointmentSelect.appendChild(option);
-                            });
+                            }
                         } catch (error) {
                             console.error("Error parsing JSON:", error, "\nServer Response:", text);
                         }
                     })
                     .catch(error => console.error('Error fetching available slots:', error));
-
             }
+
+
+            document.addEventListener("DOMContentLoaded", () => {
+
+                updateSlots();
+                setInterval(updateSlots, 1000);
+            });
 
 
             function fetchCurrentTime() {
@@ -1340,7 +1352,7 @@ if ($activeCount > 0) {
             });
 
             function updateSummary() {
-                const dentist = document.getElementById('dentist').value || 'Not selected';
+                const dentist = document.getElementById('dentist').options[document.getElementById('dentist').selectedIndex].text || 'Not selected';
                 const service = document.getElementById('service').options[document.getElementById('service').selectedIndex].text || 'Not selected';
                 const date = document.querySelector('.day.selected') ? document.querySelector('.day.selected').dataset.date : 'Not selected';
                 const time = document.getElementById('appointment_time').value || 'Not selected';
@@ -1384,6 +1396,7 @@ if ($activeCount > 0) {
                     .then(response => response.text())
                     .then(data => {
                         console.log(data);
+                        submittedform = true;
                         displayPopupMessage("Appointment booked successfully! You’ll be emailed once the appointment approves or rejects.", true);
                     })
                     .catch(error => {

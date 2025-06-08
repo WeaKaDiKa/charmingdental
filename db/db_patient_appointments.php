@@ -47,26 +47,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['otpsubmit']) && !isse
         $appointment_time = $_POST['appointment_time'] ?? '';
 
         if (!empty($appointment_time)) {
-            // Split date and time slot
-            $parts = explode(' ', $appointment_time, 2);
+            $timeRange = explode(' - ', $appointment_time); // Note the spaces around the dash
 
-            if (count($parts) === 2) {
-                $timeRange = explode('-', $parts[1]);
+            if (count($timeRange) === 2) {
+                $appointment_time_start = trim($timeRange[0]);
+                $appointment_time_end = trim($timeRange[1]);
+            }
+        }
+        // Downpayment Proof Upload
+        $proofimg = null;
+        if (isset($_FILES['proofimg']) && $_FILES['proofimg']['error'] == UPLOAD_ERR_OK) {
+            $target_dir = "../uploads/payment/";
+            $file_name = basename($_FILES["proofimg"]["name"]);
+            $uniquefile = uniqid() . "_" . $file_name;
+            $target_file = $target_dir . $uniquefile;
 
-                if (count($timeRange) === 2) {
-                    $appointment_time_start = trim($timeRange[0]);
-                    $appointment_time_end = trim($timeRange[1]);
-                }
+            if (move_uploaded_file($_FILES["proofimg"]["tmp_name"], $target_file)) {
+                $proofimg = $uniquefile;
             }
         }
         $refnum = $_POST['refnum'] ?? '';
-        // Prepare SQL statement
-        $stmt = $conn->prepare("INSERT INTO appointments (patient_id, dentist_id, service_id, appointment_date, appointment_time_start, appointment_time_end,  transaction)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO appointments 
+    (patient_id, dentist_id, service_id, appointment_date, appointment_time_start, appointment_time_end, transaction, proofimg)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
         if (!$stmt) {
             die(json_encode(['success' => false, 'message' => "Error preparing insert statement: " . $conn->error]));
         }
-        $stmt->bind_param("iiissss", $userId, $dentist_id, $service_id, $appointment_date, $appointment_time_start, $appointment_time_end, $refnum);
+
+        $stmt->bind_param("iiisssss", $userId, $dentist_id, $service_id, $appointment_date, $appointment_time_start, $appointment_time_end, $refnum, $proofimg);
 
         if ($stmt->execute()) {
             $appointmentid = $stmt->insert_id;
@@ -96,77 +105,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['otpsubmit']) && !isse
 
         $stmt->close();
 
-        // Medical Information
-        $disease = trim($_POST['disease'] ?? '');
-        $disease = $disease === '' ? 'no' : $disease;
+        /*    // Medical Information
+           $disease = trim($_POST['disease'] ?? '');
+           $disease = $disease === '' ? 'no' : $disease;
 
-        $recent_surgery = trim($_POST['recent_surgery'] ?? '');
-        $recent_surgery = $recent_surgery === '' ? 'no' : $recent_surgery;
+           $recent_surgery = trim($_POST['recent_surgery'] ?? '');
+           $recent_surgery = $recent_surgery === '' ? 'no' : $recent_surgery;
 
-        $current_disease = trim($_POST['current_disease'] ?? '');
-        $current_disease = $current_disease === '' ? 'no' : $current_disease;
+           $current_disease = trim($_POST['current_disease'] ?? '');
+           $current_disease = $current_disease === '' ? 'no' : $current_disease;
 
 
-        $sql = "SELECT disease, recent_surgery, current_disease FROM medical WHERE usersid = ? ORDER BY medid DESC LIMIT 1";
-        $stmt = $conn->prepare($sql);
-        $latest_disease = $latest_recent_surgery = $latest_current_disease = '';
-        if ($stmt) {
-            $stmt->bind_param("i", $userId);
-            $stmt->execute();
-            $stmt->bind_result($latest_disease, $latest_recent_surgery, $latest_current_disease);
-            $stmt->fetch();
-            $stmt->close();
-        }
+           $sql = "SELECT disease, recent_surgery, current_disease FROM medical WHERE usersid = ? ORDER BY medid DESC LIMIT 1";
+           $stmt = $conn->prepare($sql);
+           $latest_disease = $latest_recent_surgery = $latest_current_disease = '';
+           if ($stmt) {
+               $stmt->bind_param("i", $userId);
+               $stmt->execute();
+               $stmt->bind_result($latest_disease, $latest_recent_surgery, $latest_current_disease);
+               $stmt->fetch();
+               $stmt->close();
+           }
 
-        if (!empty($disease) || !empty($recent_surgery) || !empty($current_disease)) {
-            if ($disease != $latest_disease || $recent_surgery != $latest_recent_surgery || $current_disease != $latest_current_disease) {
-                $medcertlink = null;
-                if (isset($_FILES['medical_certificate']) && $_FILES['medical_certificate']['error'] == UPLOAD_ERR_OK) {
-                    $target_dir = "../uploads/";
-                    $file_name = basename($_FILES["medical_certificate"]["name"]);
-                    $uniquefile = uniqid() . "_" . $file_name;
-                    $target_file = $target_dir . $uniquefile;
+           if (!empty($disease) || !empty($recent_surgery) || !empty($current_disease)) {
+               if ($disease != $latest_disease || $recent_surgery != $latest_recent_surgery || $current_disease != $latest_current_disease) {
+                   $medcertlink = null;
+                   if (isset($_FILES['medical_certificate']) && $_FILES['medical_certificate']['error'] == UPLOAD_ERR_OK) {
+                       $target_dir = "../uploads/";
+                       $file_name = basename($_FILES["medical_certificate"]["name"]);
+                       $uniquefile = uniqid() . "_" . $file_name;
+                       $target_file = $target_dir . $uniquefile;
 
-                    if (move_uploaded_file($_FILES["medical_certificate"]["tmp_name"], $target_file)) {
-                        $medcertlink = $uniquefile;
-                    }
-                }
+                       if (move_uploaded_file($_FILES["medical_certificate"]["tmp_name"], $target_file)) {
+                           $medcertlink = $uniquefile;
+                       }
+                   }
 
-                $sql = "INSERT INTO medical (usersid, disease, recent_surgery, current_disease, medcertlink) VALUES (?, ?, ?, ?, ?)";
-                $stmt = $conn->prepare($sql);
-                if ($stmt) {
-                    $stmt->bind_param("issss", $userId, $disease, $recent_surgery, $current_disease, $medcertlink);
-                    $stmt->execute();
-                    $stmt->close();
-                }
-            }
-        }
+                   $sql = "INSERT INTO medical (usersid, disease, recent_surgery, current_disease, medcertlink) VALUES (?, ?, ?, ?, ?)";
+                   $stmt = $conn->prepare($sql);
+                   if ($stmt) {
+                       $stmt->bind_param("issss", $userId, $disease, $recent_surgery, $current_disease, $medcertlink);
+                       $stmt->execute();
+                       $stmt->close();
+                   }
+               }
+           }
+    */
 
-        // Downpayment Proof Upload
-        $proofimg = null;
-        if (isset($_FILES['proofimg']) && $_FILES['proofimg']['error'] == UPLOAD_ERR_OK) {
-            $target_dir = "../uploads/payment/";
-            $file_name = basename($_FILES["proofimg"]["name"]);
-            $uniquefile = uniqid() . "_" . $file_name;
-            $target_file = $target_dir . $uniquefile;
-
-            if (move_uploaded_file($_FILES["proofimg"]["tmp_name"], $target_file)) {
-                $proofimg = $uniquefile;
-            }
-        }
-
-        // Insert proofimg into downpayment
-        if ($proofimg) {
-            $sql = "INSERT INTO downpayment (proofimg, appointmentid) VALUES (?, ?)";
-            $stmt = $conn->prepare($sql);
-            if ($stmt) {
-                $stmt->bind_param("si", $proofimg, $appointmentid);
-                if ($stmt->execute()) {
-                    echo "<script>alert('Downpayment proof uploaded successfully.');</script>";
-                }
-                $stmt->close();
-            }
-        }
     } else {
         echo json_encode(['success' => false, 'message' => 'Missing required fields: ' . implode(', ', $missing_fields)]);
     }

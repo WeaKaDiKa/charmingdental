@@ -65,7 +65,10 @@ function getAvailableTimeSlots($startTime, $endTime, $duration, $unavailableSlot
 // Fetch unavailable slots from the database
 function getUnavailableSlots($date, $db)
 {
-    $query = "SELECT appointment_time_start, appointment_time_end FROM appointments WHERE appointment_date = ?";
+    $query = "SELECT appointment_time_start, appointment_time_end 
+          FROM appointments 
+          WHERE appointment_date = ? 
+          AND status NOT IN ('cancelled', 'rejected')";
 
     $stmt = $db->prepare($query);
     if (!$stmt) {
@@ -81,7 +84,7 @@ function getUnavailableSlots($date, $db)
         $slot = $row['appointment_time_start'] . ' - ' . $row['appointment_time_end'];
         $unavailableSlots[] = $slot;
     }
-
+    $unavailableSlots[] = '12:00 PM - 1:00 PM';
     return $unavailableSlots;
 }
 
