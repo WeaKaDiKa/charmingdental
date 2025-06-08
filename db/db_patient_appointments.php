@@ -13,15 +13,11 @@ if ($conn->connect_error) {
     die(json_encode(['success' => false, 'message' => "Connection failed: " . $conn->connect_error]));
 }
 
-// Check if user is logged in
-if (!isset($_SESSION['id']) || !$_SESSION['id']) {
-    echo json_encode(['success' => false, 'message' => 'User not logged in']);
-    exit();
-}
-
+// Fetch user details
+$userId = $_SESSION['id'];
 
 // Fetch services from the database
-$service_query = "SELECT id, name, duration, rate FROM services";
+$service_query = "SELECT * FROM services";
 $service_result = $conn->query($service_query);
 if (!$service_result) {
     die(json_encode(['success' => false, 'message' => "Error fetching services: " . $conn->error]));
@@ -29,40 +25,13 @@ if (!$service_result) {
 $services = $service_result->fetch_all(MYSQLI_ASSOC);
 
 // Fetch dentists from the database
-$dentist_query = "SELECT dentist_id, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) AS name FROM dentists";
+$dentist_query = "SELECT id as dentist_id, CONCAT(first_name, ' ', COALESCE(middle_name, ''), ' ', last_name) AS name FROM users_employee WHERE usertype = 'dentist'";
 $dentist_result = $conn->query($dentist_query);
 if (!$dentist_result) {
     die(json_encode(['success' => false, 'message' => "Error fetching dentists: " . $conn->error]));
 }
 $dentists = $dentist_result->fetch_all(MYSQLI_ASSOC);
 
-// Fetch user details
-$userId = $_SESSION['id'];
-
-$user_query = "SELECT first_name, middle_name, last_name, mobile, email, username FROM users WHERE id = ?";
-$stmt = $conn->prepare($user_query);
-if (!$stmt) {
-    die(json_encode(['success' => false, 'message' => "Error preparing user query: " . $conn->error]));
-}
-$stmt->bind_param("i", $userId);
-if (!$stmt->execute()) {
-    die(json_encode(['success' => false, 'message' => "Error executing user query: " . $stmt->error]));
-}
-
-$user_result = $stmt->get_result();
-if ($user_result->num_rows > 0) {
-    $user = $user_result->fetch_assoc();
-
-    $_SESSION['full_name'] = trim($user['first_name'] . ' ' . ($user['middle_name'] ?? '') . ' ' . $user['last_name']);
-    $_SESSION['mobile'] = $user['mobile'];
-    $_SESSION['email'] = $user['email'];  // Store email in session
-    $_SESSION['username'] = $user['username'];
-
-} else {
-    echo json_encode(['success' => false, 'message' => "No user found with ID: " . $userId]);
-    exit();
-}
-$stmt->close();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['otpsubmit']) && !isset($_POST['otpresend']) && !isset($_POST['resched']) && !isset($_POST['reschedupcoming']) && !isset($_POST['cancel_appointment'])) {
     $required_fields = ['dentist', 'service', 'appointment_date', 'appointment_time'];
@@ -71,22 +40,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['otpsubmit']) && !isse
     });
 
     if (empty($missing_fields)) {
-        $patient_name = $_SESSION['full_name'] ?? '';
-        $patient_contact = $_SESSION['mobile'] ?? '';
-        $dentist_name = $_POST['dentist'] ?? '';
-        $service_name = $_POST['service'] ?? '';
+
+        $dentist_id = $_POST['dentist'] ?? '';
+        $service_id = $_POST['service'] ?? '';
         $appointment_date = $_POST['appointment_date'] ?? '';
         $appointment_time = $_POST['appointment_time'] ?? '';
-        $username = $_SESSION['username'] ?? '';
-        $email = $_SESSION['email'] ?? '';
+
+        if (!empty($appointment_time)) {
+            // Split date and time slot
+            $parts = explode(' ', $appointment_time, 2);
+
+            if (count($parts) === 2) {
+                $timeRange = explode('-', $parts[1]);
+
+                if (count($timeRange) === 2) {
+                    $appointment_time_start = trim($timeRange[0]);
+                    $appointment_time_end = trim($timeRange[1]);
+                }
+            }
+        }
         $refnum = $_POST['refnum'] ?? '';
         // Prepare SQL statement
-        $stmt = $conn->prepare("INSERT INTO appointments (patient_id, p_name, p_contact, dentist_name, service_name, appointment_date, appointment_time, username, email, transaction)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO appointments (patient_id, dentist_id, service_id, appointment_date, appointment_time_start, appointment_time_end,  transaction)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)");
         if (!$stmt) {
             die(json_encode(['success' => false, 'message' => "Error preparing insert statement: " . $conn->error]));
         }
-       $stmt->bind_param("isssssssss", $userId, $patient_name, $patient_contact, $dentist_name, $service_name, $appointment_date, $appointment_time, $username, $email, $refnum);
+        $stmt->bind_param("iiissss", $userId, $dentist_id, $service_id, $appointment_date, $appointment_time_start, $appointment_time_end, $refnum);
 
         if ($stmt->execute()) {
             $appointmentid = $stmt->insert_id;
@@ -118,15 +98,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['otpsubmit']) && !isse
 
         // Medical Information
         $disease = trim($_POST['disease'] ?? '');
+        $disease = $disease === '' ? 'no' : $disease;
+
         $recent_surgery = trim($_POST['recent_surgery'] ?? '');
+        $recent_surgery = $recent_surgery === '' ? 'no' : $recent_surgery;
+
         $current_disease = trim($_POST['current_disease'] ?? '');
-        $userid = $_SESSION['id'] ?? '';
+        $current_disease = $current_disease === '' ? 'no' : $current_disease;
+
 
         $sql = "SELECT disease, recent_surgery, current_disease FROM medical WHERE usersid = ? ORDER BY medid DESC LIMIT 1";
         $stmt = $conn->prepare($sql);
         $latest_disease = $latest_recent_surgery = $latest_current_disease = '';
         if ($stmt) {
-            $stmt->bind_param("i", $userid);
+            $stmt->bind_param("i", $userId);
             $stmt->execute();
             $stmt->bind_result($latest_disease, $latest_recent_surgery, $latest_current_disease);
             $stmt->fetch();
@@ -150,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['otpsubmit']) && !isse
                 $sql = "INSERT INTO medical (usersid, disease, recent_surgery, current_disease, medcertlink) VALUES (?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 if ($stmt) {
-                    $stmt->bind_param("issss", $userid, $disease, $recent_surgery, $current_disease, $medcertlink);
+                    $stmt->bind_param("issss", $userId, $disease, $recent_surgery, $current_disease, $medcertlink);
                     $stmt->execute();
                     $stmt->close();
                 }

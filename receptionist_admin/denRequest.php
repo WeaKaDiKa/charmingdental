@@ -2,7 +2,25 @@
 // Database connection code at the top of your file
 require_once '../db/config.php';
 
-$query = "SELECT appointment_id, p_name, service_name, appointment_date, appointment_time, email, transaction FROM appointments";
+$query = "
+SELECT 
+    a.appointment_id, 
+    CONCAT(u.first_name, ' ', u.last_name) AS p_name, 
+    s.name AS service_name, 
+    a.appointment_date, 
+    CONCAT(
+        DATE_FORMAT(STR_TO_DATE(a.appointment_time_start, '%H:%i:%s'), '%h:%i %p'),
+        ' - ',
+        DATE_FORMAT(STR_TO_DATE(a.appointment_time_end, '%H:%i:%s'), '%h:%i %p')
+    ) AS appointment_time,
+    u.email,
+    a.transaction 
+FROM appointments a
+JOIN users u ON a.patient_id = u.id
+JOIN services s ON a.service_id = s.id
+WHERE a.status = 'submitted' || a.status = 'rescheduled'
+";
+
 
 $result = mysqli_query($db, $query);
 
@@ -217,8 +235,9 @@ if (!$result) {
                     <input type="text" placeholder="Search by name">
                 </div> -->
                     </div>
-                    <div class="request-content">
-                        <table class="approval-table">
+                    <div class="overflow-x-scroll mt-3">
+
+                        <table id="approvalTable" class="table table-striped table-bordered approval-table">
                             <thead>
                                 <tr>
                                     <th>Appointment No.</th>
@@ -231,24 +250,18 @@ if (!$result) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if ($result && mysqli_num_rows($result) > 0) { ?>
+                                <?php if ($result && mysqli_num_rows($result) > 0): ?>
                                     <?php while ($row = mysqli_fetch_assoc($result)):
-
-
                                         $queryreceipt = "SELECT proofimg FROM downpayment WHERE appointmentid = " . $row['appointment_id'] . " LIMIT 1";
-
                                         $resultreceipt = mysqli_query($db, $queryreceipt);
-
-
                                         ?>
-                                        <tr data-id="<?php echo $row['appointment_id']; ?>">
-                                            <td><?php echo htmlspecialchars($row['appointment_id']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['p_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['service_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                            <td class="hidden"><?php echo htmlspecialchars($row['email']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['transaction']); ?></td>
+                                        <tr data-id="<?= $row['appointment_id']; ?>">
+                                            <td><?= htmlspecialchars($row['appointment_id']); ?></td>
+                                            <td><?= htmlspecialchars($row['p_name']); ?></td>
+                                            <td><?= htmlspecialchars($row['service_name']); ?></td>
+                                            <td><?= htmlspecialchars($row['appointment_time']); ?></td>
+                                            <td><?= htmlspecialchars($row['appointment_date']); ?></td>
+                                            <td><?= htmlspecialchars($row['transaction']); ?></td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn accept-btn" onclick="acceptRequest(this)">Accept</button>
@@ -256,22 +269,30 @@ if (!$result) {
                                                     <?php while ($downpayment = mysqli_fetch_assoc($resultreceipt)): ?>
                                                         <button class="btn btn-primary btn-view" data-bs-toggle="modal"
                                                             data-bs-target="#viewModal"
-                                                            data-proofimg="../uploads/payment/<?= $downpayment['proofimg']; ?>">View
+                                                            data-proofimg="../uploads/payment/<?= $downpayment['proofimg']; ?>">
+                                                            View
                                                         </button>
                                                     <?php endwhile; ?>
                                                 </div>
                                             </td>
                                         </tr>
                                     <?php endwhile; ?>
-                                <?php } else { ?>
-                                    <tr>
-                                        <td colspan="6">
-                                            <h2>No Appointment Requests</h2>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
+                                <?php endif; ?>
                             </tbody>
                         </table>
+                        <script>
+                            $(document).ready(function () {
+                                $('#approvalTable').DataTable({
+                                    responsive: true,
+                                    pageLength: 10,
+                                    ordering: true,
+                                    columnDefs: [
+                                        { orderable: false, targets: 6 } // Disable sorting on 'Action' column
+                                    ]
+                                });
+                            });
+                        </script>
+                
                     </div>
                 </div>
             </div>

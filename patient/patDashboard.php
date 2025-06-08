@@ -4,6 +4,7 @@ require_once('../db/db_patient_appointments.php');
 // Comprehensive session check
 if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
     header('location: patLogin.php');
+
     exit();
 }
 
@@ -34,14 +35,25 @@ try {
     die("We're experiencing technical difficulties. Please try again later.");
 }
 // Fetch all upcoming appointments with sorting (latest first)
-$upcomingQuery = "SELECT * 
-                 FROM approved_requests 
-                 WHERE username = ? 
-                 AND status != 'completed' 
-                 AND status != 'Completed'
-                 AND status != 'cancelled'
-                 ORDER BY STR_TO_DATE(created_at, '%Y-%m-%d') DESC, 
-                          STR_TO_DATE(created_at, '%Y-%m-%d %H:%i:%s') DESC";
+$upcomingQuery = "
+SELECT 
+    a.appointment_id,
+    a.patient_id,
+    CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+    s.name AS service_name,
+    CONCAT(e.first_name, ' ', e.last_name) AS dentist_name,
+    a.appointment_date,
+    CONCAT(a.appointment_time_start, ' - ', a.appointment_time_end) AS appointment_time,
+    a.status,
+    a.created_at
+FROM appointments a
+JOIN users u ON a.patient_id = u.id
+JOIN users_employee e ON a.dentist_id = e.id
+JOIN services s ON a.service_id = s.id
+WHERE u.username = ?
+  AND LOWER(a.status) NOT IN ('completed', 'cancelled', 'submitted')
+ORDER BY a.created_at DESC;
+";
 
 try {
     $upcomingStmt = $db->prepare($upcomingQuery);
@@ -67,14 +79,26 @@ try {
 
 
 // Fetch all approval appointments with sorting (latest first)
-$approvalQuery = "SELECT * 
-                 FROM appointments 
-                 WHERE username = ? 
-                 AND status != 'completed' 
-                 AND status != 'Completed'
-                 AND status != 'cancelled'
-                 ORDER BY STR_TO_DATE(created_at, '%Y-%m-%d') DESC, 
-                          STR_TO_DATE(created_at, '%Y-%m-%d %H:%i:%s') DESC";
+$approvalQuery = "
+SELECT 
+    a.appointment_id,
+    a.patient_id,
+    CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+    s.name AS service_name,
+    CONCAT(e.first_name, ' ', e.last_name) AS dentist_name,
+    a.appointment_date,
+    CONCAT(a.appointment_time_start, ' - ', a.appointment_time_end) AS appointment_time,
+    a.status,
+    a.created_at
+FROM appointments a
+JOIN users u ON a.patient_id = u.id
+JOIN users_employee e ON a.dentist_id = e.id
+JOIN services s ON a.service_id = s.id
+WHERE u.username = ?
+  AND LOWER(a.status) = 'submitted'
+ORDER BY a.created_at DESC;
+";
+
 
 try {
     $previousStmt = $db->prepare($approvalQuery);
@@ -345,7 +369,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['resched'])) {
                         <div class="card">
 
                             <div class="card-body">
-     
+
                                 <h5 class="text-center mb-5">Please activate your account by typing in your OTP sent to your
                                     email to proceed.</h5>
 

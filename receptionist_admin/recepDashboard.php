@@ -1,13 +1,31 @@
 <?php
 require_once '../db/config.php';
 // Fetch the nearest appointment with 'upcoming' status
-$query = "SELECT id, patient_id, patient_name, treatment, appointment_time, appointment_date, dentist_name, status 
-          FROM approved_requests 
-          WHERE status = 'upcoming'
-          ORDER BY ABS(DATEDIFF(STR_TO_DATE(appointment_date, '%Y-%m-%d'), CURDATE())) ASC,
-                   STR_TO_DATE(appointment_time, '%H:%i:%s') ASC 
-          LIMIT 5";
+$query = "SELECT 
+            a.appointment_id AS id,
+            a.patient_id,
+            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+            s.name AS treatment,
+            CONCAT(
+                DATE_FORMAT(a.appointment_time_start, '%h:%i %p'),
+                ' - ',
+                DATE_FORMAT(a.appointment_time_end, '%h:%i %p')
+            ) AS appointment_time,
+            a.appointment_date,
+            CONCAT(e.first_name, ' ', e.last_name) AS dentist_name,
+            a.status
+        FROM appointments a
+        JOIN users u ON a.patient_id = u.id
+        JOIN services s ON a.service_id = s.id
+        JOIN users_employee e ON a.dentist_id = e.id
+        WHERE a.status = 'upcoming'
+        ORDER BY 
+            ABS(DATEDIFF(STR_TO_DATE(a.appointment_date, '%Y-%m-%d'), CURDATE())) ASC,
+            STR_TO_DATE(a.appointment_time_start, '%H:%i:%s') ASC
+        LIMIT 5";
+
 $result = mysqli_query($db, $query);
+
 if (!$result) {
     die("Query Error: " . mysqli_error($db));
 }
@@ -22,19 +40,18 @@ if (!isset($_SESSION['id'])) {
 $firstName = $_SESSION['first_name'];
 $gender = $_SESSION['gender'];
 
-
 $total_users = 0;
 $total_appointments = 0;
 $total_notified = 0;
 $approved_requests = 0;
 
-/// Query to get total patients and employees for total system users
 $query_users = "
 SELECT
     (SELECT COUNT(*) FROM users WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())) AS total_patients,
     (SELECT COUNT(*) FROM users_employee WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())) AS total_employees,
-    (SELECT COUNT(*) FROM approved_requests WHERE status = 'upcoming') AS approved_requests,
-    (SELECT COUNT(*) FROM approved_requests WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())) AS total_appointments";
+    (SELECT COUNT(*) FROM appointments WHERE status = 'upcoming') AS approved_requests,
+    (SELECT COUNT(*) FROM appointments WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())) AS total_appointments
+";
 
 $result_users = mysqli_query($db, $query_users);
 if ($row_users = mysqli_fetch_assoc($result_users)) {
@@ -45,6 +62,7 @@ if ($row_users = mysqli_fetch_assoc($result_users)) {
 }
 
 $total_users = $total_patients + $total_employees;
+
 
 require_once "../db/scheduledemail.php";
 

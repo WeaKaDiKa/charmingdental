@@ -7,13 +7,37 @@ if (!isset($_SESSION['id'])) {
 }
 
 // Fetch the nearest appointment with 'upcoming' status
-$query = "SELECT id, patient_id, patient_name, treatment, appointment_time, appointment_date, dentist_name, status 
-          FROM approved_requests 
-          WHERE status = 'upcoming'
-          ORDER BY ABS(DATEDIFF(STR_TO_DATE(appointment_date, '%Y-%m-%d'), CURDATE())) ASC,
-                   STR_TO_DATE(appointment_time, '%H:%i:%s') ASC 
-          LIMIT 1";
+$query = "
+   SELECT 
+    a.appointment_id,
+    a.patient_id,
+    CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+    s.name AS treatment_name,
+    CONCAT(
+        DATE_FORMAT(a.appointment_time_start, '%h:%i %p'),
+        ' - ',
+        DATE_FORMAT(a.appointment_time_end, '%h:%i %p')
+    ) AS appointment_time,
+    a.appointment_date,
+    CONCAT(e.first_name, ' ', e.last_name) AS dentist_name,
+    a.status
+FROM appointments a
+JOIN users u ON a.patient_id = u.id
+JOIN users_employee e ON a.dentist_id = e.id
+JOIN services s ON a.service_id = s.id
+WHERE a.status = 'upcoming'
+ORDER BY 
+    ABS(DATEDIFF(STR_TO_DATE(a.appointment_date, '%Y-%m-%d'), CURDATE())) ASC,
+    a.appointment_time_start ASC
+LIMIT 1;
+
+";
+
 $result = mysqli_query($db, $query);
+
+
+$result = mysqli_query($db, $query);
+
 if (!$result) {
     die("Query Error: " . mysqli_error($db));
 }
@@ -23,15 +47,15 @@ $upcomingAppointments = mysqli_fetch_all($result, MYSQLI_ASSOC);
 $query_appointments = "
 SELECT
     (SELECT COUNT(*) FROM appointments WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())) AS total_appointments,
-    (SELECT COUNT(*) FROM approved_requests WHERE status = 'upcoming') AS approved_requests,
-    (SELECT COUNT(*) FROM approved_requests WHERE status = 'Completed') AS completed_requests,
+    (SELECT COUNT(*) FROM appointments WHERE status = 'upcoming') AS appointments,
+    (SELECT COUNT(*) FROM appointments WHERE status = 'completed') AS completed_requests,
     (SELECT COUNT(*) FROM users WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())) AS total_patients";
 $result_appointments = mysqli_query($db, $query_appointments);
-$total_appointments = $approved_requests = $completed_requests = $total_patients = 0;
+$total_appointments = $appointments = $completed_requests = $total_patients = 0;
 
 if ($row_appointments = mysqli_fetch_assoc($result_appointments)) {
     $total_appointments = $row_appointments['total_appointments'];
-    $approved_requests = $row_appointments['approved_requests'];
+    $appointments = $row_appointments['appointments'];
     $completed_requests = $row_appointments['completed_requests'];
     $total_patients = $row_appointments['total_patients'];
 }
@@ -352,7 +376,7 @@ $gender = $_SESSION['gender'];
                                 <p>UPCOMING APPOINTMENTS</p>
                             </div>
                             <div>
-                                <p1 id="totalAppointments"><?php echo htmlspecialchars($approved_requests); ?></p1>
+                                <p1 id="totalAppointments"><?php echo htmlspecialchars($appointments); ?></p1>
                             </div>
                             <div class="description">
                                 <button class="more-buttons"
@@ -374,7 +398,7 @@ $gender = $_SESSION['gender'];
                 <!--  <div class="stat-box1">
                     <h4></h4>
                     <div class="number">
-                       <p class="date-now"><?php //echo htmlspecialchars($approved_requests); ?></p>
+                       <p class="date-now"><?php //echo htmlspecialchars($appointments); ?></p>
                         <div class="treatment-container">
                             <div id="treatment-box-container">
                                 <?php if (false):

@@ -9,47 +9,106 @@ $allowedTabs = ['upcoming', 'rescheduled', 'completed', 'cancelled', 'rejected']
 $activeTab = isset($_GET['tab']) && in_array($_GET['tab'], $allowedTabs)
     ? $_GET['tab']
     : 'upcoming';
-
-$query = "SELECT id, patient_id, notes, patient_name, treatment, appointment_time, appointment_date, status
-          FROM approved_requests WHERE status = 'upcoming';";
+// UPCOMING
+// UPCOMING
+$query = "SELECT 
+            a.appointment_id,
+            a.patient_id,
+            a.notes,
+            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+            s.name AS treatment_name,
+            a.appointment_time_start,
+            a.appointment_time_end,
+            a.appointment_date,
+            a.status
+          FROM appointments a
+          JOIN users u ON a.patient_id = u.id
+          JOIN services s ON a.service_id = s.id
+          WHERE a.status = 'upcoming';";
 
 $resultupcoming = mysqli_query($db, $query);
-
 if (!$resultupcoming) {
-    die("Query Error: " . mysqli_error($db));
+    die('Query Error: ' . mysqli_error($db));
 }
 
-$query = "SELECT id, patient_id, notes, patient_name, treatment, appointment_time, appointment_date, status
-          FROM approved_requests WHERE status = 'completed';";
+// COMPLETED
+$query = "SELECT 
+            a.appointment_id,
+            a.patient_id,
+            a.notes,
+            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+            s.name AS treatment_name,
+            a.appointment_time_start,
+            a.appointment_time_end,
+            a.appointment_date,
+            a.status
+          FROM appointments a
+          JOIN users u ON a.patient_id = u.id
+          JOIN services s ON a.service_id = s.id
+          WHERE a.status = 'completed';";
 
 $resultcompleted = mysqli_query($db, $query);
-
 if (!$resultcompleted) {
-    die("Query Error: " . mysqli_error($db));
+    die('Query Error: ' . mysqli_error($db));
 }
 
-
-$query = "SELECT id, patient_id, notes, patient_name, treatment, appointment_time, appointment_date, status
-          FROM approved_requests WHERE status = 'rescheduled';";
+// RESCHEDULED
+$query = "SELECT 
+            a.appointment_id,
+            a.patient_id,
+            a.notes,
+            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+            s.name AS treatment_name,
+            a.appointment_time_start,
+            a.appointment_time_end,
+            a.appointment_date,
+            a.status
+          FROM appointments a
+          JOIN users u ON a.patient_id = u.id
+          JOIN services s ON a.service_id = s.id
+          WHERE a.status = 'rescheduled';";
 
 $resultrescheduled = mysqli_query($db, $query);
-
 if (!$resultrescheduled) {
-    die("Query Error: " . mysqli_error($db));
+    die('Query Error: ' . mysqli_error($db));
 }
 
-
-$query = "SELECT id, patient_id, notes, patient_name, treatment, appointment_time, appointment_date, status
-          FROM approved_requests WHERE status = 'cancelled';";
+// CANCELLED
+$query = "SELECT 
+            a.appointment_id,
+            a.patient_id,
+            a.notes,
+            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+            s.name AS treatment_name,
+            a.appointment_time_start,
+            a.appointment_time_end,
+            a.appointment_date,
+            a.status
+          FROM appointments a
+          JOIN users u ON a.patient_id = u.id
+          JOIN services s ON a.service_id = s.id
+          WHERE a.status = 'cancelled';";
 
 $resultcancelled = mysqli_query($db, $query);
-
 if (!$resultcancelled) {
-    die("Query Error: " . mysqli_error($db));
+    die('Query Error: ' . mysqli_error($db));
 }
 
-$queryreject = "SELECT id, patient_id, patient_name, treatment, appointment_time, appointment_date, status
-                FROM rejected_requests";
+
+$queryreject = "SELECT 
+                    a.appointment_id,
+                    a.patient_id,
+                    CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+                    s.name AS treatment_name,
+                    a.appointment_time_start,
+                    a.appointment_time_end,
+                    a.appointment_date,
+                    a.status
+                FROM appointments a
+                JOIN users u ON a.patient_id = u.id
+                JOIN services s ON a.service_id = s.id
+                WHERE a.status = 'rejected'";
+
 
 $resultreject = mysqli_query($db, $queryreject);
 
@@ -77,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Prepare and execute update query
-    $stmt = $db->prepare("UPDATE approved_requests SET notes = ?, status = ? WHERE id = ?");
+    $stmt = $db->prepare("UPDATE appointments SET notes = ?, status = ? WHERE id = ?");
     $stmt->bind_param("ssi", $notes, $status, $id);
 
     if ($stmt->execute() && $stmt->affected_rows > 0) {
@@ -237,18 +296,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <tbody>
                                     <?php while ($row = mysqli_fetch_assoc($resultupcoming)): ?>
                                         <?php
-                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                                        // Determine appointment status
+                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time_start'];
                                         $currentDateTime = date('Y-m-d H:i:s');
 
-                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                                        // Get the end time of the appointment
+                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time_end']));
                                         $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
-
-
-
-                                        /*                         // Check if appointment has ended
-                                                                if (strtotime($appointmentEndDateTime) < strtotime($currentDateTime)) {
-                                                                    $status = 'completed';
-                                                                } */
 
                                         // Check for manual status updates from the database
                                         if (!empty($row['status'])) {
@@ -258,10 +312,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <tr class="appointment-row" data-status="<?php echo $status; ?>">
                                             <td><?php echo htmlspecialchars($row['id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
+                                                <?php echo htmlspecialchars($row['appointment_time_end']); ?>
+                                            </td>
                                             <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
                                             <?php if ($_SESSION['usertype'] == 'dentist'): ?>
                                                 <td class="action-buttons">
                                                     <!--    <button class="complete-btn" data-id="<?//php// echo $row['id']; ?>">Mark as Done</button>
@@ -318,21 +374,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php while ($row = mysqli_fetch_assoc($resultrescheduled)): ?>
                                         <?php
                                         // Determine appointment status
-                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time_start'];
                                         $currentDateTime = date('Y-m-d H:i:s');
 
                                         // Get the end time of the appointment
-                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time_end']));
                                         $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
 
-                                        // Default status is upcoming
-                                
-
-                                        // Check if appointment has ended
-                                        // if (strtotime($appointmentEndDateTime) < strtotime($currentDateTime)) {
-                                        //     $status = 'completed';
-                                        // }
-                                
                                         // Check for manual status updates from the database
                                         if (!empty($row['status'])) {
                                             $status = strtolower($row['status']);
@@ -341,10 +389,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <tr class="appointment-row" data-status="<?php echo $status; ?>">
                                             <td><?php echo htmlspecialchars($row['id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
+                                                <?php echo htmlspecialchars($row['appointment_time_end']); ?>
+                                            </td>
                                             <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
                                             <?php if ($_SESSION['usertype'] == 'dentist'): ?>
 
                                                 <td class="action-buttons">
@@ -402,11 +452,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php while ($row = mysqli_fetch_assoc($resultcompleted)): ?>
                                         <?php
                                         // Determine appointment status
-                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time_start'];
                                         $currentDateTime = date('Y-m-d H:i:s');
 
                                         // Get the end time of the appointment
-                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time_end']));
                                         $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
 
                                         // Check for manual status updates from the database
@@ -417,10 +467,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <tr class="appointment-row" data-status="<?php echo $status; ?>">
                                             <td><?php echo htmlspecialchars($row['id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
+                                                <?php echo htmlspecialchars($row['appointment_time_end']); ?>
+                                            </td>
                                             <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
 
                                             <td class="reason-note">
                                                 <?php echo htmlspecialchars($row['notes']); ?>
@@ -467,13 +519,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php while ($row = mysqli_fetch_assoc($resultcancelled)): ?>
                                         <?php
                                         // Determine appointment status
-                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time_start'];
                                         $currentDateTime = date('Y-m-d H:i:s');
 
                                         // Get the end time of the appointment
-                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time_end']));
                                         $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
-
 
                                         // Check for manual status updates from the database
                                         if (!empty($row['status'])) {
@@ -483,9 +534,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <tr class="appointment-row" data-status="<?php echo $status; ?>">
                                             <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
+                                                <?php echo htmlspecialchars($row['appointment_time_end']); ?>
+                                            </td>
                                             <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
 
 
                                         </tr>
@@ -495,11 +548,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php while ($row = mysqli_fetch_assoc($resultreject)): ?>
                                         <?php
                                         // Determine appointment status
-                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time_start'];
                                         $currentDateTime = date('Y-m-d H:i:s');
 
                                         // Get the end time of the appointment
-                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time_end']));
                                         $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
 
                                         // Check for manual status updates from the database
@@ -510,9 +563,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <tr class="appointment-row" data-status="<?php echo $status; ?>">
                                             <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
+                                                <?php echo htmlspecialchars($row['appointment_time_end']); ?>
+                                            </td>
                                             <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
 
                                         </tr>
                                     <?php endwhile; ?>
@@ -555,11 +610,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php while ($row = mysqli_fetch_assoc($resultreject)): ?>
                                         <?php
                                         // Determine appointment status
-                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time'];
+                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time_start'];
                                         $currentDateTime = date('Y-m-d H:i:s');
 
                                         // Get the end time of the appointment
-                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time'] . ' +30 minutes'));
+                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time_end']));
                                         $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
 
                                         // Check for manual status updates from the database
@@ -570,9 +625,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <tr class="appointment-row" data-status="<?php echo $status; ?>">
                                             <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['appointment_time']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
+                                                <?php echo htmlspecialchars($row['appointment_time_end']); ?>
                                             <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['treatment']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
 
                                         </tr>
                                     <?php endwhile; ?>

@@ -532,7 +532,7 @@ $result = mysqli_query($db, $query);
                         </div>
                     </div>
                     <!-- Main User Table -->
-                    <div class="d-flex justify-content-center overflow-x-scroll">
+                    <div class="d-flex justify-content-center overflow-x-scroll w-100">
                         <table id="userTable" class="table table-striped table-bordered w-100">
                             <thead>
                                 <tr>
@@ -552,8 +552,19 @@ $result = mysqli_query($db, $query);
                                         <td><?php echo htmlspecialchars($row['username']); ?></td>
                                         <td><?php echo htmlspecialchars($row['email']); ?></td>
                                         <td><?php echo htmlspecialchars($row['mobile']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['created_at']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['usertype']); ?></td>
+<td>
+    <?php
+
+    echo date("F j, Y", strtotime($row['created_at']));
+    ?>
+</td>
+<td>
+    <?php
+
+    echo ucwords(str_replace('_', ' ', $row['usertype']));
+    ?>
+</td>
+
                                         <!-- <td>
                                     <button class="action-button archive">Archive</button>
                                 </td> -->
@@ -619,29 +630,7 @@ $result = mysqli_query($db, $query);
                 }
             }
 
-            function createPagination() {
-                paginationContainer.innerHTML = '';
-                for (let i = 1; i <= totalPages; i++) {
-                    const link = document.createElement('a');
-                    link.href = '#';
-                    link.textContent = i;
-                    link.addEventListener('click', (event) => {
-                        event.preventDefault();
-                        document.querySelectorAll('.pagination a').forEach(a => a.classList.remove('active'));
-                        link.classList.add('active');
-                        displayPage(i);
-                    });
-
-                    if (i === 1) {
-                        link.classList.add('active');
-                    }
-
-                    paginationContainer.appendChild(link);
-                }
-            }
-
-            createPagination();
-            displayPage(1); // Display the first page initially
+       
         });
 
         function fetchCurrentTime() {

@@ -224,66 +224,69 @@ require_once '../db/config.php';
                         <button class="btn btn-sm btn-primary" id="addScheduleBtn">Add Schedule</button>
                     </div>
 
+                    <div class="overflow-x-scroll">
 
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Patient Name</th>
-                                <th>Frequency</th>
-                                <th>Message</th>
-                                <th>Start</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-
-                            $query = "
-                             SELECT emailsched.id, users.first_name, users.last_name, emailsched.frequency, emailsched.message, emailsched.start 
-                             FROM emailsched 
-                             JOIN users ON users.id = emailsched.patientid 
-                             ORDER BY emailsched.start DESC
-                         ";
-                            $result = $db->query($query);
-
-                            if ($result->num_rows > 0):
-                                while ($row = $result->fetch_assoc()):
-                                    ?>
-                                    <tr>
-                                        <td><?= $row['id']; ?></td>
-                                        <td><?= $row['first_name'] . ' ' . $row['last_name']; ?></td>
-                                        <td><?= ucfirst($row['frequency']); ?></td>
-                                        <td><?= $row['message']; ?></td>
-                                        <td><?= $row['start']; ?></td>
-                                        <td>
-                                            <!-- Edit Button -->
-                                            <button class="btn btn-primary btn-sm edit-btn" data-id="<?= $row['id']; ?>"
-                                                data-frequency="<?= $row['frequency']; ?>"
-                                                data-message="<?= $row['message']; ?>" data-start="<?= $row['start']; ?>">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </button>
-
-                                            <!-- Delete Button -->
-                                            <button class="btn btn-danger btn-sm delete-btn" data-id="<?= $row['id']; ?>">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <?php
-                                endwhile;
-                            else:
-                                ?>
+                        <table id="emailschedTable" class="table table-striped table-bordered">
+                            <thead>
                                 <tr>
-                                    <td colspan="6" class="text-center">No records found</td>
+                                    <th>ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Frequency</th>
+                                    <th>Message</th>
+                                    <th>Start</th>
+                                    <th>Actions</th>
                                 </tr>
+                            </thead>
+                            <tbody>
                                 <?php
-                            endif;
+                                $query = "
+            SELECT emailsched.id, users.first_name, users.last_name, emailsched.frequency, emailsched.message, emailsched.start 
+            FROM emailsched 
+            JOIN users ON users.id = emailsched.patientid 
+            ORDER BY emailsched.start DESC
+        ";
+                                $result = $db->query($query);
 
-                            ?>
-                        </tbody>
-                    </table>
+                                if ($result->num_rows > 0):
+                                    while ($row = $result->fetch_assoc()):
+                                        ?>
+                                        <tr>
+                                            <td><?= $row['id']; ?></td>
+                                            <td><?= $row['first_name'] . ' ' . $row['last_name']; ?></td>
+                                            <td><?= ucfirst($row['frequency']); ?></td>
+                                            <td><?= $row['message']; ?></td>
+                                            <td><?= $row['start']; ?></td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm edit-btn" data-id="<?= $row['id']; ?>"
+                                                    data-frequency="<?= $row['frequency']; ?>"
+                                                    data-message="<?= $row['message']; ?>" data-start="<?= $row['start']; ?>">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm delete-btn" data-id="<?= $row['id']; ?>">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <?php
+                                    endwhile;
+                                    ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
 
+                        <script>
+                            $(document).ready(function () {
+                                $('#emailschedTable').DataTable({
+                                    responsive: true,
+                                    pageLength: 10,
+                                    ordering: true,
+                                    columnDefs: [
+                                        { orderable: false, targets: 5 } // Disable sorting on 'Actions' column
+                                    ]
+                                });
+                            });
+                        </script>
+                    </div>
                 </div>
             </div>
 

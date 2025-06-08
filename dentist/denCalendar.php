@@ -204,7 +204,22 @@ require_once '../db/config.php';
     <?php
 
     $events = [];
-    $sql = "SELECT id,patient_name, treatment, appointment_time, appointment_date, status FROM approved_requests";
+    $sql = "SELECT 
+            a.appointment_id,
+            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+            s.name AS treatment,
+            CONCAT(
+                DATE_FORMAT(a.appointment_time_start, '%h:%i %p'),
+                ' - ',
+                DATE_FORMAT(a.appointment_time_end, '%h:%i %p')
+            ) AS appointment_time,
+            a.appointment_date,
+            a.status
+        FROM appointments a
+        JOIN users u ON a.patient_id = u.id
+        JOIN services s ON a.service_id = s.id
+        WHERE a.status NOT IN ('rejected', 'cancelled')";
+
     $result = $db->query($sql);
 
     if ($result->num_rows > 0) {

@@ -44,7 +44,11 @@ function validateBirthdate($birthdate)
 
 
 require_once '../db/config.php';
+if (!isset($_SESSION['id']) || !isset($_SESSION['username'])) {
 
+    echo '<script>console.log("dfdsi");</script>';
+  
+}
 
 if (isset($_POST["signup"])) {
     $firstName = $_POST["first-name"];
@@ -235,50 +239,6 @@ if (isset($_POST["signup"])) {
 
         }
         if (mysqli_stmt_execute($insert_stmt)) {
-            $last_id = mysqli_insert_id($db);
-
-            if ($usertype === 'dentist') {
-                $insert_query_dentist = "INSERT INTO dentists (user_id, first_name, middle_name, last_name, email, mobile) 
-                                         VALUES (?, ?, ?, ?, ?, ?)";
-                $stmt_insert_dentist = mysqli_prepare($db, $insert_query_dentist);
-                mysqli_stmt_bind_param(
-                    $stmt_insert_dentist,
-                    "isssss",
-                    $last_id,
-                    $firstName,
-                    $middleName,
-                    $lastName,
-                    $email,
-                    $mobile
-                );
-
-                if (!mysqli_stmt_execute($stmt_insert_dentist)) {
-                    setModalMessage("Danger", "Error inserting into dentists table: " . mysqli_error($db), "danger");
-
-                }
-
-                mysqli_stmt_close($stmt_insert_dentist);
-            } elseif ($usertype === 'clinic_receptionist') {
-                $insert_query_receptionist = "INSERT INTO receptionists (user_id, first_name, middle_name, last_name, email, mobile) 
-                                              VALUES (?, ?, ?, ?, ?, ?)";
-                $stmt_insert_receptionist = mysqli_prepare($db, $insert_query_receptionist);
-                mysqli_stmt_bind_param(
-                    $stmt_insert_receptionist,
-                    "isssss",
-                    $last_id,
-                    $firstName,
-                    $middleName,
-                    $lastName,
-                    $email,
-                    $mobile
-                );
-
-                if (!mysqli_stmt_execute($stmt_insert_receptionist)) {
-                    setModalMessage("Danger", "Error inserting into receptionists table: " . mysqli_error($db), "danger");
-                }
-
-                mysqli_stmt_close($stmt_insert_receptionist);
-            }
 
             $_SESSION['registration_success'] = true;
             setModalMessage("Success", "User registered successfully.", "success");
@@ -368,7 +328,7 @@ if (isset($_POST['login'])) {
                 mysqli_stmt_close($stmt_update);
 
                 $_SESSION['id'] = htmlspecialchars($user['id']);
-                $_SESSION['username'] = $user['username'];
+                $_SESSION['username'] = $username;
                 $_SESSION['first_name'] = htmlspecialchars($user['first_name']);
                 $_SESSION['gender'] = htmlspecialchars($user['gender']);
                 $_SESSION['usertype'] = htmlspecialchars($user['usertype']);

@@ -16,7 +16,7 @@ $stmtCheck1->fetch();
 $stmtCheck1->close();
 
 // Count approved appointments in approved_requests table
-$checkSql2 = "SELECT COUNT(*) FROM approved_requests WHERE patient_id = ? AND status = 'upcoming'";
+$checkSql2 = "SELECT COUNT(*) FROM appointments WHERE patient_id = ? AND status = 'upcoming'";
 $stmtCheck2 = $conn->prepare($checkSql2);
 $stmtCheck2->bind_param("i", $userId);
 $stmtCheck2->execute();
@@ -452,7 +452,7 @@ if ($activeCount > 0) {
                                     <select name="dentist" id="dentist" onchange="updateSlots()">
                                         <option value="" selected disabled>Select a dentist</option>
                                         <?php foreach ($dentists as $dentist): ?>
-                                            <option value="<?php echo htmlspecialchars($dentist['name']); ?>">
+                                            <option value="<?php echo htmlspecialchars($dentist['dentist_id']); ?>">
                                                 <?php echo htmlspecialchars($dentist['name']); ?>
                                             </option>
                                         <?php endforeach; ?>
@@ -464,10 +464,11 @@ if ($activeCount > 0) {
                                     <option value="" selected disabled>Select a service</option>
                                     <?php foreach ($services as $service): ?>
                                         <option data-cost="<?php echo htmlspecialchars($service['rate']); ?>"
-                                            value="<?php echo htmlspecialchars($service['name']); ?> <?php echo htmlspecialchars($service['rate']); ?>"
+                                            value="<?php echo htmlspecialchars($service['id']); ?>"
                                             data-duration="<?php echo htmlspecialchars($service['duration']); ?>">
                                             <?php echo htmlspecialchars($service['name']); ?> -
-                                            <?php echo htmlspecialchars($service['rate']); ?>
+                                            PHP<?php echo htmlspecialchars($service['rate']); ?>
+                                            (<?php echo htmlspecialchars($service['duration']); ?> min.)
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -581,11 +582,20 @@ if ($activeCount > 0) {
                                     $stmt->bind_param("i", $userid);
                                     $stmt->execute();
                                     $stmt->bind_result($disease, $recent_surgery, $current_disease);
-                                    $stmt->fetch();
+                                    if ($stmt->fetch()) {
+                                        // Set default values if any field is NULL
+                                        $disease = $disease ?? "no";
+                                        $recent_surgery = $recent_surgery ?? "no";
+                                        $current_disease = $current_disease ?? "no";
+                                    } else {
+                                        // If no record found, also assign "no"
+                                        $disease = $recent_surgery = $current_disease = "no";
+                                    }
                                     $stmt->close();
                                 } else {
                                     echo "<script>alert('Error preparing the statement: " . $conn->error . "');</script>";
                                 }
+
                                 ?>
 
                                 <h3>Health Declaration Form</h3>
@@ -593,8 +603,9 @@ if ($activeCount > 0) {
                                 <!-- 1. History of Present Disease or Allergies -->
                                 <div class="mb-2">
                                     <label>Do you have any history of present disease or allergies?</label>
-                                    <input type="radio" name="hasDisease" value="yes"> Yes
-                                    <input type="radio" name="hasDisease" value="no"> No
+                                    <input type="radio" name="hasDisease" value="yes" <?= $disease != "no" ? 'checked' : '' ?>> Yes
+                                    <input type="radio" name="hasDisease" value="no" <?= $disease == "no" ? 'checked' : '' ?>>
+                                    No
                                 </div>
                                 <div class="mb-3" id="diseaseField" style="display:none;">
                                     <label for="disease" class="form-label">If yes, please specify:</label>
@@ -605,8 +616,8 @@ if ($activeCount > 0) {
                                 <!-- 2. Recent Surgery -->
                                 <div class="mb-2">
                                     <label>Have you undergone any recent surgery?</label>
-                                    <input type="radio" name="hasSurgery" value="yes"> Yes
-                                    <input type="radio" name="hasSurgery" value="no"> No
+                                    <input type="radio" name="hasSurgery" value="yes" <?= $recent_surgery != "" ? 'checked' : '' ?>> Yes
+                                    <input type="radio" name="hasSurgery" value="no" <?= $recent_surgery == "no" ? 'checked' : '' ?>> No
                                 </div>
                                 <div class="mb-3" id="surgeryField" style="display:none;">
                                     <label for="recent_surgery" class="form-label">If yes, please specify:</label>
@@ -617,8 +628,8 @@ if ($activeCount > 0) {
                                 <!-- 3. Current Disease -->
                                 <div class="mb-2">
                                     <label>Do you have any current diseases (e.g., hypertension, diabetes)?</label>
-                                    <input type="radio" name="hasCurrentDisease" value="yes"> Yes
-                                    <input type="radio" name="hasCurrentDisease" value="no"> No
+                                    <input type="radio" name="hasCurrentDisease" value="yes" <?= $current_disease != "no" ? 'checked' : '' ?>> Yes
+                                    <input type="radio" name="hasCurrentDisease" value="no" <?= $current_disease == "no" ? 'checked' : '' ?>> No
                                 </div>
                                 <div class="mb-3" id="currentDiseaseField" style="display:none;">
                                     <label for="current_disease" class="form-label">If yes, please specify:</label>
@@ -661,7 +672,7 @@ if ($activeCount > 0) {
                                         disease.value = '';
                                     } else {
                                         diseaseField.style.display = 'none';
-                                        disease.value = 'N/A';
+                                        disease.value = 'no';
                                     }
 
                                     // Surgery toggle
@@ -670,7 +681,7 @@ if ($activeCount > 0) {
                                         recentSurgery.value = '';
                                     } else {
                                         surgeryField.style.display = 'none';
-                                        recentSurgery.value = 'N/A';
+                                        recentSurgery.value = 'no';
                                     }
 
                                     // Current disease toggle
@@ -679,7 +690,7 @@ if ($activeCount > 0) {
                                         currentDisease.value = '';
                                     } else {
                                         currentDiseaseField.style.display = 'none';
-                                        currentDisease.value = 'N/A';
+                                        currentDisease.value = 'no';
                                     }
 
                                     // Show/hide medical cert based on all "no"
@@ -738,7 +749,7 @@ if ($activeCount > 0) {
 
                             </script>
 
-                            <div class="main- overflow-hidden" id="stepfour" style="display:none">
+                            <div class="stepdiv overflow-hidden" id="stepfour" style="display:none">
                                 <h3>Will someone accompany you?</h3>
                                 <div class="form-check form-switch mb-3">
                                     <input class="form-check-input" type="checkbox" id="hasCompanion">
@@ -769,21 +780,18 @@ if ($activeCount > 0) {
                                         onclick="nextStep(5)">Next</button>
                                 </div>
                             </div>
-
                             <script>
                                 const hasCompanion = document.getElementById('hasCompanion');
                                 const fieldContainer = document.getElementById('fieldContainer');
                                 const name1 = document.getElementById('name1');
-                                const gender1 = document.getElementById('gender1');
-                                const age1 = document.getElementById('age1');
+                                const relationship1 = document.getElementById('relationship1');
                                 const addMoreBtn = document.getElementById('addMoreFields');
                                 const nextStepFour = document.getElementById('nextStepFour');
 
                                 function validateStepFour() {
                                     if (
                                         name1.value.trim() !== '' &&
-                                        gender1.value !== '' &&
-                                        age1.value.trim() !== ''
+                                        relationship1.value.trim() !== ''
                                     ) {
                                         addMoreBtn.disabled = false;
                                         nextStepFour.disabled = false;
@@ -806,7 +814,7 @@ if ($activeCount > 0) {
                                 });
 
                                 // Validate on input changes
-                                [name1, gender1, age1].forEach(input => {
+                                [name1, relationship1].forEach(input => {
                                     input.addEventListener('input', validateStepFour);
                                     input.addEventListener('change', validateStepFour);
                                 });
