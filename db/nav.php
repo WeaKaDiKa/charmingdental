@@ -45,8 +45,10 @@
                                                 My Appointments</span></li>
                                 <li class="<?= $navactive == "patRecord" ? "active" : "" ?> w-100"><span
                                                 onclick="window.location.href='patRecord.php';"><i class="fas fa-user"></i>
-                                                Personal Info & Medical Record</span></li>
-
+                                                Personal Info</span></li>
+                <li class="<?= $navactive == "patMedRecord" ? "active" : "" ?> w-100"><span
+                                                onclick="window.location.href='patMedRecord.php';"><i class="fas fa-medkit"></i>
+                                                Medical Record</span></li>
                                 <li class="<?= $navactive == "patPolicy" ? "active" : "" ?> w-100"><span
                                                 onclick="window.location.href='patPolicy.php';"><i class="fas fa-file-alt"></i>
                                                 Clinic Policies</span>

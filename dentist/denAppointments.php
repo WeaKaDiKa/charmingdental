@@ -276,7 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </form>
                         </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
+                        <div class="overflow-x-scroll justify-content-center">
                             <table id="appointment-approve-upcoming" class="w-100">
                                 <thead>
                                     <tr>
@@ -310,7 +310,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         }
                                         ?>
                                         <tr class="appointment-row" data-status="<?php echo $status; ?>">
-                                            <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
                                                 <?php echo htmlspecialchars($row['appointment_time_end']); ?>
@@ -320,9 +320,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
                                             <?php if ($_SESSION['usertype'] == 'dentist'): ?>
                                                 <td class="action-buttons">
-                                                    <!--    <button class="complete-btn" data-id="<?//php// echo $row['id']; ?>">Mark as Done</button>
+                                                    <!--    <button class="complete-btn" data-id="<?//php// echo $row['appointment_id']; ?>">Mark as Done</button>
                                      <button class="archive-btn">Decline</button> -->
-                                                    <button class="complete-btn btn btn-primary" data-id="<?= $row['id']; ?>"
+                                                    <button class="complete-btn btn btn-primary" data-id="<?= $row['appointment_id']; ?>"
                                                         data-bs-toggle="modal" data-bs-target="#completeModal">
                                                         Mark as Done
                                                     </button>
@@ -354,7 +354,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </form>
                         </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
+                        <div class="overflow-x-scroll justify-content-center">
                             <table id="appointment-approve-rescheduled" class="w-100">
                                 <thead>
                                     <tr>
@@ -387,7 +387,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         }
                                         ?>
                                         <tr class="appointment-row" data-status="<?php echo $status; ?>">
-                                            <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
                                                 <?php echo htmlspecialchars($row['appointment_time_end']); ?>
@@ -398,9 +398,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <?php if ($_SESSION['usertype'] == 'dentist'): ?>
 
                                                 <td class="action-buttons">
-                                                    <!--    <button class="complete-btn" data-id="<?//php// echo $row['id']; ?>">Mark as Done</button>
+                                                    <!--    <button class="complete-btn" data-id="<?//php// echo $row['appointment_id']; ?>">Mark as Done</button>
                                      <button class="archive-btn">Decline</button> -->
-                                                    <button class="complete-btn btn btn-primary" data-id="<?= $row['id']; ?>"
+                                                    <button class="complete-btn btn btn-primary" data-id="<?= $row['appointment_id']; ?>"
                                                         data-bs-toggle="modal" data-bs-target="#completeModal">
                                                         Mark as Done
                                                     </button>
@@ -434,7 +434,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </form>
                         </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
+                        <div class="overflow-x-scroll justify-content-center">
                             <table id="appointment-approve-completed" class="w-100">
                                 <thead>
                                     <tr>
@@ -465,7 +465,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         }
                                         ?>
                                         <tr class="appointment-row" data-status="<?php echo $status; ?>">
-                                            <td><?php echo htmlspecialchars($row['id']); ?></td>
+                                            <td><?php echo htmlspecialchars($row['appointment_id']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
                                                 <?php echo htmlspecialchars($row['appointment_time_end']); ?>
@@ -503,7 +503,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </form>
                         </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
+                        <div class="overflow-x-scroll justify-content-center">
                             <table id="appointment-approve-cancelled" class="w-100">
                                 <thead>
                                     <tr>
@@ -545,33 +545,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php endwhile; ?>
 
 
-                                    <?php while ($row = mysqli_fetch_assoc($resultreject)): ?>
-                                        <?php
-                                        // Determine appointment status
-                                        $appointmentDateTime = $row['appointment_date'] . ' ' . $row['appointment_time_start'];
-                                        $currentDateTime = date('Y-m-d H:i:s');
-
-                                        // Get the end time of the appointment
-                                        $appointmentEndTime = date('H:i:s', strtotime($row['appointment_time_end']));
-                                        $appointmentEndDateTime = $row['appointment_date'] . ' ' . $appointmentEndTime;
-
-                                        // Check for manual status updates from the database
-                                        if (!empty($row['status'])) {
-                                            $status = strtolower($row['status']);
-                                        }
-                                        ?>
-                                        <tr class="appointment-row" data-status="<?php echo $status; ?>">
-                                            <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
-                                                <?php echo htmlspecialchars($row['appointment_time_end']); ?>
-                                            </td>
-                                            <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
-
-                                        </tr>
-                                    <?php endwhile; ?>
-
                                 </tbody>
                             </table>
                         </div>
@@ -594,7 +567,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </form>
                         </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
+                        <div class="overflow-x-scroll justify-content-center">
                             <table id="appointment-rejected" class="w-100">
                                 <thead>
                                     <tr>

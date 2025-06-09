@@ -187,11 +187,11 @@ require_once '../db/config.php';
             a.appointment_id,
             CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
             s.name AS treatment,
-            CONCAT(
-                DATE_FORMAT(a.appointment_time_start, '%h:%i %p'),
-                ' - ',
-                DATE_FORMAT(a.appointment_time_end, '%h:%i %p')
-            ) AS appointment_time,
+          CONCAT(
+    DATE_FORMAT(STR_TO_DATE(a.appointment_time_start, '%h:%i %p'), '%h:%i %p'),
+    ' - ',
+    DATE_FORMAT(STR_TO_DATE(a.appointment_time_end, '%h:%i %p'), '%h:%i %p')
+) AS appointment_time,
             a.appointment_date,
             a.status
         FROM appointments a

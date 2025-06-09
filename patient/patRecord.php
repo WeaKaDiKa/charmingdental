@@ -34,7 +34,7 @@ if (isset($_POST['update_profile_pic'])) {
             exit();
         }
 
-        $updateQuery = "UPDATE users SET profile_picture = ? WHERE id = ?";
+        $updateQuery = "UPDATE users SET profilepic = ? WHERE id = ?";
         $updateStmt = $db->prepare($updateQuery);
         $updateStmt->bind_param("si", $newFilename, $userId);
         $updateStmt->execute();
@@ -114,7 +114,7 @@ $firstName = $middleName = $lastName = $email = $gender = $birthdate = $mobile =
 $treatment = $appointment_time = $appointment_date = $dentist_name = ''; // Initialize appointment-related variables
 
 // Query 1: Fetch user details from the `users` table
-$query1 = "SELECT first_name, middle_name, emergencyname,emergencycontact,last_name, email, gender, birthdate, mobile, profile_picture, address FROM users WHERE id = ?";
+$query1 = "SELECT * FROM users WHERE id = ?";
 $stmt1 = mysqli_prepare($db, $query1);
 if (!$stmt1) {
     die("Failed to prepare statement: " . mysqli_error($db));
@@ -142,7 +142,7 @@ if ($user = mysqli_fetch_assoc($result1)) {
     $birthdate = htmlspecialchars($user['birthdate']);
     $mobile = htmlspecialchars($user['mobile']);
     $address = htmlspecialchars($user['address']);
-    $profilepic = htmlspecialchars($user['profile_picture']);
+    $profilepic = htmlspecialchars($user['profilepic']);
     $emergencyname = htmlspecialchars($user['emergencyname']);
     $emergencycontact = htmlspecialchars($user['emergencycontact']);
 
@@ -154,7 +154,20 @@ if ($user = mysqli_fetch_assoc($result1)) {
 mysqli_stmt_close($stmt1);
 
 // Query 2: Fetch appointment details from the `approved_requests` table
-$query2 = "SELECT treatment, appointment_time, appointment_date, dentist_name FROM approved_requests WHERE username = ?";
+$query2 = "
+    SELECT 
+        s.name AS treatment, 
+        CONCAT(a.appointment_time_start, ' - ', a.appointment_time_end) AS appointment_time, 
+        a.appointment_date, 
+        CONCAT(e.first_name, ' ', e.last_name) AS dentist_name
+    FROM appointments a
+    JOIN users u ON a.patient_id = u.id
+    JOIN services s ON a.service_id = s.id
+    JOIN users_employee e ON a.dentist_id = e.id
+    WHERE u.username = ?
+      AND a.status = 'approved'
+";
+
 $stmt2 = mysqli_prepare($db, $query2);
 if (!$stmt2) {
     die("Failed to prepare statement: " . mysqli_error($db));

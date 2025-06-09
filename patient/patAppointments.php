@@ -13,131 +13,41 @@ $activeTab = isset($_GET['tab']) && in_array($_GET['tab'], $allowedTabs)
     ? $_GET['tab']
     : 'submitted';
 
+function fetchAppointmentsByStatus($db, $status, $patient_id)
+{
+    $query = "SELECT 
+                a.appointment_id,
+                a.patient_id,
+                a.notes,
+                CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
+                s.name AS treatment_name,
+                a.appointment_time_start,
+                a.appointment_time_end,
+                a.appointment_date,
+                a.status
+              FROM appointments a
+              JOIN users u ON a.patient_id = u.id
+              JOIN services s ON a.service_id = s.id
+              WHERE a.status = ?
+                AND a.patient_id = ?";
 
-$query = "SELECT 
-            a.appointment_id,
-            a.patient_id,
-            a.notes,
-            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
-            s.name AS treatment_name,
-            a.appointment_time_start,
-            a.appointment_time_end,
-            a.appointment_date,
-            a.status
-          FROM appointments a
-          JOIN users u ON a.patient_id = u.id
-          JOIN services s ON a.service_id = s.id
-          WHERE a.status = 'submitted';";
+    $stmt = $db->prepare($query);
+    if (!$stmt) {
+        die("Prepare Error: " . $db->error);
+    }
 
-$resultsubmitted = mysqli_query($db, $query);
-if (!$resultsubmitted) {
-    die('Query Error: ' . mysqli_error($db));
+    $stmt->bind_param("si", $status, $patient_id);
+    $stmt->execute();
+    return $stmt->get_result();
 }
 
-$query = "SELECT 
-            a.appointment_id,
-            a.patient_id,
-            a.notes,
-            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
-            s.name AS treatment_name,
-            a.appointment_time_start,
-            a.appointment_time_end,
-            a.appointment_date,
-            a.status
-          FROM appointments a
-          JOIN users u ON a.patient_id = u.id
-          JOIN services s ON a.service_id = s.id
-          WHERE a.status = 'upcoming';";
+$resultsubmitted = fetchAppointmentsByStatus($db, 'submitted', $patient_id);
+$resultupcoming = fetchAppointmentsByStatus($db, 'upcoming', $patient_id);
+$resultcompleted = fetchAppointmentsByStatus($db, 'completed', $patient_id);
+$resultrescheduled = fetchAppointmentsByStatus($db, 'rescheduled', $patient_id);
+$resultcancelled = fetchAppointmentsByStatus($db, 'cancelled', $patient_id);
+$resultreject = fetchAppointmentsByStatus($db, 'rejected', $patient_id);
 
-$resultupcoming = mysqli_query($db, $query);
-if (!$resultupcoming) {
-    die('Query Error: ' . mysqli_error($db));
-}
-
-// COMPLETED
-$query = "SELECT 
-            a.appointment_id,
-            a.patient_id,
-            a.notes,
-            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
-            s.name AS treatment_name,
-            a.appointment_time_start,
-            a.appointment_time_end,
-            a.appointment_date,
-            a.status
-          FROM appointments a
-          JOIN users u ON a.patient_id = u.id
-          JOIN services s ON a.service_id = s.id
-          WHERE a.status = 'completed';";
-
-$resultcompleted = mysqli_query($db, $query);
-if (!$resultcompleted) {
-    die('Query Error: ' . mysqli_error($db));
-}
-
-// RESCHEDULED
-$query = "SELECT 
-            a.appointment_id,
-            a.patient_id,
-            a.notes,
-            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
-            s.name AS treatment_name,
-            a.appointment_time_start,
-            a.appointment_time_end,
-            a.appointment_date,
-            a.status
-          FROM appointments a
-          JOIN users u ON a.patient_id = u.id
-          JOIN services s ON a.service_id = s.id
-          WHERE a.status = 'rescheduled';";
-
-$resultrescheduled = mysqli_query($db, $query);
-if (!$resultrescheduled) {
-    die('Query Error: ' . mysqli_error($db));
-}
-
-// CANCELLED
-$query = "SELECT 
-            a.appointment_id,
-            a.patient_id,
-            a.notes,
-            CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
-            s.name AS treatment_name,
-            a.appointment_time_start,
-            a.appointment_time_end,
-            a.appointment_date,
-            a.status
-          FROM appointments a
-          JOIN users u ON a.patient_id = u.id
-          JOIN services s ON a.service_id = s.id
-          WHERE a.status = 'cancelled';";
-
-$resultcancelled = mysqli_query($db, $query);
-if (!$resultcancelled) {
-    die('Query Error: ' . mysqli_error($db));
-}
-
-
-$queryreject = "SELECT 
-                    a.appointment_id,
-                    a.patient_id,
-                    CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
-                    s.name AS treatment_name,
-                    a.appointment_time_start,
-                    a.appointment_time_end,
-                    a.appointment_date,
-                    a.status
-                FROM appointments a
-                JOIN users u ON a.patient_id = u.id
-                JOIN services s ON a.service_id = s.id
-                WHERE a.status = 'rejected'";
-
-
-$resultreject = mysqli_query($db, $queryreject);
-
-if (!$resultreject) {
-    die("Query Error: " . mysqli_error($db));
-}
 
 $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
 //$showActionColumn = !in_array($status, ['completed', 'cancelled']);
@@ -195,33 +105,15 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
 
                     <?php
                     if ($activeTab == 'submitted'): ?>
-                        <div class="print-section mb-3">
-                            <form class="d-flex align-items-center flex-column flex-md-row gap-2"
-                                onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
-                                <div class="d-flex gap-2">
-                                    <label for="from-<?php echo $activeTab; ?>">From: </label>
-                                    <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <label for="to-<?php echo $activeTab; ?>">To: </label>
-                                    <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-success btn-sm">Print</button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
-                            <table id="submitted-approve-submitted" class="w-100">
+
+                        <div class="overflow-x-scroll  w-100">
+                            <table id="appointment-approve-submitted" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>
                                         <th>Appointment Date</th>
                                         <th>Appointment Time</th>
-                                        <th>Patient No.</th>
-                                        <th>Patient Name</th>
+
                                         <th>Treatment</th>
 
                                         <?php if ($_SESSION['usertype'] == 'dentist'): ?>
@@ -252,15 +144,15 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                                             <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
                                                 <?php echo htmlspecialchars($row['appointment_time_end']); ?>
                                             </td>
-                                            <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+
                                             <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
                                             <?php if ($_SESSION['usertype'] == 'dentist'): ?>
                                                 <td class="action-buttons">
                                                     <!--    <button class="complete-btn" data-id="<?//php// echo $row['id']; ?>">Mark as Done</button>
                                      <button class="archive-btn">Decline</button> -->
-                                                    <button class="complete-btn btn btn-primary" data-id="<?= $row['appointment_id']; ?>"
-                                                        data-bs-toggle="modal" data-bs-target="#completeModal">
+                                                    <button class="complete-btn btn btn-primary"
+                                                        data-id="<?= $row['appointment_id']; ?>" data-bs-toggle="modal"
+                                                        data-bs-target="#completeModal">
                                                         Mark as Done
                                                     </button>
                                                 </td>
@@ -274,33 +166,15 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
 
 
                     <?php elseif ($activeTab == 'upcoming'): ?>
-                        <div class="print-section mb-3">
-                            <form class="d-flex align-items-center flex-column flex-md-row gap-2"
-                                onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
-                                <div class="d-flex gap-2">
-                                    <label for="from-<?php echo $activeTab; ?>">From: </label>
-                                    <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <label for="to-<?php echo $activeTab; ?>">To: </label>
-                                    <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-success btn-sm">Print</button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
+
+                        <div class="overflow-x-scroll  w-100">
                             <table id="appointment-approve-upcoming" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>
                                         <th>Appointment Date</th>
                                         <th>Appointment Time</th>
-                                        <th>Patient No.</th>
-                                        <th>Patient Name</th>
+
                                         <th>Treatment</th>
 
                                         <?php if ($_SESSION['usertype'] == 'dentist'): ?>
@@ -331,15 +205,15 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                                             <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
                                                 <?php echo htmlspecialchars($row['appointment_time_end']); ?>
                                             </td>
-                                            <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+
                                             <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
                                             <?php if ($_SESSION['usertype'] == 'dentist'): ?>
                                                 <td class="action-buttons">
                                                     <!--    <button class="complete-btn" data-id="<?//php// echo $row['id']; ?>">Mark as Done</button>
                                      <button class="archive-btn">Decline</button> -->
-                                                    <button class="complete-btn btn btn-primary" data-id="<?= $row['appointment_id']; ?>"
-                                                        data-bs-toggle="modal" data-bs-target="#completeModal">
+                                                    <button class="complete-btn btn btn-primary"
+                                                        data-id="<?= $row['appointment_id']; ?>" data-bs-toggle="modal"
+                                                        data-bs-target="#completeModal">
                                                         Mark as Done
                                                     </button>
                                                 </td>
@@ -352,33 +226,15 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                         </div>
 
                     <?php elseif ($activeTab == 'rescheduled'): ?>
-                        <div class="print-section mb-3">
-                            <form class="d-flex align-items-center flex-column flex-md-row gap-2"
-                                onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
-                                <div class="d-flex gap-2">
-                                    <label for="from-<?php echo $activeTab; ?>">From: </label>
-                                    <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <label for="to-<?php echo $activeTab; ?>">To: </label>
-                                    <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-success btn-sm">Print</button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
+
+                        <div class="overflow-x-scroll  w-100">
                             <table id="appointment-approve-rescheduled" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>
                                         <th>Appointment Date</th>
                                         <th>Appointment Time</th>
-                                        <th>Patient No.</th>
-                                        <th>Patient Name</th>
+
                                         <th>Treatment</th>
 
                                         <?php if ($_SESSION['usertype'] == 'dentist'): ?>
@@ -408,16 +264,16 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                                             <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
                                                 <?php echo htmlspecialchars($row['appointment_time_end']); ?>
                                             </td>
-                                            <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+
                                             <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
                                             <?php if ($_SESSION['usertype'] == 'dentist'): ?>
 
                                                 <td class="action-buttons">
                                                     <!--    <button class="complete-btn" data-id="<?//php// echo $row['id']; ?>">Mark as Done</button>
                                      <button class="archive-btn">Decline</button> -->
-                                                    <button class="complete-btn btn btn-primary" data-id="<?= $row['appointment_id']; ?>"
-                                                        data-bs-toggle="modal" data-bs-target="#completeModal">
+                                                    <button class="complete-btn btn btn-primary"
+                                                        data-id="<?= $row['appointment_id']; ?>" data-bs-toggle="modal"
+                                                        data-bs-target="#completeModal">
                                                         Mark as Done
                                                     </button>
                                                 </td>
@@ -432,33 +288,15 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                             </table>
                         </div>
                     <?php elseif ($activeTab == 'completed'): ?>
-                        <div class="print-section mb-3">
-                            <form class="d-flex align-items-center flex-column flex-md-row gap-2"
-                                onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
-                                <div class="d-flex gap-2">
-                                    <label for="from-<?php echo $activeTab; ?>">From: </label>
-                                    <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <label for="to-<?php echo $activeTab; ?>">To: </label>
-                                    <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-success btn-sm">Print</button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
+
+                        <div class="overflow-x-scroll  w-100">
                             <table id="appointment-approve-completed" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>
                                         <th>Appointment Date</th>
                                         <th>Appointment Time</th>
-                                        <th>Patient No.</th>
-                                        <th>Patient Name</th>
+
                                         <th>Treatment</th>
 
                                         <th class="reason-column">Notes</th>
@@ -486,8 +324,7 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                                             <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
                                                 <?php echo htmlspecialchars($row['appointment_time_end']); ?>
                                             </td>
-                                            <td><?php echo htmlspecialchars($row['patient_id']); ?></td>
-                                            <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+
                                             <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
 
                                             <td class="reason-note">
@@ -501,32 +338,15 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                             </table>
                         </div>
                     <?php elseif ($activeTab == 'cancelled'): ?>
-                        <div class="print-section mb-3">
-                            <form class="d-flex align-items-center flex-column flex-md-row gap-2"
-                                onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
-                                <div class="d-flex gap-2">
-                                    <label for="from-<?php echo $activeTab; ?>">From: </label>
-                                    <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <label for="to-<?php echo $activeTab; ?>">To: </label>
-                                    <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-success btn-sm">Print</button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
+
+                        <div class="overflow-x-scroll  w-100">
                             <table id="appointment-approve-cancelled" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>
                                         <th>Appointment Date</th>
                                         <th>Appointment Time</th>
-                                        <th>Name</th>
+
                                         <th>Treatment</th>
 
                                     </tr>
@@ -553,7 +373,7 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                                             <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
                                                 <?php echo htmlspecialchars($row['appointment_time_end']); ?>
                                             </td>
-                                            <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+
                                             <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
 
 
@@ -592,32 +412,15 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                             </table>
                         </div>
                     <?php elseif ($activeTab == 'rejected'): ?>
-                        <div class="print-section mb-3">
-                            <form class="d-flex align-items-center flex-column flex-md-row gap-2"
-                                onsubmit="printFilteredTable('<?php echo $activeTab; ?>'); return false;">
-                                <div class="d-flex gap-2">
-                                    <label for="from-<?php echo $activeTab; ?>">From: </label>
-                                    <input type="date" id="from-<?php echo $activeTab; ?>" name="from">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <label for="to-<?php echo $activeTab; ?>">To: </label>
-                                    <input type="date" id="to-<?php echo $activeTab; ?>" name="to">
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-success btn-sm">Print</button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        onclick="saveTableToPDF('<?php echo $tab; ?>')">Save to PDF</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="overflow-x-scroll d-flex justify-content-center">
+
+                        <div class="overflow-x-scroll  w-100">
                             <table id="appointment-rejected" class="w-100">
                                 <thead>
                                     <tr>
                                         <th>Appointment No.</th>
                                         <th>Appointment Date</th>
                                         <th>Appointment Time</th>
-                                        <th>Name</th>
+
                                         <th>Treatment</th>
 
                                     </tr>
@@ -643,7 +446,7 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                                             <td><?php echo htmlspecialchars($row['appointment_date']); ?></td>
                                             <td><?php echo htmlspecialchars($row['appointment_time_start']); ?> -
                                                 <?php echo htmlspecialchars($row['appointment_time_end']); ?>
-                                            <td><?php echo htmlspecialchars($row['patient_name']); ?></td>
+
                                             <td><?php echo htmlspecialchars($row['treatment_name']); ?></td>
 
                                         </tr>
@@ -655,6 +458,16 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
                     <?php endif; ?>
                     <script>
                         $(document).ready(function () {
+                            $('#appointment-approve-submitted').DataTable({
+                                paging: true,
+
+                                searching: true,
+                                order: [[1, 'asc']],
+                                "columnDefs": [
+                                    { "orderable": false, "targets": "action-column" }
+
+                                ]
+                            });
                             $('#appointment-approve-upcoming').DataTable({
                                 paging: true,
 
@@ -697,86 +510,6 @@ $tab = isset($_GET['tab']) ? $_GET['tab'] : 'upcoming';
 
                             });
                         });
-
-                        function printFilteredTable(tab) {
-                            const fromDate = document.getElementById(`from-${tab}`).value;
-                            const toDate = document.getElementById(`to-${tab}`).value;
-                            const table = document.getElementById(`appointment-approve-${tab}`) || document.getElementById(`appointment-rejected`);
-
-                            if (!table) return;
-
-                            const rows = table.querySelectorAll('tbody tr');
-                            const filteredRows = [];
-
-                            const from = fromDate ? new Date(fromDate) : null;
-                            const to = toDate ? new Date(toDate) : null;
-
-                            rows.forEach(row => {
-                                const dateCell = row.querySelector(`td:nth-child(2)`);
-                                if (!dateCell) return;
-
-                                const date = new Date(dateCell.textContent);
-
-                                if ((from && date < from) || (to && date > to)) {
-                                    row.style.display = 'none';
-                                } else {
-                                    row.style.display = '';
-                                    filteredRows.push(row.cloneNode(true));
-                                }
-                            });
-
-                            const printWindow = window.open('', '_blank');
-                            printWindow.document.write('<html><head><title>Print Appointments</title>');
-                            printWindow.document.write('<style>table{width:100%; border-collapse:collapse;} th, td{border:1px solid #000;padding:8px;text-align:left;}</style>');
-                            printWindow.document.write('</head><body>');
-                            printWindow.document.write(`<h2>Appointments (${tab})</h2>`);
-                            printWindow.document.write('<table>' + table.querySelector('thead').outerHTML + '<tbody>');
-                            filteredRows.forEach(row => printWindow.document.write(row.outerHTML));
-                            printWindow.document.write('</tbody></table>');
-                            printWindow.document.write('</body></html>');
-                            printWindow.document.close();
-                            printWindow.print();
-                        }
-
-                        async function saveTableToPDF(tab) {
-                            const fromDate = document.getElementById(`from-${tab}`).value;
-                            const toDate = document.getElementById(`to-${tab}`).value;
-                            const table = document.getElementById(`appointment-approve-${tab}`);
-                            if (!table) return;
-
-                            const rows = table.querySelectorAll('tbody tr');
-                            const from = fromDate ? new Date(fromDate) : null;
-                            const to = toDate ? new Date(toDate) : null;
-
-                            rows.forEach(row => {
-                                const dateCell = row.querySelector(`td:nth-child(2)`);
-                                if (!dateCell) return;
-                                const date = new Date(dateCell.textContent);
-                                row.style.display = (!from || date >= from) && (!to || date <= to) ? '' : 'none';
-                            });
-
-                            const clone = table.cloneNode(true);
-                            const wrapper = document.createElement('div');
-                            wrapper.appendChild(clone);
-                            document.body.appendChild(wrapper);
-                            wrapper.style.position = 'absolute';
-                            wrapper.style.left = '-9999px';
-
-                            const canvas = await html2canvas(wrapper);
-                            const imgData = canvas.toDataURL('image/png');
-                            const { jsPDF } = window.jspdf;
-                            const pdf = new jsPDF('l', 'mm', 'a4');
-
-                            const pageWidth = pdf.internal.pageSize.getWidth();
-                            const imgWidth = pageWidth - 20;
-                            const imgHeight = canvas.height * imgWidth / canvas.width;
-
-                            pdf.text(`${tab.charAt(0).toUpperCase() + tab.slice(1)} Appointments`, 14, 10);
-                            pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
-                            pdf.save(`appointments_${tab}.pdf`);
-
-                            document.body.removeChild(wrapper);
-                        }
                     </script>
 
 

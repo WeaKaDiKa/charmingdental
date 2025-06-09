@@ -8,17 +8,19 @@ SELECT
     CONCAT(u.first_name, ' ', u.last_name) AS p_name, 
     s.name AS service_name, 
     a.appointment_date, 
-    CONCAT(
-        DATE_FORMAT(STR_TO_DATE(a.appointment_time_start, '%H:%i:%s'), '%h:%i %p'),
-        ' - ',
-        DATE_FORMAT(STR_TO_DATE(a.appointment_time_end, '%H:%i:%s'), '%h:%i %p')
-    ) AS appointment_time,
+    a.proofimg,
+  CONCAT(
+    DATE_FORMAT(STR_TO_DATE(a.appointment_time_start, '%h:%i %p'), '%h:%i %p'),
+    ' - ',
+    DATE_FORMAT(STR_TO_DATE(a.appointment_time_end, '%h:%i %p'), '%h:%i %p')
+) AS appointment_time,
+
     u.email,
     a.transaction 
 FROM appointments a
 JOIN users u ON a.patient_id = u.id
 JOIN services s ON a.service_id = s.id
-WHERE a.status = 'submitted' || a.status = 'rescheduled'
+WHERE a.status IN ('submitted', 'rescheduled')
 ";
 
 
@@ -252,27 +254,34 @@ if (!$result) {
                             <tbody>
                                 <?php if ($result && mysqli_num_rows($result) > 0): ?>
                                     <?php while ($row = mysqli_fetch_assoc($result)):
-                                        $queryreceipt = "SELECT proofimg FROM downpayment WHERE appointmentid = " . $row['appointment_id'] . " LIMIT 1";
-                                        $resultreceipt = mysqli_query($db, $queryreceipt);
+
                                         ?>
-                                        <tr data-id="<?= $row['appointment_id']; ?>">
-                                            <td><?= htmlspecialchars($row['appointment_id']); ?></td>
-                                            <td><?= htmlspecialchars($row['p_name']); ?></td>
-                                            <td><?= htmlspecialchars($row['service_name']); ?></td>
-                                            <td><?= htmlspecialchars($row['appointment_time']); ?></td>
-                                            <td><?= htmlspecialchars($row['appointment_date']); ?></td>
-                                            <td><?= htmlspecialchars($row['transaction']); ?></td>
+                                        <tr data-id="<?= $row['appointment_id']; ?>"
+                                            data-email="<?= htmlspecialchars($row['email'] ?? '') ?>">
+
+                                            <td><?= htmlspecialchars($row['appointment_id'] ?? ''); ?></td>
+                                            <td><?= htmlspecialchars($row['p_name'] ?? ''); ?></td>
+                                            <td><?= htmlspecialchars($row['service_name'] ?? ''); ?></td>
+                                            <td><?= htmlspecialchars($row['appointment_time'] ?? '') ?></td>
+
+                                            <td>
+                                                <?= isset($row['appointment_date'])
+                                                    ? date('F j, Y', strtotime($row['appointment_date']))
+                                                    : ''; ?>
+                                            </td>
+
+                                            <td><?= htmlspecialchars($row['transaction'] ?? ''); ?></td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <button class="btn accept-btn" onclick="acceptRequest(this)">Accept</button>
                                                     <button class="btn reject-btn" onclick="rejectRequest(this)">Reject</button>
-                                                    <?php while ($downpayment = mysqli_fetch_assoc($resultreceipt)): ?>
-                                                        <button class="btn btn-primary btn-view" data-bs-toggle="modal"
-                                                            data-bs-target="#viewModal"
-                                                            data-proofimg="../uploads/payment/<?= $downpayment['proofimg']; ?>">
-                                                            View
-                                                        </button>
-                                                    <?php endwhile; ?>
+
+                                                    <button class="btn btn-primary btn-view" data-bs-toggle="modal"
+                                                        data-bs-target="#viewModal"
+                                                        data-proofimg="../uploads/payment/<?= htmlspecialchars($row['proofimg']); ?>">
+                                                        View
+                                                    </button>
+
                                                 </div>
                                             </td>
                                         </tr>
@@ -292,7 +301,7 @@ if (!$result) {
                                 });
                             });
                         </script>
-                
+
                     </div>
                 </div>
             </div>
@@ -370,7 +379,6 @@ if (!$result) {
     </div>
     <script>
         let currentRow, appointmentId, patientName, treatment, appointmentTime, appointmentDate, email;
-
         function acceptRequest(button) {
             currentRow = button.closest('tr');
             appointmentId = currentRow.getAttribute('data-id');
@@ -378,14 +386,15 @@ if (!$result) {
             treatment = currentRow.cells[2].innerText;
             appointmentTime = currentRow.cells[3].innerText;
             appointmentDate = currentRow.cells[4].innerText;
-            email = currentRow.cells[5].innerText;
+            email = currentRow.getAttribute('data-email');
 
             // Set modal text and display the modal
             document.getElementById('modal-text').innerText =
                 `Do you want to accept this appointment?\n\nPatient: ${patientName}\nTreatment: ${treatment}\nTime: ${appointmentTime}\nDate: ${appointmentDate}`;
+
             document.getElementById('confirmModal').style.display = 'flex';
 
-            // Send email when accepting appointment
+            // Send email
             const formData = new FormData();
             formData.append('appointmentId', appointmentId);
             formData.append('patientName', patientName);
@@ -412,27 +421,33 @@ if (!$result) {
         // Wait for DOM to be fully loaded before attaching event listeners
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('confirmBtn').addEventListener('click', function () {
+
                 if (!appointmentId) {
-                    alert('No appointment selected.');
+                    showPopupMessage('No appointment selected.');
                     return;
                 }
-
                 $.ajax({
-                    url: 'accept_request.php', // Path to your PHP script
+                    url: 'accept_request.php',
                     type: 'POST',
                     data: {
-                        id: appointmentId,
-                        name: patientName,
-                        treatment: treatment,
-                        time: appointmentTime,
-                        date: appointmentDate
+                        id: appointmentId
                     },
+                    dataType: 'json', // Expect JSON response
                     success: function (response) {
-                        currentRow.remove(); // Remove the row on success
+                        if (response.status === 'success' && response.message === 'accepted') {
+                            currentRow.remove(); // Remove row on success
+                            console.log('Appointment accepted successfully.');
+                        } else {
+                            console.error('Unexpected response:', response);
+                            showPopupMessage('Failed to accept the appointment.');
+                        }
                     },
-                    error: function () {
+                    error: function (xhr, status, error) {
+                        console.error('AJAX error:', error);
+                        showPopupMessage('An error occurred while processing the request.');
                     }
                 });
+
 
                 document.getElementById('confirmModal').style.display = 'none';
             });
@@ -442,22 +457,17 @@ if (!$result) {
             });
         });
 
-
         function rejectRequest(button) {
             console.log('rejectRequest called');
+
+
             currentRow = button.closest('tr');
-
-            if (!currentRow) {
-                console.error('Error: Unable to find parent row.');
-                return;
-            }
-
             appointmentId = currentRow.getAttribute('data-id');
-            patientName = currentRow.cells[1]?.innerText || 'N/A';
-            treatment = currentRow.cells[2]?.innerText || 'N/A';
-            appointmentTime = currentRow.cells[3]?.innerText || 'N/A';
-            appointmentDate = currentRow.cells[4]?.innerText || 'N/A';
-            email = currentRow.cells[5]?.innerText || 'N/A';
+            patientName = currentRow.cells[1].innerText;
+            treatment = currentRow.cells[2].innerText;
+            appointmentTime = currentRow.cells[3].innerText;
+            appointmentDate = currentRow.cells[4].innerText;
+            email = currentRow.getAttribute('data-email');
 
             console.log('Extracted values:', {
                 appointmentId,
@@ -469,7 +479,7 @@ if (!$result) {
             });
 
             if (!appointmentId) {
-                console.error('Error: No appointment ID found.');
+                showPopupMessage('Error: No appointment ID found.');
                 return;
             }
 
@@ -481,8 +491,7 @@ if (!$result) {
 
             // Set modal text and display the modal
             document.getElementById('reject-modal-text').innerText =
-                `Do you want to reject this appointment?
-            \nPatient: ${patientName}\nTreatment: ${treatment}\nTime: ${appointmentTime}\nDate: ${appointmentDate}`;
+                `Do you want to reject this appointment?\n\nPatient: ${patientName}\nTreatment: ${treatment}\nTime: ${appointmentTime}\nDate: ${appointmentDate}`;
             document.getElementById('rejectModal').style.display = 'flex';
         }
 
@@ -536,6 +545,7 @@ if (!$result) {
                                 currentRow.remove();
                                 showPopupMessage('Appointment rejected and email sent successfully.');
                             } else {
+                                currentRow.remove();
                                 showPopupMessage(result.message || 'Error rejecting appointment.');
                             }
                         } catch (e) {
