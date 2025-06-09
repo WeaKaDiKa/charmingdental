@@ -7,17 +7,16 @@ if (!isset($_SESSION['id'])) {
 }
 
 // Fetch the nearest appointment with 'upcoming' status
-$query = "
-   SELECT 
+$query = "SELECT 
     a.appointment_id,
     a.patient_id,
     CONCAT(u.first_name, ' ', u.last_name) AS patient_name,
     s.name AS treatment_name,
-    CONCAT(
-        DATE_FORMAT(a.appointment_time_start, '%h:%i %p'),
+               CONCAT(
+               DATE_FORMAT(STR_TO_DATE(a.appointment_time_start, '%h:%i %p'), '%h:%i %p'),
         ' - ',
-        DATE_FORMAT(a.appointment_time_end, '%h:%i %p')
-    ) AS appointment_time,
+        DATE_FORMAT(STR_TO_DATE(a.appointment_time_end, '%h:%i %p'), '%h:%i %p')
+            ) AS appointment_time,
     a.appointment_date,
     CONCAT(e.first_name, ' ', e.last_name) AS dentist_name,
     a.status
@@ -32,9 +31,6 @@ ORDER BY
 LIMIT 1;
 
 ";
-
-$result = mysqli_query($db, $query);
-
 
 $result = mysqli_query($db, $query);
 
@@ -75,7 +71,6 @@ $gender = $_SESSION['gender'];
 
     <?php require_once "../db/head.php" ?>
     <link rel="stylesheet" href="denDashboard.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
 </head>
 <style>
@@ -326,15 +321,15 @@ $gender = $_SESSION['gender'];
                                             <div class="appointment-details">
                                                 <div>
                                                     <strong>Appointment No.</strong><br>
-                                                    <?php echo htmlspecialchars($appointment['id']); ?>
+                                                    <?php echo htmlspecialchars($appointment['appointment_id']); ?>
                                                 </div>
                                                 <div>
                                                     <strong>Treatment</strong><br>
-                                                    <?php echo htmlspecialchars($appointment['treatment']); ?>
+                                                    <?php echo htmlspecialchars($appointment['treatment_name']); ?>
                                                 </div>
                                                 <div>
                                                     <strong>Time</strong><br>
-                                                    <?php echo htmlspecialchars($appointment['appointment_time']); ?>
+                                                    <?php echo $appointment['appointment_time']; ?>
                                                 </div>
                                                 <div>
                                                     <strong>Patient Name</strong><br>
@@ -395,33 +390,7 @@ $gender = $_SESSION['gender'];
                         <p><?php echo htmlspecialchars($total_patients); ?></p>
                     </div>
                 </div>
-                <!--  <div class="stat-box1">
-                    <h4></h4>
-                    <div class="number">
-                       <p class="date-now"><?php //echo htmlspecialchars($appointments); ?></p>
-                        <div class="treatment-container">
-                            <div id="treatment-box-container">
-                                <?php if (false):
-                                    if ($result && mysqli_num_rows($result) > 0) {
-                                        while ($row = mysqli_fetch_assoc($result)) {
-                                            echo "<div class='treatment-box'>
-                                                <div class='treatment-item'>
-                                                    <strong>Treatment:</strong> " . htmlspecialchars($row['treatment']) . "
-                                                </div>
-                                                <div class='treatment-item'>
-                                                    <strong>Time:</strong> " . htmlspecialchars($row['appointment_time']) . "
-                                                </div>
-                                            </div>";
-                                        }
-                                    } else {
-                                        echo "<div class='no-data'>No data available</div>";
-                                    }
-                                endif;
-                                ?>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
+          
             </div>
         </div>
     </div>
