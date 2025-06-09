@@ -15,53 +15,50 @@ function getAvailableTimeSlots($startTime, $endTime, $duration, $unavailableSlot
     $currentTime = strtotime($startTime);
     $endTimeStamp = strtotime($endTime);
 
-    // Determine if selected date is today
-    $isToday = ($selectedDate === date('Y-m-d'));
-    $now = strtotime(date('h:i A')); // Current time as timestamp
+    $step = 30 * 60; // Always move by 30 minutes
 
-    while ($currentTime < $endTimeStamp) {
+    $isToday = ($selectedDate === date('Y-m-d'));
+    $now = strtotime(date('h:i A'));
+
+    while ($currentTime + ($duration * 60) <= $endTimeStamp) {
         $nextTime = $currentTime + ($duration * 60);
 
-        if ($nextTime <= $endTimeStamp) {
-            // Skip past time slots if the date is today
-            if ($isToday && $nextTime <= $now) {
-                $currentTime = $nextTime;
-                continue;
-            }
+        if ($isToday && $nextTime <= $now) {
+            $currentTime += $step;
+            continue;
+        }
 
-            // Format the time slot
-            $fromTime = date("h:i A", $currentTime);
-            $toTime = date("h:i A", $nextTime);
-            $timeSlot = "$fromTime - $toTime";
+        $isUnavailable = false;
+        foreach ($unavailableSlots as $unavailableSlot) {
+            list($unavailableFrom, $unavailableTo) = separateTimeSlot($unavailableSlot);
+            if ($unavailableFrom && $unavailableTo) {
+                $unavailableFromTime = strtotime($unavailableFrom);
+                $unavailableToTime = strtotime($unavailableTo);
 
-            $isUnavailable = false;
-
-            foreach ($unavailableSlots as $unavailableSlot) {
-                list($unavailableFrom, $unavailableTo) = separateTimeSlot($unavailableSlot);
-                if ($unavailableFrom && $unavailableTo) {
-                    $unavailableFromTime = strtotime($unavailableFrom);
-                    $unavailableToTime = strtotime($unavailableTo);
-
-                    if (
-                        ($currentTime >= $unavailableFromTime && $currentTime < $unavailableToTime) ||
-                        ($nextTime > $unavailableFromTime && $nextTime <= $unavailableToTime)
-                    ) {
-                        $isUnavailable = true;
-                        break;
-                    }
+                if (
+                    ($currentTime >= $unavailableFromTime && $currentTime < $unavailableToTime) ||
+                    ($nextTime > $unavailableFromTime && $nextTime <= $unavailableToTime) ||
+                    ($currentTime <= $unavailableFromTime && $nextTime >= $unavailableToTime)
+                ) {
+                    $isUnavailable = true;
+                    break;
                 }
-            }
-
-            if (!$isUnavailable) {
-                $slots[] = $timeSlot;
             }
         }
 
-        $currentTime = $nextTime;
+        if (!$isUnavailable) {
+            $fromTime = date("h:i A", $currentTime);
+            $toTime = date("h:i A", $nextTime);
+            $slots[] = "$fromTime - $toTime";
+        }
+
+        $currentTime += $step; // Always move by 30 minutes
     }
 
     return $slots;
 }
+
+
 // Fetch unavailable slots from the database
 function getUnavailableSlots($date, $db)
 {
@@ -75,7 +72,7 @@ function getUnavailableSlots($date, $db)
         die(json_encode(["error" => "SQL Error: " . $db->error]));
     }
 
-    $stmt->bind_param("s", $date); // Only one `s` since we're passing one value
+    $stmt->bind_param("s", $date);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -90,10 +87,10 @@ function getUnavailableSlots($date, $db)
 
 // Handle AJAX request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $date = $_POST['date'] ?? date('Y-m-d'); // Get the selected date
-    $startTime = "08:00 AM"; // Default start time
-    $endTime = "05:00 PM"; // Default end time
-    $duration = $_POST['duration'] ?? 30; // Default duration (30 mins)
+    $date = $_POST['date'] ?? date('Y-m-d');
+    $startTime = "08:00 AM";
+    $endTime = "05:00 PM";
+    $duration = $_POST['duration'] ?? 30;
 
     $unavailableSlots = getUnavailableSlots($date, $db);
     $availableSlots = getAvailableTimeSlots($startTime, $endTime, $duration, $unavailableSlots, $db, $date);

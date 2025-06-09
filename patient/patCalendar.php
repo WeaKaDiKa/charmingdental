@@ -932,7 +932,7 @@ if ($activeCount > 0) {
         </div>
         <!-- JavaScript to handle month/year selection and date/time selection -->
         <script>
-
+            currentstep = 1;
             function showStep(step) {
                 const steps = document.querySelectorAll('.stepdiv');
                 steps.forEach((el, index) => {
@@ -941,10 +941,12 @@ if ($activeCount > 0) {
             }
 
             function nextStep(step) {
+                currentstep = step;
                 showStep(step);
             }
 
             function prevStep(step) {
+                currentstep = step;
                 showStep(step);
             }
             document.addEventListener('DOMContentLoaded', function () {
@@ -1276,7 +1278,7 @@ if ($activeCount > 0) {
                                     option.textContent = slot;
                                     appointmentSelect.appendChild(option);
                                 });
-                                if (!submittedform) { showStep(2); }
+                                if (!submittedform && currentstep > 2) { showStep(2); currentstep = 2; }
 
                             }
                         } catch (error) {
